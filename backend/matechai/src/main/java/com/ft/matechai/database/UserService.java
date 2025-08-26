@@ -1,4 +1,5 @@
 package com.ft.matechai.database;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -9,11 +10,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User addUser(String name, int age) {
-        return userRepository.createUser(name, age);
+    public User addUser(User u) {
+        return userRepository.save(u);
     }
 
-    public void removeUser(String name) {
-        userRepository.deleteByName(name);
+    public void removeUser(Long id) {
+        userRepository.deleteById(id);
     }
 }

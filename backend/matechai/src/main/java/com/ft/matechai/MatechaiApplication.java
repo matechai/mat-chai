@@ -1,8 +1,14 @@
 package com.ft.matechai;
+
+import com.ft.matechai.database.User;
 import com.ft.matechai.database.UserService;
+
+import java.util.List;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import io.github.cdimascio.dotenv.Dotenv;
 
 @SpringBootApplication
@@ -24,10 +30,24 @@ public class MatechaiApplication implements CommandLineRunner {
     }
     @Override
     public void run(String... args) {
-        // userService.addUser("Alice", 25);
-        // userService.addUser("Bob", 30);
-        userService.removeUser("Alice");
-        userService.removeUser("Bob");
+        User u = new User();
+        u.setEmail("john@example.com");
+        u.setUsername("johnny");
+        u.setFirstname("John");
+        u.setLastname("Doe");
+        u.setAge(25);
+        u.setPassword("secret");
+        u.setGender("male");
+        u.setSexualOrientation("straight");
+        u.setBio("Hello world!");
+        u.setInterests(List.of("coding", "gaming"));
+        u.setProfilePicture("profile.png");
+        u.setPictures(List.of("pic1.png", "pic2.png"));
+        u.setFame(10);
+        u.setLocation("New York");
+        u.setLastOnline("2025-08-25");
+        userService.addUser(u);
+        // userService.removeUser(u.getId());
         System.out.println("Users added!");
     }
 }
