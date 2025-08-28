@@ -1,1 +1,37 @@
-<p>chat works!</p>
+<div style="max-width:500px; margin:2rem auto; padding:1rem; border:1px solid #ccc; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); font-family:Arial, sans-serif;">
+
+  <h2 style="text-align:center; margin-bottom:1rem;">Chats</h2>
+
+  <!-- Chat List -->
+  <div style="display:flex; flex-direction:column; gap:1rem; max-height:400px; overflow-y:auto;">
+    
+    <!-- Example Chat -->
+    <div style="display:flex; gap:1rem; align-items:center; padding:0.5rem; border-bottom:1px solid #eee;">
+      <img src="https://randomuser.me/api/portraits/women/44.jpg" 
+           alt="User" 
+           style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+      <div>
+        <strong>Jane Doe</strong>
+        <p style="margin:0; color:#666; font-size:0.9rem;">Hey! Are you free this weekend?</p>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:1rem; align-items:center; padding:0.5rem; border-bottom:1px solid #eee;">
+      <img src="https://randomuser.me/api/portraits/men/45.jpg" 
+           alt="User" 
+           style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+      <div>
+        <strong>Mike Smith</strong>
+        <p style="margin:0; color:#666; font-size:0.9rem;">Looking forward to our meeting!</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Input Box -->
+  <div style="display:flex; margin-top:1rem;">
+    <input type="text" placeholder="Type a message..." 
+           style="flex:1; padding:0.5rem; border:1px solid #ccc; border-radius:8px 0 0 8px;">
+    <button style="padding:0.5rem 1rem; background:#4CAF50; color:white; border:none; border-radius:0 8px 8px 0; cursor:pointer;">Send</button>
+  </div>
+</div>
