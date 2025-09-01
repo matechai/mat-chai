@@ -1,6 +1,6 @@
-package com.ft.matechai.user.service;
+package com.ft.matechai.auth.service;
 
-import com.ft.matechai.user.dto.SignUpRequestDTO;
+import com.ft.matechai.auth.dto.SignUpRequestDTO;
 import com.ft.matechai.user.node.UserNode;
 import com.ft.matechai.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;

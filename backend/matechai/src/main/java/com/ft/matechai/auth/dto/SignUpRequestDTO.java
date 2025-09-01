@@ -1,4 +1,4 @@
-package com.ft.matechai.user.dto;
+package com.ft.matechai.auth.dto;
 
 
 import jakarta.validation.constraints.Email;

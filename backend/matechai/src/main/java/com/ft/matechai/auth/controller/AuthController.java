@@ -1,8 +1,8 @@
-package com.ft.matechai.user.controller;
+package com.ft.matechai.auth.controller;
 
-import com.ft.matechai.user.dto.SignUpRequestDTO;
-import com.ft.matechai.user.service.AuthService;
-import com.ft.matechai.user.service.VerificationService;
+import com.ft.matechai.auth.dto.SignUpRequestDTO;
+import com.ft.matechai.auth.service.AuthService;
+import com.ft.matechai.auth.service.VerificationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
