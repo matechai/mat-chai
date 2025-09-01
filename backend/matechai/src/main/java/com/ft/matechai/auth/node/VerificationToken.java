@@ -1,4 +1,4 @@
-package com.ft.matechai.user.node;
+package com.ft.matechai.auth.node;
 
 import lombok.Getter;
 import lombok.Setter;

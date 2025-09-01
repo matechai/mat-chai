@@ -1,8 +1,9 @@
-package com.ft.matechai.user.service;
+package com.ft.matechai.auth.service;
 
-import com.ft.matechai.user.node.VerificationToken;
+import com.ft.matechai.auth.node.VerificationToken;
+import com.ft.matechai.auth.service.EmailService;
 import com.ft.matechai.user.repository.UserRepository;
-import com.ft.matechai.user.repository.VerificationTokenRepository;
+import com.ft.matechai.auth.repository.VerificationTokenRepository;
 import org.springframework.stereotype.Service;
 import com.ft.matechai.user.node.UserNode;
 

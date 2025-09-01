@@ -1,8 +1,6 @@
 package com.ft.matechai.user.controller;
 
-import com.ft.matechai.user.dto.SignUpRequestDTO;
 import com.ft.matechai.user.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

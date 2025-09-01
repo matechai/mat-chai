@@ -1,4 +1,4 @@
-package com.ft.matechai.user.service;
+package com.ft.matechai.auth.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
