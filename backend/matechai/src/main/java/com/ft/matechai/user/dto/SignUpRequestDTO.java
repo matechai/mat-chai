@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserRequestDTO {
+public class SignUpRequestDTO {
 
     @Email    (message = "Please enter a valid email address")
     @NotBlank(message = "Email is required")
@@ -25,4 +25,6 @@ public class UserRequestDTO {
 
     @NotBlank(message = "Password is required")
     private String password;
+
+    private boolean enabled = false;
 }
