@@ -1,34 +1,76 @@
-<div style="max-width:500px; margin:2rem auto; padding:2rem; border:1px solid #ccc; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); font-family:Arial, sans-serif;">
+<div style="max-width:600px; margin:2rem auto; padding:2rem; border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Arial, sans-serif;">
 
-  <!-- Profile Header -->
-  <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+  <h2 style="text-align:center; margin-bottom:1.5rem;">Edit My Profile</h2>
+
+  <!-- Profile Picture Upload -->
+  <div style="text-align:center; margin-bottom:1.5rem;">
     <img src="https://randomuser.me/api/portraits/men/32.jpg" 
          alt="My Profile Picture" 
-         style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #333;">
-    <div>
-      <h2 style="margin:0;">John Smith, 30</h2>
-      <p style="color:#666; margin:0;">San Francisco, USA</p>
+         style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid #4CAF50;">
+    <div style="margin-top:0.5rem;">
+      <button style="background:#4CAF50; color:white; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">
+        Change Photo
+      </button>
     </div>
   </div>
 
-  <!-- Bio Section -->
-  <h3 style="margin-top:1rem;">About Me</h3>
-  <p style="color:#333; line-height:1.4;">
-    I love hiking, trying out new recipes, and exploring new cities. Looking to meet like-minded people who enjoy adventure and meaningful conversations.
-  </p>
+  <!-- Edit Form -->
+  <form style="display:flex; flex-direction:column; gap:1rem;">
 
-  <!-- Personal Details -->
-  <h3 style="margin-top:1rem;">Details</h3>
-  <ul style="list-style:none; padding:0; color:#333;">
-    <li><strong>Email:</strong> john.smith@example.com</li>
-    <li><strong>Occupation:</strong> Software Engineer</li>
-    <li><strong>Interests:</strong> Hiking, Cooking, Travel, Music</li>
-  </ul>
+    <!-- Name & Age -->
+    <div style="display:flex; gap:1rem;">
+      <input type="text" placeholder="Full Name" value="John Smith"
+             style="flex:2; padding:0.75rem; border:1px solid #ccc; border-radius:8px;">
+      <input type="number" placeholder="Age" value="30"
+             style="flex:1; padding:0.75rem; border:1px solid #ccc; border-radius:8px;">
+    </div>
 
-  <!-- Edit Profile Button -->
-  <div style="text-align:center; margin-top:1.5rem;">
-    <button style="background:#4CAF50; color:white; border:none; padding:0.75rem 1.5rem; border-radius:8px; cursor:pointer;">
-      Edit Profile
+    <!-- Location -->
+    <input type="text" placeholder="Location" value="San Francisco, USA"
+           style="padding:0.75rem; border:1px solid #ccc; border-radius:8px;">
+
+    <!-- Bio -->
+    <textarea placeholder="Write something about yourself..." rows="4"
+              style="padding:0.75rem; border:1px solid #ccc; border-radius:8px; resize:none;">
+I love hiking, trying out new recipes, and exploring new cities. Looking to meet like-minded people who enjoy adventure and meaningful conversations.
+    </textarea>
+
+    <!-- Occupation -->
+    <input type="text" placeholder="Occupation" value="Software Engineer"
+           style="padding:0.75rem; border:1px solid #ccc; border-radius:8px;">
+
+    <!-- Interests -->
+    <input type="text" placeholder="Interests (comma separated)" value="Hiking, Cooking, Travel, Music"
+           style="padding:0.75rem; border:1px solid #ccc; border-radius:8px;">
+
+    <!-- Preferences (Tinder/Bumble style filter) -->
+    <div>
+      <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Looking For</label>
+      <select style="width:100%; padding:0.75rem; border:1px solid #ccc; border-radius:8px;">
+        <option>Women</option>
+        <option>Men</option>
+        <option>Everyone</option>
+      </select>
+    </div>
+
+    <div style="display:flex; gap:1rem;">
+      <div style="flex:1;">
+        <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Age Range</label>
+        <input type="text" placeholder="25 - 35" value="25 - 35"
+               style="width:100%; padding:0.75rem; border:1px solid #ccc; border-radius:8px;">
+      </div>
+      <div style="flex:1;">
+        <label style="display:block; margin-bottom:0.5rem; font-weight:bold;">Max Distance</label>
+        <input type="text" placeholder="10 miles" value="10 miles"
+               style="width:100%; padding:0.75rem; border:1px solid #ccc; border-radius:8px;">
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <button type="submit" 
+            style="background:#4CAF50; color:white; border:none; padding:0.75rem; border-radius:8px; cursor:pointer; margin-top:1rem;">
+      Save Changes
     </button>
-  </div>
+
+  </form>
 </div>
