@@ -1,6 +1,6 @@
 package com.ft.matechai.user.controller;
 
-import com.ft.matechai.user.dto.UserRequestDTO;
+import com.ft.matechai.user.dto.SignUpRequestDTO;
 import com.ft.matechai.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,11 +17,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public ResponseEntity<?> createNode(@Valid @RequestBody UserRequestDTO dto) {
-        userService.createUser(dto);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     @GetMapping("/{username}")
     public ResponseEntity<?> getNode(@PathVariable String username){
