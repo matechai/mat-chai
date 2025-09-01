@@ -20,4 +20,6 @@ public class UserNode {
     private String lastName;
 
     private String password;
+
+    private boolean enabled = false;
 }
