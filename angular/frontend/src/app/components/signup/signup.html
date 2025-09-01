@@ -9,8 +9,8 @@
     <label>Last Name:</label>
     <input formControlName="lastName" type="text" style="width:100%; margin-bottom:0.5rem;" required>
 
-    <!-- <label>User Name</label>
-    <input formControlName="userName" type="text" style="width:100%; margin-bottom:0.5rem;" required> -->
+    <label>User Name</label>
+    <input formControlName="userName" type="text" style="width:100%; margin-bottom:0.5rem;" required>
 
     <label>Email:</label>
     <input formControlName="email" type="email" style="width:100%; margin-bottom:0.5rem;" required>
@@ -32,13 +32,13 @@
 
     <!-- Validation messages -->
     <div style="color:red; font-size:0.9rem;">
-      @if (signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('firstName')?.value?.toLowerCase())) {
-        <p>❌ Password should not contain First Name</p>
+      @if (signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('firstName')?.value?.toLowerCase()) || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('lastName')?.value?.toLowerCase()) || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('userName')?.value?.toLowerCase()) || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('email')?.value?.toLowerCase())) {
+        <p>❌ Password should not contain First/Last/User Name or Email</p>
       }
-
+<!-- 
       @if (signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('lastName')?.value?.toLowerCase())) {
         <p>❌ Password should not contain Last Name</p>
-      }
+      } -->
 
       @if (signupForm.get('password')?.value !== signupForm.get('confirmPassword')?.value) {
         <p>❌ Passwords do not match</p>

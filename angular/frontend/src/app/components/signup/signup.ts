@@ -17,6 +17,7 @@ export class Signup {
     this.signupForm = this.fb.group({
       firstName : ['', [Validators.required]],
       lastName : ['', [Validators.required]],
+      userName : ['', [Validators.required]],
       email : ['', [Validators.required, Validators.email]],
       password : ['', [Validators.required]],
       confirmPassword : ['', [Validators.required]],
@@ -53,6 +54,7 @@ export class Signup {
   {
     const firstName = this.signupForm.get('firstName')?.value?.toLowerCase() || '';
     const lastName = this.signupForm.get('lastName')?.value?.toLowerCase() || '';
+    const userName = this.signupForm.get('userName')?.value?.toLowerCase() || '';
     const email = this.signupForm.get('email')?.value?.toLowerCase() || '';
     const password = this.signupForm.get('password')?.value?.toLowerCase() || '';
     const confirmPassword = this.signupForm.get('confirmPassword')?.value || '';
@@ -63,7 +65,7 @@ export class Signup {
     if (password !== confirmPassword.toLowerCase())
       return false;
 
-    if (password.includes(firstName) || password.includes(lastName) || password.includes(email))
+    if (password.includes(firstName) || password.includes(lastName) || password.includes(email) || password.includes(userName))
       return false;
 
     return this.passwordStrength !== 'weak';
