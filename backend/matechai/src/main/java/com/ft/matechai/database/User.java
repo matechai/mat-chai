@@ -35,4 +35,19 @@ public class User {
     private int fame;
     private String location;
     private String lastOnline;
+
+    @Relationship(type = "Viewed", direction = Relationship.Direction.INCOMING)
+    private Set<User> Viewers;
+
+    @Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
+    private Set<User> Viewed;
+
+    @Relationship(type = "Liked", direction = Relationship.Direction.INCOMING)
+    private Set<User> Likers;
+
+    @Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
+    private Set<User> Liked;
+
+    @Relationship(type = "Blocked", direction = Relationship.Direction.OUTGOING)
+    private Set<User> Blocked;
 }

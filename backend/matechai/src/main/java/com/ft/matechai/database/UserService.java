@@ -17,4 +17,8 @@ public class UserService {
     public void removeUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    public void followUser(Long followerId, Long followedId) {
+        //LK Add code: Call a function to find follower user and followed user then add the followed user to the follower's Set and save it all
+    }
 }
