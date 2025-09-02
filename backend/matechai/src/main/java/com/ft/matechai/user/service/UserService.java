@@ -1,6 +1,5 @@
 package com.ft.matechai.user.service;
 
-import com.ft.matechai.user.dto.UserRequestDTO;
 import com.ft.matechai.user.node.UserNode;
 import com.ft.matechai.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -16,13 +15,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // create user node
-    public void createUser(UserRequestDTO dto) {
-        UserNode userNode = new UserNode();
-        userNode.setUsername(dto.getUsername());
-        userNode.setEmail(dto.getEmail());
-        userRepository.save(userNode);
-    }
 
     public UserNode findUser(String username) {
         return userRepository.findByUsernameCustom(username).orElseThrow();
