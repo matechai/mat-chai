@@ -49,5 +49,4 @@ public class VerificationService {
         tokenRepository.delete(vt);
         return true;
     }
-
 }

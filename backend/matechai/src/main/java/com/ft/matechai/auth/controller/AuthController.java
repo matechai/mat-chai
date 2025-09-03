@@ -30,12 +30,13 @@ public class AuthController {
 
     @GetMapping("/verify")
     public ResponseEntity<String> verify(@RequestParam("token") String token) {
+
         boolean success = verificationService.verifyToken(token);
-        if (success) {
+        if (success)
             return ResponseEntity.ok("Account verified successfully!");
-        } else {
+        else
             return ResponseEntity.badRequest().body("Invalid token.");
-        }
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto) {
