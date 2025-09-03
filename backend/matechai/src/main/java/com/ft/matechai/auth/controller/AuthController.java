@@ -1,5 +1,7 @@
 package com.ft.matechai.auth.controller;
 
+import com.ft.matechai.auth.dto.LoginRequestDTO;
+import com.ft.matechai.auth.dto.LoginResponseDTO;
 import com.ft.matechai.auth.dto.SignUpRequestDTO;
 import com.ft.matechai.auth.service.AuthService;
 import com.ft.matechai.auth.service.VerificationService;
@@ -34,6 +36,16 @@ public class AuthController {
         } else {
             return ResponseEntity.badRequest().body("Invalid token.");
         }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto) {
+
+        LoginResponseDTO response = authService.logIn(dto);
+
+        if (response != null)
+            return ResponseEntity.ok(response);
+        else
+            return ResponseEntity.status(401).build();
     }
 
 }
