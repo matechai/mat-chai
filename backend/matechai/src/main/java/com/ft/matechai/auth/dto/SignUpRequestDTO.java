@@ -3,11 +3,9 @@ package com.ft.matechai.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class SignUpRequestDTO {
 
     @Email    (message = "Please enter a valid email address")

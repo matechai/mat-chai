@@ -23,7 +23,9 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
 
-    public AuthService(UserRepository userRepository, VerificationService verificationService, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository,
+                       VerificationService verificationService,
+                       PasswordEncoder passwordEncoder,
                        JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.verificationService = verificationService;
@@ -32,13 +34,14 @@ public class AuthService {
     }
 
 
+    // Sign Up
     public void signUp(SignUpRequestDTO dto) {
         UserNode user = createUser(dto);
 
         verificationService.sendVerificationEmail(user);
     }
 
-    // create user node
+
     // Log In
     public LoginResponseDTO logIn(LoginRequestDTO dto) {
 
@@ -61,6 +64,7 @@ public class AuthService {
         }
     }
 
+    // Create User node
     private UserNode createUser(SignUpRequestDTO dto) {
 
         String hash = encoder.encode(dto.getPassword());
