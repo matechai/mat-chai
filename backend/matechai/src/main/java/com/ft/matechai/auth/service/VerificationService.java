@@ -1,7 +1,7 @@
 package com.ft.matechai.auth.service;
 
 import com.ft.matechai.auth.node.VerificationToken;
-import com.ft.matechai.auth.service.EmailService;
+import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.repository.UserRepository;
 import com.ft.matechai.auth.repository.VerificationTokenRepository;
 import org.springframework.stereotype.Service;
@@ -42,12 +42,11 @@ public class VerificationService {
         if (vt == null)
             return false;
 
-        UserNode user = userRepository.findById(vt.getUserId()).orElseThrow();
+        UserNode user = userRepository.findByIdOrThrow(vt.getUserId());
         user.setEnabled(true);
         userRepository.save(user);
 
         tokenRepository.delete(vt);
         return true;
     }
-
 }
