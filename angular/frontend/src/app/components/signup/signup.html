@@ -1,41 +1,57 @@
-<div style="max-width:400px; margin:2rem auto; padding:2rem; border:1px solid #ccc; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-  <h2 style="text-align:center;">Sign Up</h2>
+<div style="max-width:400px; margin:2rem auto; padding:1rem; border:1px solid #ccc; border-radius:8px;">
+  <h3>Create Account</h3>
 
-  <form>
-    <div style="margin-bottom:1rem;">
-      <label for="name" style="display:block; margin-bottom:0.5rem;">Full Name</label>
-      <input id="name" type="text" placeholder="Enter your name"
-             style="width:100%; padding:0.5rem; border:1px solid #ccc; border-radius:4px;" />
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+
+    <label>First Name:</label>
+    <input formControlName="firstName" type="text" style="width:100%; margin-bottom:0.5rem;" required>
+
+    <label>Last Name:</label>
+    <input formControlName="lastName" type="text" style="width:100%; margin-bottom:0.5rem;" required>
+
+    <label>User Name</label>
+    <input formControlName="userName" type="text" style="width:100%; margin-bottom:0.5rem;" required>
+
+    <label>Email:</label>
+    <input formControlName="email" type="email" style="width:100%; margin-bottom:0.5rem;" required>
+
+    <label>Password:</label>
+    <input formControlName="password" type="password" (input)="onPasswordInput()" style="width:100%; margin-bottom:0.5rem;" required>
+
+    @if (signupForm.get('password')?.value) {
+      <p>
+        Strength:
+        <span [style.color]="passwordStrength === 'Weak' ? 'red' : (passwordStrength === 'Medium' ? 'orange' : 'green')" >
+          {{ passwordStrength }}
+        </span>
+      </p>
+    }
+
+    <label>Confirm Password:</label>
+    <input formControlName="confirmPassword" type="password" style="width:100%; margin-bottom:0.5rem;" required>
+
+    <!-- Validation messages -->
+    <div style="color:red; font-size:0.9rem;">
+      @if (signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('firstName')?.value?.toLowerCase()) 
+      || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('lastName')?.value?.toLowerCase()) 
+      || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('userName')?.value?.toLowerCase()) 
+      || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('email')?.value?.toLowerCase())) 
+      {
+        <p>❌ Password should not contain First/Last/User Name or Email</p>
+      }
+<!-- 
+      @if (signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('lastName')?.value?.toLowerCase())) {
+        <p>❌ Password should not contain Last Name</p>
+      } -->
+
+      @if (signupForm.get('password')?.value !== signupForm.get('confirmPassword')?.value) 
+      {
+        <p>❌ Passwords do not match</p>
+      }
     </div>
 
-    <div style="margin-bottom:1rem;">
-      <label for="email" style="display:block; margin-bottom:0.5rem;">Email</label>
-      <input id="email" type="email" placeholder="Enter your email"
-             style="width:100%; padding:0.5rem; border:1px solid #ccc; border-radius:4px;" />
-    </div>
-
-    <div style="margin-bottom:1rem;">
-      <label for="password" style="display:block; margin-bottom:0.5rem;">Password</label>
-      <input id="password" type="password" placeholder="Enter your password"
-             style="width:100%; padding:0.5rem; border:1px solid #ccc; border-radius:4px;" />
-    </div>
-
-    <button type="submit"
-            style="width:100%; padding:0.75rem; background:#333; color:white; border:none; border-radius:4px; cursor:pointer; margin-bottom:1rem;">
+    <button type="submit" [disabled]="!isPasswordValid()" style="margin-top:1rem; padding:0.5rem 1rem;">
       Sign Up
     </button>
   </form>
-
-  <div style="text-align:center; margin:1rem 0; color:#888;">OR</div>
-
-  <!-- Dummy Google Signup Button -->
-  <button style="width:100%; padding:0.75rem; background:white; border:1px solid #ccc; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" width="20" height="20"/>
-    <span>Sign up with Google</span>
-  </button>
-
-  <p style="text-align:center; margin-top:1rem;">
-    Already have an account?
-    <a routerLink="/login" style="color:#007bff; text-decoration:none;">Login</a>
-  </p>
 </div>
