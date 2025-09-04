@@ -32,7 +32,11 @@
 
     <!-- Validation messages -->
     <div style="color:red; font-size:0.9rem;">
-      @if (signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('firstName')?.value?.toLowerCase()) || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('lastName')?.value?.toLowerCase()) || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('userName')?.value?.toLowerCase()) || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('email')?.value?.toLowerCase())) {
+      @if (signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('firstName')?.value?.toLowerCase()) 
+      || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('lastName')?.value?.toLowerCase()) 
+      || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('userName')?.value?.toLowerCase()) 
+      || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('email')?.value?.toLowerCase())) 
+      {
         <p>❌ Password should not contain First/Last/User Name or Email</p>
       }
 <!-- 
@@ -40,7 +44,8 @@
         <p>❌ Password should not contain Last Name</p>
       } -->
 
-      @if (signupForm.get('password')?.value !== signupForm.get('confirmPassword')?.value) {
+      @if (signupForm.get('password')?.value !== signupForm.get('confirmPassword')?.value) 
+      {
         <p>❌ Passwords do not match</p>
       }
     </div>
