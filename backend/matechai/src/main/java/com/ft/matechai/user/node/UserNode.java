@@ -26,4 +26,6 @@ public class UserNode {
     private String password;
 
     private boolean enabled = false;
+
+    private boolean firstLogin = true;
 }
