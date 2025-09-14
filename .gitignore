@@ -207,3 +207,10 @@ typings/
 # e2e
 e2e/*.js
 e2e/*.map
+
+
+#environment file
+.env
+.env.example
+.env.local
+.env.staging
