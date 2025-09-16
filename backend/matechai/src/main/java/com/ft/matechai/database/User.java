@@ -16,38 +16,38 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    @Id
-    @GeneratedValue
-    private Long id;
+	@Id
+	@GeneratedValue
+	private Long id;
 
-    private String email;
-    private String username;
-    private String firstname;
-    private String lastname;
-    private int age;
-    private String password;
-    private String gender;
-    private String sexualOrientation;
-    private String bio;
-    private List<String> interests = new ArrayList<>();
-    private String profilePicture;
-    private List<String> pictures = new ArrayList<>();
-    private int fame;
-    private String location;
-    private String lastOnline;
+	private String email;
+	private String username;
+	private String firstname;
+	private String lastname;
+	private int age;
+	private String password;
+	private String gender;
+	private String sexualOrientation;
+	private String bio;
+	private List<String> interests = new ArrayList<>();
+	private String profilePicture;
+	private List<String> pictures = new ArrayList<>();
+	private int fame;
+	private String location;
+	private String lastOnline;
 
-    @Relationship(type = "Viewed", direction = Relationship.Direction.INCOMING)
-    private Set<User> Viewers;
+	@Relationship(type = "Viewed", direction = Relationship.Direction.INCOMING)
+	private Set<User> Viewers;
 
-    @Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
-    private Set<User> Viewed;
+	@Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
+	private Set<User> Viewed;
 
-    @Relationship(type = "Liked", direction = Relationship.Direction.INCOMING)
-    private Set<User> Likers;
+	@Relationship(type = "Liked", direction = Relationship.Direction.INCOMING)
+	private Set<User> Likers;
 
-    @Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
-    private Set<User> Liked;
+	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
+	private Set<User> Liked;
 
-    @Relationship(type = "Blocked", direction = Relationship.Direction.OUTGOING)
-    private Set<User> Blocked;
+	@Relationship(type = "Blocked", direction = Relationship.Direction.OUTGOING)
+	private Set<User> Blocked;
 }
