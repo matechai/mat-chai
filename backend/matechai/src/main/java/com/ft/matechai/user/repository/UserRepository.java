@@ -24,6 +24,10 @@ public interface UserRepository extends Neo4jRepository<UserNode, Long> {
                 .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid id"));
     }
 
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
     @Query("MATCH (a:User) RETURN a")
     List<UserNode> findAllUsers();
 }
