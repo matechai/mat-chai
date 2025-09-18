@@ -18,4 +18,9 @@ public class AuthExceptions {
     public static class EmailNotVerifiedException extends RuntimeException {
         public EmailNotVerifiedException() { super("Email not verified"); }
     }
+
+    @ResponseStatus(HttpStatus.CONFLICT)    // 409
+    public static class DuplicateUsernameException extends RuntimeException {
+        public DuplicateUsernameException() { super("Duplicate Username"); }
+    }
 }
