@@ -36,8 +36,11 @@ public class AuthService {
 
     // Sign Up
     public void signUp(SignUpRequestDTO dto) {
-        UserNode user = createUser(dto);
 
+        if (userRepository.existsByUsername(dto.getUsername()))
+            throw new AuthExceptions.DuplicateUsernameException();
+
+        UserNode user = createUser(dto);
         verificationService.sendVerificationEmail(user);
     }
 
