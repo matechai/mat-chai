@@ -20,7 +20,7 @@ public class AuthExceptions {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)    // 409
-    public static class DuplicateUsernameException extends RuntimeException {
-        public DuplicateUsernameException() { super("Duplicate Username"); }
+    public static class DuplicateUserException extends RuntimeException {
+        public DuplicateUserException() { super("Duplicate Username or Email "); }
     }
 }
