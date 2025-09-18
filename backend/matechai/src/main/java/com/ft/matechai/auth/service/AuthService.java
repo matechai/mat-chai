@@ -38,7 +38,7 @@ public class AuthService {
     public void signUp(SignUpRequestDTO dto) {
 
         if (userRepository.existsByUsername(dto.getUsername()))
-            throw new AuthExceptions.DuplicateUsernameException();
+            throw new AuthExceptions.DuplicateUserException();
 
         UserNode user = createUser(dto);
         verificationService.sendVerificationEmail(user);
