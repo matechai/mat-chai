@@ -1,5 +1,6 @@
 package com.ft.matechai.user.node;
 
+import com.ft.matechai.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,6 +35,8 @@ public class User {
     private boolean enabled = false;
 
     private boolean firstLogin = true;
+
+    private Role role;
 
 
     // Profile

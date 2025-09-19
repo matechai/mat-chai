@@ -3,6 +3,7 @@ package com.ft.matechai.auth.service;
 import com.ft.matechai.auth.dto.LoginRequestDTO;
 import com.ft.matechai.auth.dto.LoginResponseDTO;
 import com.ft.matechai.auth.dto.SignUpRequestDTO;
+import com.ft.matechai.enums.Role;
 import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
@@ -71,13 +72,14 @@ public class AuthService {
     private User createUser(SignUpRequestDTO dto) {
 
         String hash = encoder.encode(dto.getPassword());
-        User user = new User();
-
-        user.setEmail(dto.getEmail());
-        user.setUsername(dto.getUsername());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setPassword(hash);
+        User user = User.builder()
+                        .email(dto.getEmail())
+                        .username(dto.getUsername())
+                        .firstName(dto.getFirstName())
+                        .lastName(dto.getLastName())
+                        .password(hash)
+                        .role(Role.ROLE_USER)
+                        .build();
 
         userRepository.save(user);
 
