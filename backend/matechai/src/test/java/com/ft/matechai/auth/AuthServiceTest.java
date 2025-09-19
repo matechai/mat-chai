@@ -1,7 +1,7 @@
 package com.ft.matechai.auth;
 
 import com.ft.matechai.auth.service.AuthService;
-import com.ft.matechai.user.node.UserNode;
+import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,19 +12,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.ft.matechai.auth.dto.SignUpRequestDTO;
-import com.ft.matechai.auth.service.AuthService;
 import com.ft.matechai.auth.service.VerificationService;
-import com.ft.matechai.user.node.UserNode;
-import com.ft.matechai.user.repository.UserRepository;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,7 +47,7 @@ class AuthServiceTest {
         authService.signUp(dto);
 
         // then
-        verify(userRepository).save(any(UserNode.class));
-        verify(verificationService).sendVerificationEmail(any(UserNode.class));
+        verify(userRepository).save(any(User.class));
+        verify(verificationService).sendVerificationEmail(any(User.class));
     }
 }

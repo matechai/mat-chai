@@ -3,10 +3,11 @@ package com.ft.matechai.auth.service;
 import com.ft.matechai.auth.dto.LoginRequestDTO;
 import com.ft.matechai.auth.dto.LoginResponseDTO;
 import com.ft.matechai.auth.dto.SignUpRequestDTO;
+import com.ft.matechai.enums.Role;
 import com.ft.matechai.exception.AuthExceptions;
-import com.ft.matechai.user.node.UserNode;
+import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
-import com.ft.matechai.util.JwtUtil;
+import com.ft.matechai.config.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class AuthService {
         if (userRepository.existsByUsername(dto.getUsername()) || userRepository.existsByEmail(dto.getEmail()))
             throw new AuthExceptions.DuplicateUserException();
 
-        UserNode user = createUser(dto);
+        User user = createUser(dto);
         verificationService.sendVerificationEmail(user);
     }
 
@@ -48,7 +49,7 @@ public class AuthService {
     // Log In
     public LoginResponseDTO logIn(LoginRequestDTO dto) {
 
-        UserNode user = userRepository.findByUsernameOrThrow(dto.getUsername());
+        User user = userRepository.findByUsernameOrThrow(dto.getUsername());
 
         // check password
         if (encoder.matches(dto.getPassword(), user.getPassword())) {       // success
@@ -68,19 +69,20 @@ public class AuthService {
     }
 
     // Create User node
-    private UserNode createUser(SignUpRequestDTO dto) {
+    private User createUser(SignUpRequestDTO dto) {
 
         String hash = encoder.encode(dto.getPassword());
-        UserNode userNode = new UserNode();
+        User user = User.builder()
+                        .email(dto.getEmail())
+                        .username(dto.getUsername())
+                        .firstName(dto.getFirstName())
+                        .lastName(dto.getLastName())
+                        .password(hash)
+                        .role(Role.ROLE_USER)
+                        .build();
 
-        userNode.setEmail(dto.getEmail());
-        userNode.setUsername(dto.getUsername());
-        userNode.setFirstName(dto.getFirstName());
-        userNode.setLastName(dto.getLastName());
-        userNode.setPassword(hash);
+        userRepository.save(user);
 
-        userRepository.save(userNode);
-
-        return userNode;
+        return user;
     }
 }
