@@ -1,6 +1,7 @@
 package com.ft.matechai.config.jwt;
 
 
+import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.exception.AuthExceptions;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -52,7 +53,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Set<GrantedAuthority> authorities = new HashSet<>();
                 authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
 
-                Authentication auth = new UsernamePasswordAuthenticationToken(user, null, authorities);
+                PrincipalDetails principal = new PrincipalDetails(user);
+                Authentication auth = new UsernamePasswordAuthenticationToken(principal, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
                 log.info("[JWT] JWT Authentication Success : {}", user.getUsername());
