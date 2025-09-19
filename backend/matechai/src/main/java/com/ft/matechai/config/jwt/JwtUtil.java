@@ -1,4 +1,4 @@
-package com.ft.matechai.util;
+package com.ft.matechai.config.jwt;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;

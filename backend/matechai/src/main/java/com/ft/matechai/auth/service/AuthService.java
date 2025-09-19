@@ -6,7 +6,7 @@ import com.ft.matechai.auth.dto.SignUpRequestDTO;
 import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
-import com.ft.matechai.util.JwtUtil;
+import com.ft.matechai.config.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

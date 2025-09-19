@@ -1,6 +1,5 @@
 package com.ft.matechai.user.initializer;
 
-import com.ft.matechai.user.node.Tag;
 import com.ft.matechai.user.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
