@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
-                    .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN", "GOD")
+                    .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN", "GOD")
                     .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "GOD")
                     .anyRequest().permitAll()
                 .and()

@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String bearer = request.getHeader("Authorization");
         String path = request.getRequestURI();
 
-        if (path.startsWith("/api/user/")) {
+        if (path.startsWith("/api/users/")) {
 
             if (bearer != null && bearer.startsWith("Bearer ")) {
 
