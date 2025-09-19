@@ -4,6 +4,7 @@ import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,8 +29,15 @@ public class UserService {
                 .build();
     }
 
-    public User findUser(String username) {
-        return userRepository.findByUsernameOrThrow(username);
-    }
+    @Transactional
+    public void updateUserInfo(String username, UserInfoDTO dto) {
 
+        User user = userRepository.findByUsernameOrThrow(username);
+
+        user.setEmail(dto.getEmail());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+
+        userRepository.save(user);
+    }
 }
