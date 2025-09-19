@@ -3,7 +3,7 @@ package com.ft.matechai.auth;
 import com.ft.matechai.auth.node.VerificationToken;
 import com.ft.matechai.auth.service.EmailService;
 import com.ft.matechai.auth.service.VerificationService;
-import com.ft.matechai.user.node.UserNode;
+import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import com.ft.matechai.auth.repository.VerificationTokenRepository;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class VerificationServiceUnitTest {
 
     @Test
     void testSendVerificationEmail() {
-        UserNode user = new UserNode();
+        User user = new User();
         user.setId(1L);
         user.setEmail("test@example.com");
 
@@ -56,7 +56,7 @@ class VerificationServiceUnitTest {
         vt.setToken(tokenStr);
         vt.setUserId(1L);
 
-        UserNode user = new UserNode();
+        User user = new User();
         user.setId(1L);
         user.setEnabled(false);
 
