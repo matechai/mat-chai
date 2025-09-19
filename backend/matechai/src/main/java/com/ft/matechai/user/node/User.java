@@ -6,18 +6,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.*;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Node("User")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
+    // User Information
     @Id @GeneratedValue
     private Long id;
 
     private String email;
 
-    private String username;
+    private String username;    // should be unique
 
     private String firstName;
 
@@ -28,6 +34,21 @@ public class User {
     private boolean enabled = false;
 
     private boolean firstLogin = true;
+
+
+    // Profile
+    private String gender;
+
+    private String sexualPreference;
+
+    private String biography;
+
+    @Relationship(type = "INTERESTED_IN", direction = Relationship.Direction.OUTGOING)
+    private Set<Tag> interests = new HashSet<>();
+
+    private String profilePictureUrl;
+
+    private List<String> pictureUrls;
 
 //    // 좋아요
 //    @Relationship(type = "LIKES", direction = Relationship.Direction.OUTGOING)
