@@ -1,7 +1,6 @@
 package com.ft.matechai.user.service;
 
-import com.ft.matechai.exception.AuthExceptions;
-import com.ft.matechai.user.node.UserNode;
+import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ public class UserService {
     }
 
 
-    public UserNode findUser(String username) {
+    public User findUser(String username) {
         return userRepository.findByUsernameOrThrow(username);
     }
 

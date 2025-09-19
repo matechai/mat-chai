@@ -1,11 +1,10 @@
 package com.ft.matechai.auth.service;
 
 import com.ft.matechai.auth.node.VerificationToken;
-import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.repository.UserRepository;
 import com.ft.matechai.auth.repository.VerificationTokenRepository;
 import org.springframework.stereotype.Service;
-import com.ft.matechai.user.node.UserNode;
+import com.ft.matechai.user.node.User;
 
 import java.util.UUID;
 
@@ -25,7 +24,7 @@ public class VerificationService {
         this.emailService = emailService;
     }
 
-    public void sendVerificationEmail(UserNode user) {
+    public void sendVerificationEmail(User user) {
 
         String token = UUID.randomUUID().toString();
         VerificationToken vt = new VerificationToken();
@@ -42,7 +41,7 @@ public class VerificationService {
         if (vt == null)
             return false;
 
-        UserNode user = userRepository.findByIdOrThrow(vt.getUserId());
+        User user = userRepository.findByIdOrThrow(vt.getUserId());
         user.setEnabled(true);
         userRepository.save(user);
 
