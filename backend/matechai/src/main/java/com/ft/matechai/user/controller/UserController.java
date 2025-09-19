@@ -1,8 +1,7 @@
 package com.ft.matechai.user.controller;
 
+import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,8 +16,8 @@ public class UserController {
 
 
     @GetMapping("/{username}")
-    public ResponseEntity<?> getNode(@PathVariable String username){
+    public UserInfoDTO getUserInformation(@PathVariable String username) {
 
-        return new ResponseEntity<>(userService.findUser(username), HttpStatus.OK);
+        return userService.getUserInfo(username);
     }
 }

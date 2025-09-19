@@ -1,5 +1,6 @@
 package com.ft.matechai.user.service;
 
+import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,17 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+
+    public UserInfoDTO getUserInfo(String username) {
+
+        User user = userRepository.findByUsernameOrThrow(username);
+
+        return UserInfoDTO.builder()
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
+    }
 
     public User findUser(String username) {
         return userRepository.findByUsernameOrThrow(username);
