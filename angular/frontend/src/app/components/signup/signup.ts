@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { SignupInterface } from '../../interfaces/signup-interface';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-signup',
@@ -9,6 +11,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 })
 export class Signup {
 
+  private authService = inject(Auth);
   signupForm!: FormGroup;
   passwordStrength: String = '';
 
@@ -75,12 +78,32 @@ export class Signup {
   {
     if (this.signupForm.valid && this.isPasswordValid()) 
     {
-      console.log('Form Submitted:', this.signupForm.value);
-      alert('✅ Signup successful!');
+      const request: SignupInterface =
+      {
+        firstName : this.signupForm.value.firstName,
+        lastName : this.signupForm.value.lastName,
+        username : this.signupForm.value.userName,
+        email : this.signupForm.value.email,
+        password : this.signupForm.value.password
+      }
+      this.authService.signup_request(request)
+      .subscribe({
+        next: response =>
+        {
+          console.log('Form Submitted:', request);
+          alert('✅ Signup successful!');
+        },
+        error: err =>
+        {
+          console.log('signup failed: ', err)
+          alert('❌ Please fix the form errors.');
+        }
+      })
     }
     else 
     {
       alert('❌ Please fix the form errors.');
     }
+
   }
 }
