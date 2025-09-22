@@ -22,6 +22,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
 
 @Slf4j
 @Configuration
@@ -69,7 +71,8 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");   // should be front address
+        config.setAllowedOriginPatterns(List.of("*")); // * 허용 가능
+//        config.addAllowedOrigin("*");   // should be front address
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
