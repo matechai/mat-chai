@@ -9,6 +9,7 @@ import { SignupInterface } from '../interfaces/signup-interface';
 export class Auth {
 
   private http = inject(HttpClient);
+<<<<<<< HEAD
   private apiUrl = 'http://localhost:8080/api';
 
   signup_request(request: SignupInterface): Observable<any> 
@@ -19,5 +20,12 @@ export class Auth {
   signin_request(userName: string, password: string): Observable<any>
   {
     return this.http.post(`${this.apiUrl}/auth/login`,{userName, password});
+=======
+  private apiUrl = 'http://localhost:8080/';
+
+  signup_request(request: SignupInterface): Observable<any> 
+  {
+    return this.http.post(`${this.apiUrl}api/auth/signup`, request);
+>>>>>>> 70e376a (merging from main)
   }
 }
