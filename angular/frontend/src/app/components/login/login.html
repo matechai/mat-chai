@@ -1,27 +1,43 @@
-<div style="max-width:400px; margin:2rem auto; padding:2rem; border:1px solid #ccc; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-  <h2 style="text-align:center;">Login</h2>
+<div class="login-container">
+  <h2 class="title">Login</h2>
 
-  <form>
-    <div style="margin-bottom:1rem;">
-      <label for="email" style="display:block; margin-bottom:0.5rem;">Email</label>
-      <input id="email" type="email" placeholder="Enter your email"
-             style="width:100%; padding:0.5rem; border:1px solid #ccc; border-radius:4px;" />
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <!-- Username -->
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input
+        id="username"
+        type="text"
+        formControlName="userName"
+        placeholder="Enter your username"
+      />
+      @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+        <div class="error">Username is required</div>
+      }
     </div>
 
-    <div style="margin-bottom:1rem;">
-      <label for="password" style="display:block; margin-bottom:0.5rem;">Password</label>
-      <input id="password" type="password" placeholder="Enter your password"
-             style="width:100%; padding:0.5rem; border:1px solid #ccc; border-radius:4px;" />
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="Enter your password"
+      />
+      @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+        <div class="error">Password is required</div>
+      }
     </div>
 
-    <button type="submit"
-            style="width:100%; padding:0.75rem; background:#333; color:white; border:none; border-radius:4px; cursor:pointer;">
+    <!-- Submit -->
+    <button type="submit" [disabled]="loginForm.invalid">
       Login
     </button>
   </form>
 
-  <p style="text-align:center; margin-top:1rem;">
+  <p class="signup-link">
     Don’t have an account?
-    <a routerLink="/signup" style="color:#007bff; text-decoration:none;">Sign up</a>
+    <a routerLink="/signup">Sign up</a>
   </p>
 </div>
