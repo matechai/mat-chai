@@ -1,8 +1,6 @@
 package com.ft.matechai.auth.service;
 
-import com.ft.matechai.auth.dto.LoginRequestDTO;
-import com.ft.matechai.auth.dto.LoginResponseDTO;
-import com.ft.matechai.auth.dto.SignUpRequestDTO;
+import com.ft.matechai.auth.dto.*;
 import com.ft.matechai.enums.Role;
 import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
@@ -78,6 +76,27 @@ public class AuthService {
         } else {        // fail
             throw new AuthExceptions.UnauthorizedException("Invalid username or password");
         }
+    }
+
+
+    // Create new Access token using refresh token
+    public RefreshResponseDTO refreshAccessToken(RefreshRequestDTO dto) {
+
+        String refreshToken = dto.getRefreshToken();
+
+        if (!jwtUtil.validateToken(refreshToken))
+            throw new AuthExceptions.UnauthorizedException();
+
+        String username = jwtUtil.getUsernameFromToken(refreshToken);
+        User user = userRepository.findByUsernameOrThrow(username);
+
+        if (!refreshToken.equals(user.getRefreshToken()))
+            throw new AuthExceptions.UnauthorizedException();
+
+        String accessToken = jwtUtil.generateToken(username, accessTokenExpirationMs);
+        return RefreshResponseDTO.builder()
+                .AccessToken(accessToken)
+                .build();
     }
 
     // Create User node
