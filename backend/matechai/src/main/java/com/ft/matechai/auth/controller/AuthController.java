@@ -1,8 +1,6 @@
 package com.ft.matechai.auth.controller;
 
-import com.ft.matechai.auth.dto.LoginRequestDTO;
-import com.ft.matechai.auth.dto.LoginResponseDTO;
-import com.ft.matechai.auth.dto.SignUpRequestDTO;
+import com.ft.matechai.auth.dto.*;
 import com.ft.matechai.auth.service.AuthService;
 import com.ft.matechai.auth.service.VerificationService;
 import jakarta.validation.Valid;
@@ -48,6 +46,14 @@ public class AuthController {
             return ResponseEntity.ok(response);
         else
             return ResponseEntity.status(401).build();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshResponseDTO> refreshToken(@RequestBody RefreshRequestDTO dto) {
+
+        RefreshResponseDTO response = authService.refreshAccessToken(dto);
+
+        return ResponseEntity.ok(response);
     }
 
 }
