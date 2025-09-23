@@ -13,19 +13,16 @@ import java.util.Date;
 public class JwtUtil {
 
     private final Key key;
-    private final long expirationMs;
 
 
-    public JwtUtil(@Value("${jwt.secret-key}") String secret,
-                   @Value("${jwt.expirationMs}") long expirationMs) {
+    public JwtUtil(@Value("${jwt.secret-key}") String secret) {
 
         this.key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-        this.expirationMs = expirationMs;
     }
 
 
     // Generate JWT Token
-    public String generateToken(String username) {
+    public String generateToken(String username, long expirationMs) {
 
         return Jwts.builder()
                 .setSubject(username)

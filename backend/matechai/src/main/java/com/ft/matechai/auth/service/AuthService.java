@@ -8,6 +8,7 @@ import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import com.ft.matechai.config.jwt.JwtUtil;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,10 @@ public class AuthService {
 
     @Value("${jwt.type}")
     private String tokenType;
+    @Value("${jwt.expirationMs.accessToken}")
+    private long accessTokenExpirationMs;
+    @Value("${jwt.expirationMs.refreshToken}")
+    private long refreshTokenExpirationMs;
 
     private final UserRepository userRepository;
     private final VerificationService verificationService;
@@ -57,8 +62,15 @@ public class AuthService {
             if (!user.isEnabled())
                 throw new AuthExceptions.EmailNotVerifiedException();
 
+            String accessToken = jwtUtil.generateToken(user.getUsername(), accessTokenExpirationMs);
+            String refreshToken = jwtUtil.generateToken(user.getUsername(), refreshTokenExpirationMs);
+
+            user.setRefreshToken(refreshToken);
+            userRepository.save(user);
+
             return LoginResponseDTO.builder()
-                    .token(jwtUtil.generateToken(user.getUsername()))
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
                     .tokenType(tokenType)
                     .firstLogin(user.isFirstLogin())
                     .build();
@@ -79,6 +91,7 @@ public class AuthService {
                         .lastName(dto.getLastName())
                         .password(hash)
                         .role(Role.ROLE_USER)
+                        .refreshToken(null)
                         .build();
 
         userRepository.save(user);
