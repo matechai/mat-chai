@@ -28,6 +28,7 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    // email verify
     @GetMapping("/verify")
     public ResponseEntity<String> verify(@RequestParam("token") String token) {
 
