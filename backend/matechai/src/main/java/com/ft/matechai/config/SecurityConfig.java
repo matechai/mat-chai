@@ -56,9 +56,14 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
+                    .requestMatchers("/api/auth/signup",
+                                            "/api/auth/login",
+                                            "/api/auth/verify",
+                                            "/api/auth/refresh").permitAll()
+                    .requestMatchers("/api/auth/logout").authenticated()
                     .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN", "GOD")
                     .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "GOD")
-                    .anyRequest().permitAll()
+                    .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
                     .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)); // Authentication failed
