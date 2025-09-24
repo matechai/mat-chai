@@ -5,16 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponseDTO {
+public class RefreshResponseDTO {
 
-    private String accessToken;
-    private String refreshToken;
-    private String tokenType;
-    private boolean firstLogin;
-
+    private String AccessToken;
 }
