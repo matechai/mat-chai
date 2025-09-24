@@ -1,13 +1,12 @@
 package com.ft.matechai.auth.service;
 
-import com.ft.matechai.auth.dto.LoginRequestDTO;
-import com.ft.matechai.auth.dto.LoginResponseDTO;
-import com.ft.matechai.auth.dto.SignUpRequestDTO;
+import com.ft.matechai.auth.dto.*;
 import com.ft.matechai.enums.Role;
 import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import com.ft.matechai.config.jwt.JwtUtil;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,10 @@ public class AuthService {
 
     @Value("${jwt.type}")
     private String tokenType;
+    @Value("${jwt.expirationMs.accessToken}")
+    private long accessTokenExpirationMs;
+    @Value("${jwt.expirationMs.refreshToken}")
+    private long refreshTokenExpirationMs;
 
     private final UserRepository userRepository;
     private final VerificationService verificationService;
@@ -57,8 +60,15 @@ public class AuthService {
             if (!user.isEnabled())
                 throw new AuthExceptions.EmailNotVerifiedException();
 
+            String accessToken = jwtUtil.generateToken(user.getUsername(), accessTokenExpirationMs);
+            String refreshToken = jwtUtil.generateToken(user.getUsername(), refreshTokenExpirationMs);
+
+            user.setRefreshToken(refreshToken);
+            userRepository.save(user);
+
             return LoginResponseDTO.builder()
-                    .token(jwtUtil.generateToken(user.getUsername()))
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
                     .tokenType(tokenType)
                     .firstLogin(user.isFirstLogin())
                     .build();
@@ -66,6 +76,27 @@ public class AuthService {
         } else {        // fail
             throw new AuthExceptions.UnauthorizedException("Invalid username or password");
         }
+    }
+
+
+    // Create new Access token using refresh token
+    public RefreshResponseDTO refreshAccessToken(RefreshRequestDTO dto) {
+
+        String refreshToken = dto.getRefreshToken();
+
+        if (!jwtUtil.validateToken(refreshToken))
+            throw new AuthExceptions.UnauthorizedException();
+
+        String username = jwtUtil.getUsernameFromToken(refreshToken);
+        User user = userRepository.findByUsernameOrThrow(username);
+
+        if (!refreshToken.equals(user.getRefreshToken()))
+            throw new AuthExceptions.UnauthorizedException();
+
+        String accessToken = jwtUtil.generateToken(username, accessTokenExpirationMs);
+        return RefreshResponseDTO.builder()
+                .AccessToken(accessToken)
+                .build();
     }
 
     // Create User node
@@ -79,6 +110,7 @@ public class AuthService {
                         .lastName(dto.getLastName())
                         .password(hash)
                         .role(Role.ROLE_USER)
+                        .refreshToken(null)
                         .build();
 
         userRepository.save(user);

@@ -38,6 +38,8 @@ public class User {
 
     private Role role;
 
+    private String refreshToken;
+
 
     // Profile
     private String gender;

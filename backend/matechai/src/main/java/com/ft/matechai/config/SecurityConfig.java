@@ -71,7 +71,7 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("*")); // * 허용 가능
+        config.setAllowedOriginPatterns(List.of("*"));
 //        config.addAllowedOrigin("*");   // should be front address
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
