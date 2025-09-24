@@ -79,6 +79,14 @@ public class AuthService {
     }
 
 
+    // Log Out
+    public void logout(User user) {
+
+        user.setRefreshToken(null);
+        userRepository.save(user);
+    }
+
+
     // Create new Access token using refresh token
     public RefreshResponseDTO refreshAccessToken(RefreshRequestDTO dto) {
 
