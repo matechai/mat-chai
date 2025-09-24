@@ -8,6 +8,7 @@ services:
       - ./backend/matechai/src/main/resources/application-secret.properties:/app/resources/application-secret.properties:ro
     environment:
       - SPRING_CONFIG_ADDITIONAL_LOCATION=classpath:/application.properties,/app/resources/application-secret.properties
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
     ports:
       - "8080:8080"
     depends_on:
