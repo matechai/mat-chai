@@ -3,9 +3,11 @@ package com.ft.matechai.auth.controller;
 import com.ft.matechai.auth.dto.*;
 import com.ft.matechai.auth.service.AuthService;
 import com.ft.matechai.auth.service.VerificationService;
+import com.ft.matechai.config.auth.PrincipalDetails;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,6 +50,15 @@ public class AuthController {
             return ResponseEntity.status(401).build();
     }
 
+    @DeleteMapping("/logout")
+
+    public ResponseEntity<?> logout(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        authService.logout(principalDetails.getUser());
+
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<RefreshResponseDTO> refreshToken(@RequestBody RefreshRequestDTO dto) {
 
@@ -55,5 +66,4 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-
 }
