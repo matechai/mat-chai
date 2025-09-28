@@ -16,8 +16,8 @@ export class Auth {
     return this.http.post(`${this.apiUrl}/auth/signup`, request);
   }
 
-  signin_request(userName: string, password: string): Observable<any>
+  signin_request(username: any, password: any): Observable<any>
   {
-    return this.http.post(`${this.apiUrl}/auth/login`,{userName, password});
+    return this.http.post(`${this.apiUrl}/auth/login`,{username, password});
   }
 }
