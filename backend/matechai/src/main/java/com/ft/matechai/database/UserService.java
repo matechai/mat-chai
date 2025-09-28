@@ -36,22 +36,22 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-	// @Transactional(readOnly = true)
-	// public Set<User> getLikedUsers(String userId) {
-	// 	User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
-	// 	return user.getLiked();
-	// }
+	@Transactional(readOnly = true)
+	public Set<User> getLikedUsers(String userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+		return user.getLiked();
+	}
 
 	@Transactional(readOnly = true)
 	public Set<String> getLikersUsers(String userId) {
 		return userRepository.findLikersIds(userId);
 	}
 
-	// @Transactional(readOnly = true)
-	// public Set<User> getViewedUsers(String userId) {
-	// 	User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
-	// 	return user.getViewed();
-	// }
+	@Transactional(readOnly = true)
+	public Set<User> getViewedUsers(String userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+		return user.getViewed();
+	}
 
 	@Transactional(readOnly = true)
 	public Set<String> getViewersUsers(String userId) {
@@ -72,8 +72,6 @@ public class UserService {
 		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
 		User liked = userRepository.findById(toLikeId).orElseThrow(() -> new RuntimeException("toLike user not found"));
 
-        // liked.getLikers().add(user);
-		// userRepository.save(liked);
 		user.getLiked().add(liked);
 		userRepository.save(user);
 	}
@@ -82,8 +80,6 @@ public class UserService {
 		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
 		User unLiked = userRepository.findById(toUnlikeId).orElseThrow(() -> new RuntimeException("toUnlike user not found"));
 
-        // unLiked.getLikers().remove(user);
-        // userRepository.save(unLiked);
 		user.getLiked().remove(unLiked);
 		userRepository.save(user);
 	}
@@ -92,8 +88,6 @@ public class UserService {
 		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
 		User viewed = userRepository.findById(toViewId).orElseThrow(() -> new RuntimeException("toView user not found"));
 
-        // viewed.getViewers().add(user);
-        // userRepository.save(viewed);
 		user.getViewed().add(viewed);
 		userRepository.save(user);
 	}
@@ -102,8 +96,6 @@ public class UserService {
 		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
 		User unViewed = userRepository.findById(toUnviewId).orElseThrow(() -> new RuntimeException("toUnview user not found"));
 
-        // unViewed.getViewers().remove(user);
-        // userRepository.save(unViewed);
 		user.getViewed().remove(unViewed);
 		userRepository.save(user);
 	}

@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +22,12 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"Viewed", "Liked", "Blocked"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 	@Id
 	@GeneratedValue(UUIDStringGenerator.class)
+	@EqualsAndHashCode.Include
 	private String id;
 
 	private String email;
@@ -41,14 +46,9 @@ public class User {
 	private String location;
 	private String lastOnline;
 
-	// @Relationship(type = "Viewed", direction = Relationship.Direction.INCOMING)
-	// private Set<User> Viewers;
 	@JsonIgnore
 	@Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Viewed;
-
-	// @Relationship(type = "Liked", direction = Relationship.Direction.INCOMING)
-	// private Set<User> Likers;
 	
 	@JsonIgnore
 	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)

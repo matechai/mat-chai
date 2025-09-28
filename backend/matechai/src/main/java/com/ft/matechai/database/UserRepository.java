@@ -16,7 +16,6 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 	@Query("MATCH (liker:User)-[:Liked]->(u:User {id: $id}) RETURN liker.id")
     Set<String> findLikersIds(String id);
 
-
     @Query("MATCH (viewer:User)-[:Viewed]->(u:User {id: $id}) RETURN viewer.id")
     Set<String> findViewersIds(String id);
 }
