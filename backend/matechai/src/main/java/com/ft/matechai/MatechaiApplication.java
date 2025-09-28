@@ -9,11 +9,11 @@ import java.util.Set;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
-@SpringBootApplication
-public class MatechaiApplication implements CommandLineRunner {
-
-	private final UserService userService;
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+public class MatechaiApplication {
+  private final UserService userService;
 
 	public MatechaiApplication(UserService userService) {
 		this.userService = userService;

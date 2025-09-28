@@ -1,0 +1,23 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./angular
+      dockerfile: Dockerfile
+    volumes:
+      - ./angular/frontend:/app/frontend
+      - node_modules:/app/frontend/node_modules 
+    ports:
+      - "4200:4200"
+    command: ng serve --host 0.0.0.0 --poll 2000
+  
+volumes:
+  node_modules:

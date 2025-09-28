@@ -1,0 +1,26 @@
+<nav style="background:#333; padding:1rem; display:flex; gap:1rem;">
+  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+     style="color:white; text-decoration:none;">Home (Profile)</a>
+
+  <a routerLink="/login" routerLinkActive="active"
+     style="color:white; text-decoration:none;">Login</a>
+
+  <a routerLink="/signup" routerLinkActive="active"
+     style="color:white; text-decoration:none;">Signup</a>
+
+  <a routerLink="/matching/1" routerLinkActive="active"
+     style="color:white; text-decoration:none;">Matching (dummy id)</a>
+
+  <a routerLink="/chat" routerLinkActive="active"
+     style="color:white; text-decoration:none;">Chat</a>
+
+  <a routerLink="/setting" routerLinkActive="active"
+     style="color:white; text-decoration:none;">Settings</a>
+
+  <a routerLink="/not-found" routerLinkActive="active"
+     style="color:white; text-decoration:none;">404 Test</a>
+</nav>
+
+
+<!-- This is where routed components will render -->
+<router-outlet></router-outlet>
