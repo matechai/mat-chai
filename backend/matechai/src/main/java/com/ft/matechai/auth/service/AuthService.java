@@ -6,6 +6,8 @@ import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import com.ft.matechai.config.jwt.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,7 +52,7 @@ public class AuthService {
 
 
     // Log In
-    public LoginResponseDTO logIn(LoginRequestDTO dto) {
+    public LoginResponseDTO logIn(LoginRequestDTO dto, HttpServletResponse response) {
 
         User user = userRepository.findByUsernameOrThrow(dto.getUsername());
 
@@ -66,10 +68,15 @@ public class AuthService {
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
 
+            Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs);
+            Cookie refreshCookie = createCookie("refreshToken", refreshToken, refreshTokenExpirationMs);
+
+            response.addCookie(accessCookie);
+            response.addCookie(refreshCookie);
+
             return LoginResponseDTO.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
-                    .tokenType(tokenType)
                     .firstLogin(user.isFirstLogin())
                     .build();
 
@@ -105,6 +112,17 @@ public class AuthService {
         return RefreshResponseDTO.builder()
                 .AccessToken(accessToken)
                 .build();
+    }
+
+    private Cookie createCookie(String name, String token, long expirationMs) {
+
+        Cookie tokenCookie = new Cookie(name, token);
+        tokenCookie.setHttpOnly(true);
+        tokenCookie.setSecure(false); // HTTPS
+        tokenCookie.setPath("/");
+        tokenCookie.setMaxAge((int)(expirationMs / 1000));
+
+        return tokenCookie;
     }
 
     // Create User node
