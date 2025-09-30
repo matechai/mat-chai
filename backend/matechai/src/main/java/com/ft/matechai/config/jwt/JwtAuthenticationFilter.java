@@ -5,6 +5,7 @@ import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.exception.AuthExceptions;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -35,17 +36,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String bearer = request.getHeader("Authorization");
+        Cookie[] cookies = request.getCookies();
         String path = request.getRequestURI();
 
         if (!path.startsWith("/api/auth/") || path.startsWith("/api/auth/logout")) {
 
-            if (bearer != null && bearer.startsWith("Bearer ")) {
+            if (cookies != null) {
 
-                String token = bearer.substring(7);
+                String token = null;
+                for (Cookie c : cookies) {
+                    if ("accessToken".equals(c.getName())) {
+                        token = c.getValue();
+                        break;
+                    }
+                }
+                if (token == null)
+                    throw new AuthExceptions.UnauthorizedException("Unauthorized: accessToken missing");
 
                 if (!jwtUtil.validateToken(token))
-                    throw new AuthExceptions.UnauthorizedException("JWT token is wrong");
+                    throw new AuthExceptions.UnauthorizedException("Unauthorized: invalid token");
 
                 User user = userRepository.findByUsername(jwtUtil.getUsernameFromToken(token))
                         .orElseThrow(() -> new AuthExceptions.UnauthorizedException("User not found"));
