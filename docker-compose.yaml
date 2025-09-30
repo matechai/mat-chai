@@ -4,14 +4,20 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    volumes:
+      - ./backend/matechai/src/main/resources/application-secret.properties:/app/resources/application-secret.properties:ro
+    environment:
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=classpath:/application.properties,/app/resources/application-secret.properties
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
     ports:
       - "8080:8080"
+    depends_on:
+      - neo4j
     restart: unless-stopped
 
   frontend:
     build:
       context: ./angular
-      dockerfile: Dockerfile
     volumes:
       - ./angular/frontend:/app/frontend
       - node_modules:/app/frontend/node_modules 
@@ -19,5 +25,17 @@ services:
       - "4200:4200"
     command: ng serve --host 0.0.0.0 --poll 2000
   
+  neo4j:
+    image: neo4j:5
+    container_name: neo4j 
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD}
+    ports:
+      - "7474:7474" #browser UI
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+
 volumes:
   node_modules:
+  neo4j_data:
