@@ -76,6 +76,7 @@ public class AuthService {
 
             return LoginResponseDTO.builder()
                     .accessToken(accessToken)
+                    .refreshToken(refreshToken)
                     .firstLogin(user.isFirstLogin())
                     .build();
 
