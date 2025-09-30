@@ -4,6 +4,7 @@ import com.ft.matechai.auth.dto.*;
 import com.ft.matechai.auth.service.AuthService;
 import com.ft.matechai.auth.service.VerificationService;
 import com.ft.matechai.config.auth.PrincipalDetails;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,12 +41,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto, HttpServletResponse response) {
 
-        LoginResponseDTO response = authService.logIn(dto);
+        LoginResponseDTO loginResponse = authService.logIn(dto, response);
 
         if (response != null)
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(loginResponse);
         else
             return ResponseEntity.status(401).build();
     }
