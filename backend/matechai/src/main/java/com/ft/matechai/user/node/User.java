@@ -1,12 +1,17 @@
 package com.ft.matechai.user.node;
 
+import org.springframework.data.neo4j.core.schema.*;
+import org.springframework.data.annotation.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ft.matechai.enums.Role;
+
+import lombok.ToString;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.neo4j.core.schema.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +21,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"Viewed", "Liked", "Blocked"})
 public class User {
 
     // User Information
@@ -24,7 +30,7 @@ public class User {
 
     private String email;
 
-    private String username;    // should be unique
+    private static final String username;    // should be unique AND immutable
 
     private String firstName;
 
@@ -42,18 +48,37 @@ public class User {
 
 
     // Profile
+    private int age;
+
     private String gender;
 
     private String sexualPreference;
 
     private String biography;
 
-    @Relationship(type = "INTERESTED_IN", direction = Relationship.Direction.OUTGOING)
-    private Set<Tag> interests = new HashSet<>();
-
     private String profilePictureUrl;
+    
+    private List<String> pictureUrls = new ArrayList<>();
+    
+    private List<String> interests = new ArrayList<>();
+    
+	private int fame;
+    
+	private String location;
+    
+	private String lastOnline;
 
-    private List<String> pictureUrls;
+	@JsonIgnore
+	@Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
+	private Set<User> Viewed;
+	
+	@JsonIgnore
+	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
+	private Set<User> Liked;
+
+	@JsonIgnore
+	@Relationship(type = "Blocked", direction = Relationship.Direction.OUTGOING)
+	private Set<User> Blocked;
 
 //    // 좋아요
 //    @Relationship(type = "LIKES", direction = Relationship.Direction.OUTGOING)

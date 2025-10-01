@@ -5,9 +5,12 @@ import com.ft.matechai.user.node.User;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserRepository extends Neo4jRepository<User, Long> {
 
@@ -30,4 +33,15 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
 
     @Query("MATCH (a:User) RETURN a")
     List<User> findAllUsers();
+
+    @Query("MATCH (u:User {username: $username}) DETACH DELETE u")
+	void deleteById(String username);
+
+	Page<User> findAll(Pageable pageable);
+
+	@Query("MATCH (liker:User)-[:Liked]->(u:User {username: $username}) RETURN liker.username")
+    Set<String> findLikers(String username);
+
+    @Query("MATCH (viewer:User)-[:Viewed]->(u:User {username: $username}) RETURN viewer.username")
+    Set<String> findViewers(String username);
 }
