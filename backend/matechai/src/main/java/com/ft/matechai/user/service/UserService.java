@@ -5,7 +5,6 @@ import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -39,8 +38,8 @@ public class UserService {
     }
 
 	@Transactional(readOnly = true)
-	public Optional<User> getUserById(String userId) {
-		return userRepository.findById(userId);
+	public User getUserByUsername(String username) {
+		return userRepository.findByUsernameOrThrow(username);
 	}
 
 	@Transactional(readOnly = true)
@@ -54,25 +53,25 @@ public class UserService {
     }
 
 	@Transactional(readOnly = true)
-	public Set<User> getLikedUsers(String userId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+	public Set<User> getLikedUsers(String username) {
+		User user = userRepository.findByUsernameOrThrow(username);
 		return user.getLiked();
 	}
 
 	@Transactional(readOnly = true)
-	public Set<String> getLikersUsers(String userId) {
-		return userRepository.findLikersIds(userId);
+	public Set<String> getLikersUsers(String username) {
+		return userRepository.findLikers(username);
 	}
 
 	@Transactional(readOnly = true)
-	public Set<User> getViewedUsers(String userId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+	public Set<User> getViewedUsers(String username) {
+		User user = userRepository.findByUsernameOrThrow(username);
 		return user.getViewed();
 	}
 
 	@Transactional(readOnly = true)
-	public Set<String> getViewersUsers(String userId) {
-		return userRepository.findViewersIds(userId);
+	public Set<String> getViewersUsers(String username) {
+		return userRepository.findViewers(username);
 	}
 
 	// SETTERS // SETTERS // SETTERS // SETTERS //
@@ -92,37 +91,37 @@ public class UserService {
 		return userRepository.save(u);
 	}
 
-	public void removeUser(String userId) {
-		userRepository.deleteById(userId);
+	public void removeUser(String username) {
+		userRepository.deleteUser(username);
 	}
 
-	public void likeUser(String userId, String toLikeId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
-		User liked = userRepository.findById(toLikeId).orElseThrow(() -> new RuntimeException("toLike user not found"));
+	public void likeUser(String username, String toLikeUsername) {
+		User user = userRepository.findByUsernameOrThrow(username);
+		User liked = userRepository.findByUsernameOrThrow(toLikeUsername);
 
 		user.getLiked().add(liked);
 		userRepository.save(user);
 	}
 
-	public void unlikeUser(String userId, String toUnlikeId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
-		User unLiked = userRepository.findById(toUnlikeId).orElseThrow(() -> new RuntimeException("toUnlike user not found"));
+	public void unlikeUser(String username, String toUnlikeUsername) {
+		User user = userRepository.findByUsernameOrThrow(username);
+		User unLiked = userRepository.findByUsernameOrThrow(toUnlikeUsername);
 
 		user.getLiked().remove(unLiked);
 		userRepository.save(user);
 	}
 
-	public void viewUser(String userId, String toViewId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
-		User viewed = userRepository.findById(toViewId).orElseThrow(() -> new RuntimeException("toView user not found"));
+	public void viewUser(String username, String toViewUsername) {
+		User user = userRepository.findByUsernameOrThrow(username);
+		User viewed = userRepository.findByUsernameOrThrow(toViewUsername);
 
 		user.getViewed().add(viewed);
 		userRepository.save(user);
 	}
 
-	public void unviewUser(String userId, String toUnviewId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
-		User unViewed = userRepository.findById(toUnviewId).orElseThrow(() -> new RuntimeException("toUnview user not found"));
+	public void unviewUser(String username, String toUnviewUsername) {
+		User user = userRepository.findByUsernameOrThrow(username);
+		User unViewed = userRepository.findByUsernameOrThrow(toUnviewUsername);
 
 		user.getViewed().remove(unViewed);
 		userRepository.save(user);

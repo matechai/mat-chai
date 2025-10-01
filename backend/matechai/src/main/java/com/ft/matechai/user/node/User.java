@@ -12,7 +12,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,12 +24,10 @@ import java.util.Set;
 public class User {
 
     // User Information
-    @Id @GeneratedValue
-    private Long id;
+    @Id
+    private String username;    // should be unique AND immutable, it would be better to use username as ID so the builtin functions return us the usernames
 
     private String email;
-
-    private static final String username;    // should be unique AND immutable
 
     private String firstName;
 
@@ -38,8 +35,10 @@ public class User {
 
     private String password;
 
+    @Builder.Default
     private boolean enabled = false;
 
+    @Builder.Default
     private boolean firstLogin = true;
 
     private Role role;
@@ -57,18 +56,20 @@ public class User {
     private String biography;
 
     private String profilePictureUrl;
-    
-    private List<String> pictureUrls = new ArrayList<>();
-    
-    private List<String> interests = new ArrayList<>();
-    
-	private int fame;
-    
-	private String location;
-    
-	private String lastOnline;
 
-	@JsonIgnore
+    @Builder.Default
+    private List<String> pictureUrls = new ArrayList<>();
+
+    @Builder.Default
+    private List<String> interests = new ArrayList<>();
+
+    private int fame;
+
+    private String location;
+
+    private String lastOnline;
+
+    @JsonIgnore
 	@Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Viewed;
 	
