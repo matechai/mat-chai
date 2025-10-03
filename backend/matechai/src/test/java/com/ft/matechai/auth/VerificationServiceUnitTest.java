@@ -17,6 +17,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,7 +37,7 @@ class VerificationServiceUnitTest {
     @Test
     void testSendVerificationEmail() {
         User user = new User();
-        user.setId(1L);
+        user.setUsername("test");
         user.setEmail("test@example.com");
 
         verificationService.sendVerificationEmail(user);
@@ -42,7 +45,7 @@ class VerificationServiceUnitTest {
         // Token 저장 확인
         ArgumentCaptor<VerificationToken> tokenCaptor = ArgumentCaptor.forClass(VerificationToken.class);
         verify(tokenRepository).save(tokenCaptor.capture());
-        assertEquals(user.getId(), tokenCaptor.getValue().getUserId());
+        assertEquals(user.getUsername(), tokenCaptor.getValue().getUserId());
         assertNotNull(tokenCaptor.getValue().getToken());
 
         // 이메일 발송 확인
@@ -54,14 +57,16 @@ class VerificationServiceUnitTest {
         String tokenStr = UUID.randomUUID().toString();
         VerificationToken vt = new VerificationToken();
         vt.setToken(tokenStr);
-        vt.setUserId(1L);
+        vt.setUserId("test");
 
         User user = new User();
-        user.setId(1L);
+        user.setUsername("test");
         user.setEnabled(false);
 
         when(tokenRepository.findByToken(tokenStr)).thenReturn(vt);
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        // when(userRepository.findByUsername("test")).thenReturn(Optional.of(user));
+        when(userRepository.findByUsernameOrThrow("test")).thenReturn(user); //LK I had to add this because verifyToken() uses it
+
 
         boolean result = verificationService.verifyToken(tokenStr);
 
