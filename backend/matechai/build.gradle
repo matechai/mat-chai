@@ -54,5 +54,5 @@ task IT(type: Test) {
     useJUnitPlatform {
         includeTags 'integration'
     }
-    // shouldRunAfter test
+    shouldRunAfter test
 }
