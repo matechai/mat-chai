@@ -61,10 +61,11 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<RefreshResponseDTO> refreshToken(@RequestBody RefreshRequestDTO dto) {
+    public ResponseEntity<?> refreshToken(@CookieValue(name="refreshToken", required=false) String refreshToken,
+                                          HttpServletResponse response) {
 
-        RefreshResponseDTO response = authService.refreshAccessToken(dto);
+        authService.refreshAccessToken(refreshToken, response);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.noContent().build();
     }
 }
