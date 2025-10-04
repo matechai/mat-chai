@@ -95,9 +95,7 @@ public class AuthService {
 
 
     // Create new Access token using refresh token
-    public RefreshResponseDTO refreshAccessToken(RefreshRequestDTO dto) {
-
-        String refreshToken = dto.getRefreshToken();
+    public void refreshAccessToken(String refreshToken, HttpServletResponse response) {
 
         if (!jwtUtil.validateToken(refreshToken))
             throw new AuthExceptions.UnauthorizedException();
@@ -109,9 +107,9 @@ public class AuthService {
             throw new AuthExceptions.UnauthorizedException();
 
         String accessToken = jwtUtil.generateToken(username, accessTokenExpirationMs);
-        return RefreshResponseDTO.builder()
-                .AccessToken(accessToken)
-                .build();
+        Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs);
+
+        response.addCookie(accessCookie);
     }
 
     private Cookie createCookie(String name, String token, long expirationMs) {
