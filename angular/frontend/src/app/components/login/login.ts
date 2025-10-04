@@ -23,7 +23,7 @@ export class Login {
 
   onSubmit()
   {
-    this.authService.signin_request(this.loginForm.value.userName, this.loginForm.value.password)
+    this.authService.signin_request({username: this.loginForm.value.userName, password: this.loginForm.value.password})
     .subscribe({
       next: response =>
       {

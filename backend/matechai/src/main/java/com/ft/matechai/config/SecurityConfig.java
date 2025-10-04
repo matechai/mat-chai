@@ -77,6 +77,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
 //        config.addAllowedOrigin("*");   // should be front address
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
