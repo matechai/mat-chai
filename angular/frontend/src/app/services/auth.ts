@@ -16,8 +16,23 @@ export class Auth {
     return this.http.post(`${this.apiUrl}/auth/signup`, request);
   }
 
-  signin_request(username: any, password: any): Observable<any>
+  signin_request(credentials: {username: String, password: String}): Observable<any>
   {
-    return this.http.post(`${this.apiUrl}/auth/login`,{username, password});
+    return this.http.post<{firstlogin: boolean}>(`${this.apiUrl}/auth/login`, credentials, {
+      withCredentials: true
+    });
   }
+
+  logout_request() // Check API URL
+  {
+    return this.http.post<null>(`${this.apiUrl}/auth/logout`, {WithCredentials: true});
+  }
+
+ refresh_request() {
+  return this.http.post(
+    `${this.apiUrl}/auth/refresh`, {},
+    { withCredentials: true }
+  );
+}
+
 }
