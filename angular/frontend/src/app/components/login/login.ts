@@ -37,4 +37,11 @@ export class Login {
       }
     })
   }
+
+  callProtected() {
+    this.authService.test_protected_request().subscribe({
+      next: res => console.log('✅ Protected response:', res),
+      error: err => console.error('❌ Error:', err)
+    });
+  }
 }

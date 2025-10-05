@@ -25,14 +25,23 @@ export class Auth {
 
   logout_request() // Check API URL
   {
-    return this.http.post<null>(`${this.apiUrl}/auth/logout`, {WithCredentials: true});
+    return this.http.post<null>(`${this.apiUrl}/auth/logout`, {}, 
+      { withCredentials: true});
   }
 
  refresh_request() {
+  console.log("refresh call\n");
   return this.http.post(
     `${this.apiUrl}/auth/refresh`, {},
     { withCredentials: true }
   );
+}
+
+//testing API
+test_protected_request() {
+  return this.http.get('http://localhost:8080/api/protected/test', {
+    withCredentials: true
+  });
 }
 
 }

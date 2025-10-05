@@ -4,7 +4,8 @@ import { catchError, from, Observable, switchMap, throwError } from 'rxjs';
 import { Auth } from '../services/auth';
 
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => 
-  {
+{
+  console.log('[Interceptor] Request:', req.url);
   const authService = inject(Auth);
 
   //clone request to add credentials if needed
@@ -14,9 +15,11 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
   return next(cloneReq).pipe(
     catchError(err => {
+      console.error('[Interceptor] Caught error:', err);
       // handles the error when accessToken is expired
       if (err.status == 401)
       {
+        console.log('[Interceptor] 401 detected, refreshing token...');
         return authService.refresh_request().pipe(
           switchMap(() => {
             //retry original request after refresh
