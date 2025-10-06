@@ -8,11 +8,20 @@ services:
       - ./backend/matechai/src/main/resources/application-secret.properties:/app/resources/application-secret.properties:ro
     environment:
       - SPRING_CONFIG_ADDITIONAL_LOCATION=classpath:/application.properties,/app/resources/application-secret.properties
-      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+      - SERVER_PORT=${SERVER_PORT}
+      - APP_URL=${APP_URL}
+      - SPRING_NEO4J_URI=${SPRING_NEO4J_URI}
+      - SPRING_NEO4J_AUTHENTICATION_USERNAME=${SPRING_NEO4J_AUTHENTICATION_USERNAME}
+      - SPRING_NEO4J_AUTHENTICATION_PASSWORD=${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
+      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT}
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
     ports:
       - "8080:8080"
     depends_on:
-      - neo4j
+      neo4j:
+        condition: service_healthy
     restart: unless-stopped
 
   frontend:
@@ -29,12 +38,19 @@ services:
     image: neo4j:5
     container_name: neo4j 
     environment:
-      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD}
+      - NEO4J_AUTH=neo4j/${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
     ports:
       - "7474:7474" #browser UI
       - "7687:7687"
     volumes:
       - neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p ${SPRING_NEO4J_AUTHENTICATION_PASSWORD} 'RETURN 1;' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 volumes:
   node_modules:
