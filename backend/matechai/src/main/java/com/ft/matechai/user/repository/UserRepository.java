@@ -8,8 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-public interface UserRepository extends Neo4jRepository<User, Long> {
+public interface UserRepository extends Neo4jRepository<User, String> {
 
     @Query("MATCH (a:User {username: $username}) Return a")
     Optional<User> findByUsername(@Param("username") String username);
@@ -19,10 +20,10 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
                 .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid username"));
     }
 
-    default User findByIdOrThrow(Long id) {
-        return findById(id)
-                .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid id"));
-    }
+    // default User findByIdOrThrow(Long id) {
+    //     return findById(id)
+    //             .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid id"));
+    // }
 
     boolean existsByUsername(String username);
 
@@ -30,4 +31,13 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
 
     @Query("MATCH (a:User) RETURN a")
     List<User> findAllUsers();
+
+    @Query("MATCH (u:User {username: $username}) DETACH DELETE u")
+	void deleteUser(String username);
+
+	@Query("MATCH (liker:User)-[:Liked]->(u:User {username: $username}) RETURN liker.username")
+    Set<String> findLikers(String username);
+
+    @Query("MATCH (viewer:User)-[:Viewed]->(u:User {username: $username}) RETURN viewer.username")
+    Set<String> findViewers(String username);
 }
