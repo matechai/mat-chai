@@ -23,7 +23,7 @@ export class Login {
 
   onSubmit()
   {
-    this.authService.signin_request(this.loginForm.value.userName, this.loginForm.value.password)
+    this.authService.signin_request({username: this.loginForm.value.userName, password: this.loginForm.value.password})
     .subscribe({
       next: response =>
       {
@@ -36,5 +36,12 @@ export class Login {
         alert('Sorry failed');
       }
     })
+  }
+
+  callProtected() {
+    this.authService.test_protected_request().subscribe({
+      next: res => console.log('✅ Protected response:', res),
+      error: err => console.error('❌ Error:', err)
+    });
   }
 }
