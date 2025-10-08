@@ -3,6 +3,7 @@ package com.ft.matechai.user.controller;
 import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.service.UserService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -47,9 +48,4 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{username}/like/{toLikeUsername}")
-    public ResponseEntity<Void> likeUser(@PathVariable String username, @PathVariable String toLikeUsername) {
-        userService.likeUser(username, toLikeUsername);
-        return ResponseEntity.ok().build();
-    }
 }
