@@ -20,11 +20,6 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                 .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid username"));
     }
 
-    // default User findByIdOrThrow(Long id) {
-    //     return findById(id)
-    //             .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid id"));
-    // }
-
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
