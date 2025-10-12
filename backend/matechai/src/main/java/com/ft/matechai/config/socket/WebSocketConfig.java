@@ -1,3 +1,4 @@
+
 package com.ft.matechai.config.socket;
 
 import com.ft.matechai.chat.interceptor.JwtHandShakeInterceptor;
@@ -33,3 +34,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.setApplicationDestinationPrefixes("/app");
     }
 }
+
+
+
