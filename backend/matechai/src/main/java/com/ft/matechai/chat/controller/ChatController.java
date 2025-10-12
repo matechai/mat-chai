@@ -1,5 +1,6 @@
 package com.ft.matechai.chat.controller;
 
+<<<<<<< HEAD
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -44,4 +45,14 @@ public class ChatController
 	{
 		headerAccessor.getSessionAttributes().put("username", chatMessage.get_sender());
 	}
+=======
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/chat")
+public class ChatController
+{
+	
+>>>>>>> da121c5 (working on websockets)
 }
