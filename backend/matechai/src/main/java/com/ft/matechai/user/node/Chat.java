@@ -38,6 +38,6 @@ public class Chat {
     private List<Message> history = new ArrayList<>(); 
 
     @Builder.Default
-    private List<String>  = new ArrayList<>(); 
+    private List<String> participants = new ArrayList<>(); 
 
 }
