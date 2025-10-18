@@ -215,3 +215,7 @@ e2e/*.map
 .env.example
 .env.local
 .env.staging
+
+#some node js files to check sockets
+websocket-test/*
+package-lock.json
