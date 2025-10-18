@@ -1,33 +1,36 @@
 const Stomp = require('stompjs');
 const SockJS = require('sockjs-client');
 
-// Fix for environments where WebSocket is undefined (e.g., Node.js)
+// Fix for Node.js environments
 global.WebSocket = require('ws');
 
-// Replace this URL with your backend's WebSocket endpoint
+// === CONFIGURE YOUR USERNAME HERE ===
+const username = process.argv[2]; // use command-line argument (e.g. user1 or user2)
+if (!username) {
+  console.error('❌ Please provide a username: node client.js user1');
+  process.exit(1);
+}
+
+// === CONNECT TO YOUR BACKEND ===
 const socket = new SockJS('http://localhost:8080/ws');
 const stompClient = Stomp.over(socket);
 
-// Optional: Disable debug logging
+// Optional: silence debug logs
 stompClient.debug = null;
 
-// Connect to the WebSocket server
-stompClient.connect({}, function () {
-    console.log('✅ Connected to WebSocket server');
+stompClient.connect({}, () => {
+  console.log(`✅ Connected as ${username}`);
 
-    // Subscribe to a topic (adjust as needed)
-    stompClient.subscribe('/topic/messages', function (message) {
-        const body = JSON.parse(message.body);
-        console.log(`📩 Received message: ${body.sender}: ${body.content}`);
-    });
+  // Subscribe to private queue
+  stompClient.subscribe(`/user/${username}/queue/messages`, (message) => {
+    const body = JSON.parse(message.body);
+    console.log(`📩 Message from ${body.sender}: ${body.content}`);
+  });
 
-    // Send a message to the server (adjust endpoint as needed)
-    stompClient.send('/app/chat', {}, JSON.stringify({
-        sender: 'NodeClient',
-        content: 'Hello from Node.js'
-    }));
+  // Register the user on server side
+  stompClient.send('/app/chat.addUser', {}, JSON.stringify({
+    sender: username
+  }));
 
-    console.log('📤 Message sent!');
-}, function (error) {
-    console.error('❌ Connection error:', error);
+  console.log(`👤 Registered user: ${username}`);
 });

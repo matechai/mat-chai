@@ -12,20 +12,20 @@ import com.ft.matechai.chat.nodes.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Component
-@Slf4j
-@RequiredArgsConstructor
-public class WebSocketEventListener {
-    private final SimpMessageSendingOperations messageTemplate;
+// @Component
+// @Slf4j
+// @RequiredArgsConstructor
+// public class WebSocketEventListener {
+//     private final SimpMessageSendingOperations messageTemplate;
 
-    @EventListener
-    public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
-        if (username != null) {
-            log.info("User disconnected: {}", username);
-            ChatMessage chatMessage = new ChatMessage(username, MessageType.LEAVE);
-            messageTemplate.convertAndSend("/topic/public", chatMessage);
-        }
-    }
-}
+//     @EventListener
+//     public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
+//         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+//         String username = (String) headerAccessor.getSessionAttributes().get("username");
+//         if (username != null) {
+//             log.info("User disconnected: {}", username);
+//             // ChatMessage chatMessage = new ChatMessage(username, MessageType.LEAVE);
+//             messageTemplate.convertAndSend("/topic/public", chatMessage);
+//         }
+//     }
+// }
