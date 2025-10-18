@@ -21,6 +21,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config)
 	{
+		//Change it later on
 		config.enableSimpleBroker("/topic", "/queue"); // In-memory message broker
 		config.setApplicationDestinationPrefixes("/app"); // Prefix for application destination
 	}
