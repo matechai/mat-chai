@@ -1,4 +1,3 @@
-
 package com.ft.matechai.config.socket;
 
 import com.ft.matechai.chat.interceptor.JwtHandShakeInterceptor;
