@@ -1,36 +1,81 @@
+/**
+ * Simple Node.js STOMP chat client
+ * Usage:
+ *   node client.js user1
+ *   node client.js user2
+ */
+
 const Stomp = require('stompjs');
 const SockJS = require('sockjs-client');
+const readline = require('readline');
 
-// Fix for Node.js environments
+// Polyfill WebSocket for Node
 global.WebSocket = require('ws');
 
-// === CONFIGURE YOUR USERNAME HERE ===
-const username = process.argv[2]; // use command-line argument (e.g. user1 or user2)
+// --- CONFIG ---
+const username = process.argv[2];
 if (!username) {
-  console.error('❌ Please provide a username: node client.js user1');
+  console.error('❌ Please run with a username: node client.js user1');
   process.exit(1);
 }
 
-// === CONNECT TO YOUR BACKEND ===
-const socket = new SockJS('http://localhost:8080/ws');
+// Your Spring Boot WebSocket endpoint
+const SOCKET_URL = 'http://localhost:8080/ws';
+
+// Create SockJS and STOMP clients
+const socket = new SockJS(SOCKET_URL);
 const stompClient = Stomp.over(socket);
 
-// Optional: silence debug logs
+// Optional: silence STOMP debug logs
 stompClient.debug = null;
 
+// Setup console input
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+// Utility: send a chat message
+function sendMessage(to, content) {
+  const message = {
+    sender: username,
+    receiver: to,
+    content: content,
+    type: 'CHAT'
+  };
+  stompClient.send('/app/chat.sendMessage', {}, JSON.stringify(message));
+  console.log(`📤 Sent to ${to}: ${content}`);
+}
+
+// Recursive prompt to keep chatting
+function chatPrompt() {
+  rl.question('👤 Send to (username): ', (receiver) => {
+    if (!receiver.trim()) return chatPrompt();
+    rl.question('💬 Message: ', (text) => {
+      sendMessage(receiver.trim(), text.trim());
+      chatPrompt();
+    });
+  });
+}
+
+// --- CONNECT TO SERVER ---
+console.log(`🔌 Connecting to ${SOCKET_URL} as ${username}...`);
 stompClient.connect({}, () => {
   console.log(`✅ Connected as ${username}`);
 
-  // Subscribe to private queue
-  stompClient.subscribe(`/user/${username}/queue/messages`, (message) => {
-    const body = JSON.parse(message.body);
-    console.log(`📩 Message from ${body.sender}: ${body.content}`);
+  // Subscribe to this user's private queue
+  stompClient.subscribe(`/user/${username}/queue/messages`, (msg) => {
+    const body = JSON.parse(msg.body);
+    console.log(`\n📩 Message from ${body.sender}: ${body.content}`);
+    // chatPrompt();
   });
 
-  // Register the user on server side
-  stompClient.send('/app/chat.addUser', {}, JSON.stringify({
-    sender: username
-  }));
+  // Register user on the server
+  stompClient.send('/app/chat.addUser', {}, JSON.stringify({ sender: username }));
+  console.log(`👋 Registered user: ${username}`);
 
-  console.log(`👤 Registered user: ${username}`);
+  // Start chatting
+  chatPrompt();
+}, (error) => {
+  console.error('❌ Connection error:', error);
 });
