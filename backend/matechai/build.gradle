@@ -42,10 +42,11 @@ dependencies {
 >>>>>>> da121c5 (working on websockets)
 =======
     // Lettuce (Basic Redis Client)
-    implementation 'io.lettuce.core:lettuce-core:6.0.0'
+    // implementation 'io.lettuce.core:lettuce-core:6.0.0'
 
     //websocket && STOMP
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 >>>>>>> efe4612 (working on chat)
     // JWT
