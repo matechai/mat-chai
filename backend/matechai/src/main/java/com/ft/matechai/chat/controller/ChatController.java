@@ -1,18 +1,17 @@
 package com.ft.matechai.chat.controller;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-=======
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
->>>>>>> f04d151 (aded chat with redis)
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +25,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-<<<<<<< HEAD
 // @RequiredArgsConstructor
-=======
 @RequestMapping
->>>>>>> f04d151 (aded chat with redis)
 @Slf4j
 // @RequestMapping("/api/chat")
 public class ChatController
@@ -88,12 +84,4 @@ public class ChatController
 	// 	return chatMessage;
 	// }
 
-<<<<<<< HEAD
-	@MessageMapping("/chat.addUser")
-	public void addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor)
-	{
-		headerAccessor.getSessionAttributes().put("username", chatMessage.get_sender());
-	}
-=======
->>>>>>> f04d151 (aded chat with redis)
 }
