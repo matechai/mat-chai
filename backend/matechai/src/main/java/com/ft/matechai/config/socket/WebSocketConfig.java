@@ -16,6 +16,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
 		registry.addEndpoint("/ws") //websockt endpoint
 				.setAllowedOrigins("*")
 				.withSockJS();
+		
+		 // Direct WebSocket endpoint (for Postman, WebSocket King, etc.)
+        registry.addEndpoint("/ws-direct")
+                .setAllowedOriginPatterns("*");
 	}
 
 	@Override
