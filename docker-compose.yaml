@@ -61,6 +61,23 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+  
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "retries-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
 
   mongodb:
     image: mongo:latest
