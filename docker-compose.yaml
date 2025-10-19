@@ -7,21 +7,46 @@ services:
     volumes:
       - ./backend/matechai/src/main/resources/application-secret.properties:/app/resources/application-secret.properties:ro
     environment:
+      # Spring config
       - SPRING_CONFIG_ADDITIONAL_LOCATION=classpath:/application.properties,/app/resources/application-secret.properties
+
+      # Backend
       - SERVER_PORT=${SERVER_PORT}
       - APP_URL=${APP_URL}
+
+      # Neo4j
       - SPRING_NEO4J_URI=${SPRING_NEO4J_URI}
       - SPRING_NEO4J_AUTHENTICATION_USERNAME=${SPRING_NEO4J_AUTHENTICATION_USERNAME}
       - SPRING_NEO4J_AUTHENTICATION_PASSWORD=${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
+
+      # Redis
+      - SPRING_DATA_REDIS_HOST=${SPRING_DATA_REDIS_HOST}
+      - SPRING_DATA_REDIS_PORT=${SPRING_DATA_REDIS_PORT}
+      - SPRING_DATA_REDIS_PASSWORD=${SPRING_DATA_REDIS_PASSWORD}
+      - SPRING_DATA_REDIS_TIMEOUT=${SPRING_DATA_REDIS_TIMEOUT}
+
+      # Mail
+      - SMTP_MAIL_HOST=${SMTP_MAIL_HOST}
       - SPRING_MAIL_PORT=${SPRING_MAIL_PORT}
       - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
       - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+      - SPRING_MAIL_PROTOCOL=${SPRING_MAIL_PROTOCOL}
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH}
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED}
+
+      # JWT
+      - JWT_TYPE=${JWT_TYPE}
       - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATIONMS_ACCESSTOKEN=${JWT_EXPIRATIONMS_ACCESSTOKEN}
+      - JWT_EXPIRATIONMS_REFRESHTOKEN=${JWT_EXPIRATIONMS_REFRESHTOKEN}
     ports:
       - "8080:8080"
     depends_on:
       neo4j:
         condition: service_healthy
+      redis:
+        condition: service_started
     restart: unless-stopped
 
   frontend:
@@ -51,7 +76,25 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+  
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "retries-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
 
 volumes:
   node_modules:
   neo4j_data:
+  redis_data:
