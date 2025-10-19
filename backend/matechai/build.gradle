@@ -34,11 +34,20 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     //websocket && STOMP
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 =======
 >>>>>>> da121c5 (working on websockets)
+=======
+    // Lettuce (Basic Redis Client)
+    implementation 'io.lettuce.core:lettuce-core:6.0.0'
+
+    //websocket && STOMP
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+>>>>>>> efe4612 (working on chat)
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
