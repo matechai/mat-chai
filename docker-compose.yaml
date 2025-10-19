@@ -72,7 +72,7 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "retries-cli", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
