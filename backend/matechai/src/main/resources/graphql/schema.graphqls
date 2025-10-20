@@ -5,26 +5,6 @@ type User {
     username: String
     firstName: String
     lastName: String
-    dateOfBirth: String
-    age: Int
-
-    gender: String
-    sexualPreferences: [String]
-    biography: String
-    interests: [String]
-    profilePictureUrl: String
-    pictureUrls: [String]
-    fame: Float
-}
-
-
-type Query {
-    getUserByUsername(username: String!): User
-    me: User
-    genders: [String]
-    sexualPreferences: [String]
-    interests: [String]
-}
 
     gender: String
     sexualPreference: String
