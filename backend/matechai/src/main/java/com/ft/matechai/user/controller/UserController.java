@@ -1,15 +1,20 @@
 package com.ft.matechai.user.controller;
 
 import com.ft.matechai.user.dto.UserInfoDTO;
+import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.service.UserService;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/api/users")
+@Controller // GraphQL
 public class UserController {
 
     private final UserService userService;
@@ -18,6 +23,8 @@ public class UserController {
         this.userService = userService;
     }
 
+
+    // ================= REST =================
 
     @GetMapping("/{username}")
     public UserInfoDTO getUserInformation(@PathVariable String username) {
@@ -32,5 +39,14 @@ public class UserController {
 
         userService.updateUserInfo(username, userInfoDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+    // ================= GraphQL =================
+
+    @QueryMapping
+    public User getUserByUsername(@Argument String username) {
+
+        return userService.getUser(username);
     }
 }
