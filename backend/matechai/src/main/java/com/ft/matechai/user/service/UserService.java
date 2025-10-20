@@ -18,6 +18,11 @@ public class UserService {
     }
 
 
+    public User getUser(String username) {
+
+        return userRepository.findByUsernameOrThrow(username);
+    }
+
     public UserInfoDTO getUserInfo(String username) {
 
         User user = userRepository.findByUsernameOrThrow(username);
