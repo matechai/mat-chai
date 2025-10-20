@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
+                    .requestMatchers("/api/graphql").hasAnyRole("USER", "ADMIN", "GOD")
                     .requestMatchers("/api/auth/signup",
                                             "/api/auth/login",
                                             "/api/auth/verify",
