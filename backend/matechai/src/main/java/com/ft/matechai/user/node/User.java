@@ -81,4 +81,7 @@ public class User {
 	@Relationship(type = "Blocked", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Blocked;
 
+	@JsonIgnore
+    @Relationship(type = "chat", direction = Relationship.Direction.OUTGOING)
+    private List<Chat> chats;
 }
