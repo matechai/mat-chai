@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends Neo4jRepository<User, Long> {
+public interface UserRepository extends Neo4jRepository<User, String> {
 
     @Query("MATCH (a:User {username: $username}) Return a")
     Optional<User> findByUsername(@Param("username") String username);
@@ -17,11 +17,6 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
     default User findByUsernameOrThrow(String username) {
         return findByUsername(username)
                 .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid username"));
-    }
-
-    default User findByIdOrThrow(Long id) {
-        return findById(id)
-                .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid id"));
     }
 
     boolean existsByUsername(String username);
