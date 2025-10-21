@@ -17,20 +17,10 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
 public class UserController {
 
-    private final UserRepository userRepository;
-
     private final UserService userService;
 
     public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
-        this.userRepository = userRepository;
-    }
-
-    @PostMapping
-    @PreAuthorize("permitAll()")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User saved = userService.saveUser(user);
-        return ResponseEntity.ok(saved);
     }
 
     @GetMapping
@@ -62,10 +52,10 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{username}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String username) {
-        userService.removeUser(username);
-        return ResponseEntity.noContent().build();
-    }
+    // @DeleteMapping("/{username}")
+    // public ResponseEntity<Void> deleteUser(@PathVariable String username) {
+    //     userService.removeUser(username);
+    //     return ResponseEntity.noContent().build();
+    // }
 
 }
