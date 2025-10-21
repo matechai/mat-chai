@@ -1,13 +1,17 @@
 package com.ft.matechai.user.node;
 
+import org.springframework.data.neo4j.core.schema.*;
+import org.springframework.data.annotation.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ft.matechai.enums.Role;
+
+import lombok.ToString;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.neo4j.core.schema.*;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,15 +20,14 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"Viewed", "Liked", "Interested_in"})
 public class User {
 
     // User Information
-    @Id @GeneratedValue
-    private Long id;
+    @Id
+    private String username;    // should be unique AND immutable, it would be better to use username as ID so the builtin functions return us the usernames
 
     private String email;
-
-    private String username;    // should be unique
 
     private String firstName;
 
@@ -32,8 +35,10 @@ public class User {
 
     private String password;
 
+    @Builder.Default
     private boolean enabled = false;
 
+    @Builder.Default
     private boolean firstLogin = true;
 
     private Role role;
@@ -42,17 +47,35 @@ public class User {
 
 
     // Profile
+    private int age;
+
     private String gender;
 
     private String sexualPreference;
 
     private String biography;
 
-    @Relationship(type = "INTERESTED_IN", direction = Relationship.Direction.OUTGOING)
-    private Set<Tag> interests = new HashSet<>();
-
     private String profilePictureUrl;
 
-    private List<String> pictureUrls;
+    @Builder.Default
+    private List<String> pictureUrls = new ArrayList<>();
+
+    private int fame;
+
+    private String location;
+
+    private String lastOnline;
+
+    @JsonIgnore
+	@Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
+	private Set<User> Viewed;
+	
+	@JsonIgnore
+	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
+	private Set<User> Liked;
+
+	@JsonIgnore
+	@Relationship(type = "Interested_in", direction = Relationship.Direction.OUTGOING)
+    private Set<Tag> Interested_in;
 
 }
