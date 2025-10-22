@@ -47,6 +47,8 @@ public class User {
 
 
     // Profile
+    private String birthDay;
+
     private int age;
 
     private String gender;
