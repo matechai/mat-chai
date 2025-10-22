@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class User {
 
 
     // Profile
-    private String birthDay;
+    private LocalDate birthDay;
 
     private int age;
 
