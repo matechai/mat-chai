@@ -17,5 +17,5 @@ public class VerificationToken {
     @Id
     private String token;
 
-    private String userId;
+    private String username;
 }

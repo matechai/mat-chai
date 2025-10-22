@@ -29,7 +29,7 @@ public class VerificationService {
         String token = UUID.randomUUID().toString();
         VerificationToken vt = new VerificationToken();
         vt.setToken(token);
-        vt.setUserId(user.getUsername());
+        vt.setUsername(user.getUsername());
         tokenRepository.save(vt);
 
         emailService.sendVerificationEmail(user.getEmail(), token);
@@ -41,7 +41,7 @@ public class VerificationService {
         if (vt == null)
             return false;
 
-        User user = userRepository.findByUsernameOrThrow(vt.getUserId());
+        User user = userRepository.findByUsernameOrThrow(vt.getUsername());
         user.setEnabled(true);
         userRepository.save(user);
 
