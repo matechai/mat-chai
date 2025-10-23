@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+
 @Node("User")
 @Data
 @Builder
@@ -52,11 +53,16 @@ public class User {
 
     private int age;
 
-    private String gender;
+    @Relationship(type = "HAS_GENDER", direction = Relationship.Direction.OUTGOING)
+    private Gender gender;
 
-    private String sexualPreference;
+    @Relationship(type = "HAS_PREFERENCE", direction = Relationship.Direction.OUTGOING)
+    private List<SexualPreference> sexualPreferences;
 
     private String biography;
+
+    @Relationship(type = "INTERESTED_IN", direction = Relationship.Direction.OUTGOING)
+    private List<Tag> Interested_in;
 
     private String profilePictureUrl;
 
@@ -65,6 +71,7 @@ public class User {
 
     private int fame;
 
+
     private String location;
 
     private String lastOnline;
@@ -72,13 +79,8 @@ public class User {
     @JsonIgnore
 	@Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Viewed;
-	
+
 	@JsonIgnore
 	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Liked;
-
-	@JsonIgnore
-	@Relationship(type = "Interested_in", direction = Relationship.Direction.OUTGOING)
-    private Set<Tag> Interested_in;
-
 }
