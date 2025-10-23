@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 
 @Service
-@Transactional
 public class UserService {
 	private final UserRepository userRepository;
     private final GenderRepository genderRepository;
