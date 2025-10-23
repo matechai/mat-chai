@@ -1,12 +1,24 @@
 package com.ft.matechai.user.repository;
 
+import com.ft.matechai.exception.EntityNotFoundException;
 import com.ft.matechai.user.node.Gender;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface GenderRepository extends Neo4jRepository<Gender, String > {
+import java.util.Optional;
 
+
+public interface GenderRepository extends Neo4jRepository<Gender, Long> {
+
+    @Query("MATCH (g:Gender {gender: $gender}) RETURN g")
+    Optional<Gender> findByGender(@Param("gender") String gender);
+
+    default Gender findByGenderOrThrow(String gender) {
+        return findByGender(gender)
+                .orElseThrow(() -> new EntityNotFoundException("Gender", gender));
+    }
 
     @Query("MERGE (g:Gender {gender: $gender}) RETURN g")
-    void saveIfNotExists(String gender);
+    void saveIfNotExists(@Param("gender") String gender);
 }
