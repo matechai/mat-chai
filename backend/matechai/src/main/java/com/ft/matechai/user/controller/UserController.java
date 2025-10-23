@@ -1,6 +1,7 @@
 package com.ft.matechai.user.controller;
 
 import com.ft.matechai.user.dto.UserInfoDTO;
+import com.ft.matechai.user.dto.UserProfileDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.service.UserService;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -39,6 +40,16 @@ public class UserController {
 
         userService.updateUserInfo(username, userInfoDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{username}/profile")
+    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
+    public ResponseEntity<?> updateProfile(@PathVariable String username,
+                                                        @RequestBody UserProfileDTO userProfileDTO) {
+
+        UserProfileDTO updatedProfile = userService.updateProfile(username, userProfileDTO);
+
+        return ResponseEntity.ok(updatedProfile);
     }
 
 
