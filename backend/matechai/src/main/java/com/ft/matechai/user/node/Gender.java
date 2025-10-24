@@ -19,6 +19,5 @@ public class Gender {
 
     @Id @GeneratedValue
     private Long id;
-
     private String gender;
 }
