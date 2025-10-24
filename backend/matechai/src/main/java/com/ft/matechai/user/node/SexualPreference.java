@@ -19,6 +19,5 @@ public class SexualPreference {
 
     @Id @GeneratedValue
     private Long id;
-
     private String name;
 }
