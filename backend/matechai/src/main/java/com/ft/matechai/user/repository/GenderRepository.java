@@ -21,4 +21,11 @@ public interface GenderRepository extends Neo4jRepository<Gender, Long> {
 
     @Query("MERGE (g:Gender {gender: $gender}) RETURN g")
     void saveIfNotExists(@Param("gender") String gender);
+
+
+    @Query("""
+        MATCH (u:User {username: $username})-[:HAS_GENDER]->(g:Gender)
+        RETURN g.gender
+    """)
+    String findByUserUsername(@Param("username") String username);
 }
