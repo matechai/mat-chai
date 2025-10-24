@@ -4,11 +4,11 @@ import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.dto.UserProfileDTO;
 import com.ft.matechai.user.node.Gender;
 import com.ft.matechai.user.node.SexualPreference;
-import com.ft.matechai.user.node.Tag;
+import com.ft.matechai.user.node.Interest;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.GenderRepository;
 import com.ft.matechai.user.repository.SexualPreferenceRepository;
-import com.ft.matechai.user.repository.TagRepository;
+import com.ft.matechai.user.repository.InterestRepository;
 import com.ft.matechai.user.repository.UserRepository;
 
 import org.springframework.stereotype.Service;
@@ -22,16 +22,16 @@ public class UserService {
 	private final UserRepository userRepository;
     private final GenderRepository genderRepository;
     private final SexualPreferenceRepository sexualPreferenceRepository;
-    private final TagRepository tagRepository;
+    private final InterestRepository interestRepository;
 
 	public UserService(UserRepository userRepository,
                        GenderRepository genderRepository,
                        SexualPreferenceRepository sexualPreferenceRepository,
-                       TagRepository tagRepository) {
+                       InterestRepository interestRepository) {
 		this.userRepository = userRepository;
         this.genderRepository = genderRepository;
         this.sexualPreferenceRepository = sexualPreferenceRepository;
-        this.tagRepository = tagRepository;
+        this.interestRepository = interestRepository;
 	}
 
 	// GETTERS // GETTERS // GETTERS // GETTERS //
@@ -66,7 +66,7 @@ public class UserService {
 
     public List<String> getInterests(String username) {
 
-        return tagRepository.findByUserUsername(username);
+        return interestRepository.findByUsername(username);
     }
 
 
@@ -107,12 +107,12 @@ public class UserService {
         sexualPreferences.forEach(sp -> userRepository.addSexualPreference(username, sp.getName()));
 
         // Interest (1:N)
-        List<Tag> tags = dto.getTags().stream()
-                .map(tagRepository::findByTagOrThrow)
+        List<Interest> interests = dto.getInterests().stream()
+                .map(interestRepository::findByNameOrThrow)
                 .collect(Collectors.toList());
-        user.setInterested_in(tags);
-        userRepository.removeStaleInterests(username, dto.getTags());
-        tags.forEach(tag -> userRepository.addInterest(username, tag.getName()));
+        user.setInterested_in(interests);
+        userRepository.removeStaleInterests(username, dto.getInterests());
+        interests.forEach(interest -> userRepository.addInterest(username, interest.getName()));
 
         // todo image field
 

@@ -59,21 +59,21 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                                       @Param("newPrefs") List<String> newPrefs);
 
 
-    // Tags
+    // Interest
     @Transactional
-    @Query("MATCH (u:User {username: $username}), (t:Tag {name: $tagName}) " +
-            "MERGE (u)-[:INTERESTED_IN]->(t)")
+    @Query("MATCH (u:User {username: $username}), (i:Interest {name: $interestName}) " +
+            "MERGE (u)-[:INTERESTED_IN]->(i)")
     void addInterest(@Param("username") String username,
-                     @Param("tagName") String tagName);
+                     @Param("interestName") String interestName);
 
     @Transactional
     @Query("""
-            MATCH (u:User {username: $username})-[r:INTERESTED_IN]->(t:Tag)
-            WHERE NOT t.name IN $newTags
+            MATCH (u:User {username: $username})-[r:INTERESTED_IN]->(i:Interest)
+            WHERE NOT i.name IN $newInterests
             DELETE r
             """)
     void removeStaleInterests(@Param("username") String username,
-                              @Param("newTags") List<String> newTags);
+                              @Param("newInterests") List<String> newInterests);
 
 
     @Query("MATCH (a:User) RETURN a")

@@ -37,6 +37,7 @@ public class User {
     private Role role;
     private String refreshToken;
 
+    private String lastOnline;
     @Builder.Default
     private boolean enabled = false;
     @Builder.Default
@@ -44,26 +45,23 @@ public class User {
 
 
     // Profile
-    @Relationship(type = "HAS_GENDER", direction = Relationship.Direction.OUTGOING)
-    private Gender gender;
-    @Relationship(type = "HAS_PREFERENCE", direction = Relationship.Direction.OUTGOING)
-    private List<SexualPreference> sexualPreferences;
     private String biography;
-    @Relationship(type = "INTERESTED_IN", direction = Relationship.Direction.OUTGOING)
-    private List<Tag> Interested_in;
+    private Float fame;
+    private String location;
     private String profilePictureUrl;
     @Builder.Default
     private List<String> pictureUrls = new ArrayList<>();
 
-    private Float fame;
-    private String location;
+    @Relationship(type = "INTERESTED_IN", direction = Relationship.Direction.OUTGOING)
+    private List<Interest> Interested_in = new ArrayList<>();
+    @Relationship(type = "HAS_GENDER", direction = Relationship.Direction.OUTGOING)
+    private Gender gender;
+    @Relationship(type = "HAS_PREFERENCE", direction = Relationship.Direction.OUTGOING)
+    private List<SexualPreference> sexualPreferences = new ArrayList<>();;
 
-    private String lastOnline;
 
-    @JsonIgnore
-	@Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
+    @JsonIgnore @Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Viewed;
-	@JsonIgnore
-	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
+	@JsonIgnore	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Liked;
 }
