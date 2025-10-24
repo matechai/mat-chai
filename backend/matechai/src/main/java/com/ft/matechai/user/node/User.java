@@ -55,7 +55,7 @@ public class User {
     @Builder.Default
     private List<String> pictureUrls = new ArrayList<>();
 
-    private int fame;
+    private Float fame;
     private String location;
 
     private String lastOnline;
