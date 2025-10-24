@@ -1,11 +1,12 @@
 package com.ft.matechai.user.dto;
 
+import com.ft.matechai.user.node.Interest;
 import com.ft.matechai.user.node.SexualPreference;
-import com.ft.matechai.user.node.Tag;
 import com.ft.matechai.user.node.User;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,12 +15,12 @@ import java.util.stream.Collectors;
 public class UserProfileDTO {
 
     private String gender;
-
-    private List<String> sexualPreferences;
-
     private String biography;
 
-    private List<String> tags;
+    @Builder.Default
+    private List<String> sexualPreferences = new ArrayList<>();
+    @Builder.Default
+    private List<String> interests = new ArrayList<>();
 
     // todo 5 images, one should be profile picture
 
@@ -32,9 +33,9 @@ public class UserProfileDTO {
                                 .map(SexualPreference::getName)
                                 .collect(Collectors.toList()))
                 .biography(user.getBiography())
-                .tags(
+                .interests(
                         user.getInterested_in().stream()
-                                .map(Tag::getName)
+                                .map(Interest::getName)
                                 .collect(Collectors.toList()))
                 // todo image
                 .build();
