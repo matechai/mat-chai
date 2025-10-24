@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+
 public interface UserRepository extends Neo4jRepository<User, String> {
 
+    // Find by username
     @Query("MATCH (a:User {username: $username}) Return a")
     Optional<User> findByUsername(@Param("username") String username);
 

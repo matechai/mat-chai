@@ -110,9 +110,4 @@ public class UserService {
 
         return UserProfileDTO.from(user);
     }
-
-
-	public User saveUser(User u) {
-		return userRepository.save(u);
-	}
 }
