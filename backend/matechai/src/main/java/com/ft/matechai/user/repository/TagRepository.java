@@ -6,7 +6,9 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
+
 
 public interface TagRepository extends Neo4jRepository<Tag, Long> {
 
@@ -20,4 +22,11 @@ public interface TagRepository extends Neo4jRepository<Tag, Long> {
 
     @Query("MERGE (t:Tag {name: $name}) RETURN t")
     void saveIfNotExists(@Param("name") String name);
+
+
+    @Query("""
+        MATCH (u:User {username: $username})-[:INTERESTED_IN]->(t:Tag)
+        RETURN t.name
+    """)
+    List<String> findByUserUsername(@Param("username") String username);
 }

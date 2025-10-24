@@ -6,6 +6,7 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -21,4 +22,11 @@ public interface SexualPreferenceRepository extends Neo4jRepository<SexualPrefer
 
     @Query("MERGE (s:SexualPreference {name: $name}) RETURN s")
     void saveIfNotExists(@Param("name") String name);
+
+
+    @Query("""
+        MATCH (u:User {username: $username})-[:HAS_PREFERENCE]->(s:SexualPreference)
+        RETURN s.name
+    """)
+    List<String> findByUserUsername(@Param("username") String username);
 }

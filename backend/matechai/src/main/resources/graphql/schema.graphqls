@@ -1,26 +1,22 @@
 
 type User {
-    id: ID
     email: String
     username: String
     firstName: String
     lastName: String
+    dateOfBirth: String
+    age: Int
 
     gender: String
-    sexualPreference: String
+    sexualPreferences: [String]
     biography: String
+    interests: [String]
     profilePictureUrl: String
     pictureUrls: [String]
-    interests: [Tag]
+    fame: Float
 }
 
-
-type Tag {
-    id: ID
-    name: String
-}
 
 type Query {
     getUserByUsername(username: String!): User
 }
-

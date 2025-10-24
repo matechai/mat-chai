@@ -7,11 +7,14 @@ import com.ft.matechai.user.service.UserService;
 
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -60,5 +63,22 @@ public class UserController {
     public User getUserByUsername(@Argument String username) {
 
         return userService.getUser(username);
+    }
+
+    @SchemaMapping(typeName = "User", field = "gender")
+    public String getGender(User user) {
+
+        return userService.getGender(user.getUsername());
+    }
+
+    @SchemaMapping(typeName = "User", field = "sexualPreferences")
+    public List<String> getSexualPreferences(User user) {
+
+        return userService.getSexualPreference(user.getUsername());
+    }
+    @SchemaMapping(typeName = "User", field = "interests")
+    public List<String> getInterests(User user) {
+
+        return userService.getInterests(user.getUsername());
     }
 }
