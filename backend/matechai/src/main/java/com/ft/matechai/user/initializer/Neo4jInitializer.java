@@ -2,7 +2,7 @@ package com.ft.matechai.user.initializer;
 
 import com.ft.matechai.user.repository.GenderRepository;
 import com.ft.matechai.user.repository.SexualPreferenceRepository;
-import com.ft.matechai.user.repository.TagRepository;
+import com.ft.matechai.user.repository.InterestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -14,14 +14,14 @@ public class Neo4jInitializer implements CommandLineRunner {
 
     private final GenderRepository genderRepository;
     private final SexualPreferenceRepository sexualPreferenceRepository;
-    private final TagRepository tagRepository;
+    private final InterestRepository interestRepository;
 
     @Override
     public void run(String... args) throws Exception {
 
         initialGenders();
         initialSexualPreference();
-        initialTags();
+        initialInterests();
     }
 
     private void initialGenders() {
@@ -63,9 +63,9 @@ public class Neo4jInitializer implements CommandLineRunner {
         System.out.println("Initial Sexual Preference loaded into Neo4j");
     }
 
-    private void initialTags() {
+    private void initialInterests() {
 
-        String[] tags = {
+        String[] interests = {
                 "Vegan",
                 "Geek",
                 "Piercing",
@@ -89,10 +89,10 @@ public class Neo4jInitializer implements CommandLineRunner {
                 "Cooking"
         };
 
-        for (String tag : tags) {
-            tagRepository.saveIfNotExists(tag);
+        for (String interest : interests) {
+            interestRepository.saveIfNotExists(interest);
         }
 
-        System.out.println("Initial Tags loaded into Neo4j");
+        System.out.println("Initial Interests loaded into Neo4j");
     }
 }
