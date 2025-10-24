@@ -23,7 +23,15 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             log.error(e.getMessage());
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write(e.getMessage());
+            response.setContentType("application/json;charset=UTF-8");
+            String body = String.format("""
+            {
+              "status": %d,
+              "error": "Unauthorized",
+              "message": "%s"
+            }
+            """, HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+            response.getWriter().write(body);
         }
     }
 }
