@@ -1,7 +1,7 @@
-package com.ft.matechai.user.repository;
+package com.ft.matechai.option.repository;
 
 import com.ft.matechai.exception.EntityNotFoundException;
-import com.ft.matechai.user.node.Interest;
+import com.ft.matechai.option.node.Interest;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,4 +29,8 @@ public interface InterestRepository extends Neo4jRepository<Interest, Long> {
         RETURN i.name
     """)
     List<String> findByUsername(@Param("username") String username);
+
+
+    @Query("MATCH (i:Interest) RETURN i.name AS name")
+    List<String> findAllNames();
 }

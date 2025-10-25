@@ -1,4 +1,4 @@
-package com.ft.matechai.user.node;
+package com.ft.matechai.option.node;
 
 import lombok.*;
 import org.springframework.data.neo4j.core.schema.*;
