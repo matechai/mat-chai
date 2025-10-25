@@ -1,53 +1,37 @@
 package com.ft.matechai.chat.controller;
 
 
+
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import java.util.List;
+import org.springframework.stereotype.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.ft.matechai.chat.model.ChatMessage;
 import com.ft.matechai.chat.service.ChatService;
+import com.ft.matechai.config.jwt.JwtUtil;
 
-import lombok.extern.slf4j.Slf4j;
 
-@RestController
-// @RequiredArgsConstructor
-@RequestMapping
-@Slf4j
-// @RequestMapping("/api/chat")
+
+@Controller
 public class ChatController
 {
-	private final ChatService chatService;
-	
-	@Autowired
-	public ChatController(ChatService chatService)
-	{
-		this.chatService = chatService;
-	}
+	 private final ChatService chatService;
+    private final JwtUtil jwtService;
 
-	// @PostMapping("/send")
-	// public void sendMessage(@RequestBody ChatMessage message)
-	// {
-	// 	chatService.sendMessage(message);
-	// }
+    public ChatController(ChatService chatService, JwtUtil jwtService) {
+        this.chatService = chatService;
+        this.jwtService = jwtService;
+    }
 
-	// @GetMapping("/history")
-	// public List<ChatMessage> getHistory(@RequestParam String user1, @RequestParam String user2)
-	// {
-	// 	return chatService.getChatHistory(user1, user2);
-	// }
+    @MessageMapping("/chat.send/{receiverId}")
+    public void sendMessage(@Header("Authorization") String jwt,
+                            @DestinationVariable String receiver,
+                            @Payload String content) {
+
+        String sender = jwtService.getUsernameFromToken(jwt);
+        chatService.sendMessage(sender, receiver, content);
+    }
 
 }
