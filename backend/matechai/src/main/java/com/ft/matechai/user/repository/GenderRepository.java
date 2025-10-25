@@ -6,6 +6,7 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -28,4 +29,8 @@ public interface GenderRepository extends Neo4jRepository<Gender, Long> {
         RETURN g.gender
     """)
     String findByUserUsername(@Param("username") String username);
+
+
+    @Query("MATCH (g:Gender) RETURN g.gender AS gender")
+    List<String> findAllNames();
 }
