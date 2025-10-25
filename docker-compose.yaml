@@ -1,3 +1,4 @@
+version: "3.9"
 
 services:
   backend:
@@ -7,94 +8,92 @@ services:
     volumes:
       - ./backend/matechai/src/main/resources/application-secret.properties:/app/resources/application-secret.properties:ro
     environment:
-      # Spring config
-      - SPRING_CONFIG_ADDITIONAL_LOCATION=classpath:/application.properties,/app/resources/application-secret.properties
-
-      # Backend
-      - SERVER_PORT=${SERVER_PORT}
-      - APP_URL=${APP_URL}
-
-      # Neo4j
-      - SPRING_NEO4J_URI=${SPRING_NEO4J_URI}
-      - SPRING_NEO4J_AUTHENTICATION_USERNAME=${SPRING_NEO4J_AUTHENTICATION_USERNAME}
-      - SPRING_NEO4J_AUTHENTICATION_PASSWORD=${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
-
-      # Redis
-      - SPRING_DATA_REDIS_HOST=${SPRING_DATA_REDIS_HOST}
-      - SPRING_DATA_REDIS_PORT=${SPRING_DATA_REDIS_PORT}
-      - SPRING_DATA_REDIS_PASSWORD=${SPRING_DATA_REDIS_PASSWORD}
-      - SPRING_DATA_REDIS_TIMEOUT=${SPRING_DATA_REDIS_TIMEOUT}
-
-      # Mail
-      - SMTP_MAIL_HOST=${SMTP_MAIL_HOST}
-      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT}
-      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
-      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
-      - SPRING_MAIL_PROTOCOL=${SPRING_MAIL_PROTOCOL}
-      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH}
-      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
-      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED}
+      SPRING_CONFIG_ADDITIONAL_LOCATION: ${SPRING_CONFIG_ADDITIONAL_LOCATION}
+      SERVER_PORT: ${SERVER_PORT}
+      APP_URL: ${APP_URL}
 
       # JWT
-      - JWT_TYPE=${JWT_TYPE}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRATIONMS_ACCESSTOKEN=${JWT_EXPIRATIONMS_ACCESSTOKEN}
-      - JWT_EXPIRATIONMS_REFRESHTOKEN=${JWT_EXPIRATIONMS_REFRESHTOKEN}
+      JWT_TYPE: ${JWT_TYPE}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATIONMS_ACCESSTOKEN: ${JWT_EXPIRATIONMS_ACCESSTOKEN}
+      JWT_EXPIRATIONMS_REFRESHTOKEN: ${JWT_EXPIRATIONMS_REFRESHTOKEN}
+
+      # MongoDB
+      SPRING_DATA_MONGODB_URI: ${SPRING_DATA_MONGODB_URI}
+
+      # Neo4j
+      SPRING_NEO4J_URI: ${SPRING_NEO4J_URI}
+      SPRING_NEO4J_AUTHENTICATION_USERNAME: ${SPRING_NEO4J_AUTHENTICATION_USERNAME}
+      SPRING_NEO4J_AUTHENTICATION_PASSWORD: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
+
+      # Mail
+      SMTP_MAIL_HOST: ${SMTP_MAIL_HOST}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
+      SPRING_MAIL_PROTOCOL: ${SPRING_MAIL_PROTOCOL}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED}
+
     ports:
       - "8080:8080"
     depends_on:
       neo4j:
         condition: service_healthy
-      redis:
-        condition: service_started
+      mongodb:
+        condition: service_healthy
     restart: unless-stopped
 
-  frontend:
-    build:
-      context: ./angular
-    volumes:
-      - ./angular/frontend:/app/frontend
-      - node_modules:/app/frontend/node_modules 
-    ports:
-      - "4200:4200"
-    command: ng serve --host 0.0.0.0 --poll 2000
-  
   neo4j:
     image: neo4j:5
-    container_name: neo4j 
+    container_name: neo4j
     environment:
-      - NEO4J_AUTH=neo4j/${SPRING_NEO4J_AUTHENTICATION_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
+      NEO4J_AUTH: "${SPRING_NEO4J_AUTHENTICATION_USERNAME}/${SPRING_NEO4J_AUTHENTICATION_PASSWORD}"
     ports:
-      - "7474:7474" #browser UI
+      - "7474:7474"
       - "7687:7687"
     volumes:
       - neo4j_data:/data
     healthcheck:
-      test: ["CMD-SHELL", "cypher-shell -u neo4j -p ${SPRING_NEO4J_AUTHENTICATION_PASSWORD} 'RETURN 1;' || exit 1"]
+      test: ["CMD-SHELL", "cypher-shell -u ${SPRING_NEO4J_AUTHENTICATION_USERNAME} -p ${SPRING_NEO4J_AUTHENTICATION_PASSWORD} 'RETURN 1;' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
-  
-  redis:
-    image: redis:7
-    container_name: redis
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
     ports:
-      - "6380:6379"
+      - "27017:27017"
     volumes:
-      - redis_data:/data
-    command: ["redis-server", "--appendonly", "yes"]
-    restart: unless-stopped
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${SPRING_DATA_MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${SPRING_DATA_MONGODB_PASSWORD}
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "mongosh", "--username", "${SPRING_DATA_MONGODB_USERNAME}", "--password", "${SPRING_DATA_MONGODB_PASSWORD}", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
+  mongodb-express:
+    image: mongo-express
+    container_name: mongodb-express
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${SPRING_DATA_MONGODB_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${SPRING_DATA_MONGODB_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: ${ME_CONFIG_MONGODB_SERVER}
 
 volumes:
-  node_modules:
   neo4j_data:
-  redis_data:
+  mongodb_data:
+  node_modules:
