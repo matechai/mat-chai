@@ -1,8 +1,8 @@
-package com.ft.matechai.user.initializer;
+package com.ft.matechai.option.initializer;
 
-import com.ft.matechai.user.repository.GenderRepository;
-import com.ft.matechai.user.repository.SexualPreferenceRepository;
-import com.ft.matechai.user.repository.InterestRepository;
+import com.ft.matechai.option.repository.GenderRepository;
+import com.ft.matechai.option.repository.SexualPreferenceRepository;
+import com.ft.matechai.option.repository.InterestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

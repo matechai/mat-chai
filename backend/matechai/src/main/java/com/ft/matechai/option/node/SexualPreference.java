@@ -1,4 +1,4 @@
-package com.ft.matechai.user.node;
+package com.ft.matechai.option.node;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
-package com.ft.matechai.user.repository;
+package com.ft.matechai.option.repository;
 
 import com.ft.matechai.exception.EntityNotFoundException;
-import com.ft.matechai.user.node.Gender;
+import com.ft.matechai.option.node.Gender;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;

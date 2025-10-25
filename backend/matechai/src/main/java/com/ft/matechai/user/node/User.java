@@ -1,5 +1,8 @@
 package com.ft.matechai.user.node;
 
+import com.ft.matechai.option.node.Gender;
+import com.ft.matechai.option.node.Interest;
+import com.ft.matechai.option.node.SexualPreference;
 import org.springframework.data.neo4j.core.schema.*;
 import org.springframework.data.annotation.Id;
 import com.fasterxml.jackson.annotation.JsonIgnore;
