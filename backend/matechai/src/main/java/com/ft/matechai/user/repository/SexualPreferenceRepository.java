@@ -29,4 +29,8 @@ public interface SexualPreferenceRepository extends Neo4jRepository<SexualPrefer
         RETURN s.name
     """)
     List<String> findByUserUsername(@Param("username") String username);
+
+
+    @Query("MATCH (s:SexualPreference) RETURN s.name AS name")
+    List<String> findAllNames();
 }
