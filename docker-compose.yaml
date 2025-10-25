@@ -61,23 +61,37 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-  
-  redis:
-    image: redis:7
-    container_name: redis
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
     ports:
-      - "6380:6379"
+      - "27017:27017"
     volumes:
-      - redis_data:/data
-    command: ["redis-server", "--appendonly", "yes"]
-    restart: unless-stopped
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${SPRING_DATA_MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${SPRING_DATA_MONGODB_PASSWORD}
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "mongosh", "--username", "${SPRING_DATA_MONGODB_USERNAME}", "--password", "${SPRING_DATA_MONGODB_PASSWORD}", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
+  mongodb-express:
+    image: mongo-express
+    container_name: mongodb-express
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${SPRING_DATA_MONGODB_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${SPRING_DATA_MONGODB_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: ${ME_CONFIG_MONGODB_SERVER}
 
   mongodb:
     image: mongo:latest
