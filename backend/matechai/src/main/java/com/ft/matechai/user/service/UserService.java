@@ -2,13 +2,13 @@ package com.ft.matechai.user.service;
 
 import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.dto.UserProfileDTO;
-import com.ft.matechai.user.node.Gender;
-import com.ft.matechai.user.node.SexualPreference;
-import com.ft.matechai.user.node.Interest;
+import com.ft.matechai.option.node.Gender;
+import com.ft.matechai.option.node.SexualPreference;
+import com.ft.matechai.option.node.Interest;
 import com.ft.matechai.user.node.User;
-import com.ft.matechai.user.repository.GenderRepository;
-import com.ft.matechai.user.repository.SexualPreferenceRepository;
-import com.ft.matechai.user.repository.InterestRepository;
+import com.ft.matechai.option.repository.GenderRepository;
+import com.ft.matechai.option.repository.SexualPreferenceRepository;
+import com.ft.matechai.option.repository.InterestRepository;
 import com.ft.matechai.user.repository.UserRepository;
 
 import org.springframework.stereotype.Service;

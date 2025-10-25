@@ -1,9 +1,9 @@
-package com.ft.matechai.option;
+package com.ft.matechai.option.service;
 
 
-import com.ft.matechai.user.repository.GenderRepository;
-import com.ft.matechai.user.repository.InterestRepository;
-import com.ft.matechai.user.repository.SexualPreferenceRepository;
+import com.ft.matechai.option.repository.GenderRepository;
+import com.ft.matechai.option.repository.InterestRepository;
+import com.ft.matechai.option.repository.SexualPreferenceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,17 +25,17 @@ public class OptionService {
     }
 
 
-    List<String> getGendersList() {
+    public List<String> getGendersList() {
 
         return genderRepository.findAllNames();
     }
 
-    List<String> getSexualPreferencesList() {
+    public List<String> getSexualPreferencesList() {
 
         return sexualPreferenceRepository.findAllNames();
     }
 
-    List<String> getInterestsList() {
+    public List<String> getInterestsList() {
 
         return interestRepository.findAllNames();
     }

@@ -1,5 +1,6 @@
-package com.ft.matechai.option;
+package com.ft.matechai.option.controller;
 
+import com.ft.matechai.option.service.OptionService;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
