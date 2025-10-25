@@ -3,12 +3,9 @@ FROM eclipse-temurin:17-jdk AS builder
 
 WORKDIR /app
 
-# Copy Gradle wrapper and build files first
-COPY matechai/gradle ./matechai/gradle
-COPY matechai/gradlew matechai/gradlew.bat matechai/build.gradle matechai/settings.gradle ./matechai/
 
 # Copy source code
-COPY matechai/src ./matechai/src
+COPY matechai ./matechai
 
 WORKDIR /app/matechai
 
