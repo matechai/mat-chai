@@ -21,9 +21,17 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (Exception e) {
-            log.error("[JWT] Exception in the JWT Filter : {}", e.getMessage());
+            log.error(e.getMessage());
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write("[JWT] JWT Authentication Failed : " + e.getMessage());
+            response.setContentType("application/json;charset=UTF-8");
+            String body = String.format("""
+            {
+              "status": %d,
+              "error": "Unauthorized",
+              "message": "%s"
+            }
+            """, HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+            response.getWriter().write(body);
         }
     }
 }

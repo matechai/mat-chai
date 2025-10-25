@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+
 @Node("User")
 @Data
 @Builder
@@ -27,58 +28,40 @@ public class User {
     // User Information
     @Id
     private String username;    // should be unique AND immutable, it would be better to use username as ID so the builtin functions return us the usernames
-
     private String email;
-
     private String firstName;
-
     private String lastName;
-
     private String password;
+    private LocalDate DateOfBirth;
+    private int age;
+    private Role role;
+    private String refreshToken;
 
+    private String lastOnline;
     @Builder.Default
     private boolean enabled = false;
-
     @Builder.Default
     private boolean firstLogin = true;
 
-    private Role role;
-
-    private String refreshToken;
-
 
     // Profile
-    private LocalDate birthDay;
-
-    private int age;
-
-    private String gender;
-
-    private String sexualPreference;
-
     private String biography;
-
+    private Float fame;
+    private String location;
     private String profilePictureUrl;
-
     @Builder.Default
     private List<String> pictureUrls = new ArrayList<>();
 
-    private int fame;
+    @Relationship(type = "INTERESTED_IN", direction = Relationship.Direction.OUTGOING)
+    private List<Interest> Interested_in = new ArrayList<>();
+    @Relationship(type = "HAS_GENDER", direction = Relationship.Direction.OUTGOING)
+    private Gender gender;
+    @Relationship(type = "HAS_PREFERENCE", direction = Relationship.Direction.OUTGOING)
+    private List<SexualPreference> sexualPreferences = new ArrayList<>();;
 
-    private String location;
 
-    private String lastOnline;
-
-    @JsonIgnore
-	@Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
+    @JsonIgnore @Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Viewed;
-	
-	@JsonIgnore
-	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
+	@JsonIgnore	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Liked;
-
-	@JsonIgnore
-	@Relationship(type = "Interested_in", direction = Relationship.Direction.OUTGOING)
-    private Set<Tag> Interested_in;
-
 }

@@ -3,15 +3,14 @@ package com.ft.matechai.user.node;
 import lombok.*;
 import org.springframework.data.neo4j.core.schema.*;
 
-@Node("Tag")
+@Node("Interest")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tag {
+public class Interest {
 
     @Id @GeneratedValue
     private Long id;
-
     private String name;
 }
