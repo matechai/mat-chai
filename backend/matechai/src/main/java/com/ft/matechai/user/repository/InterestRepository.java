@@ -29,4 +29,8 @@ public interface InterestRepository extends Neo4jRepository<Interest, Long> {
         RETURN i.name
     """)
     List<String> findByUsername(@Param("username") String username);
+
+
+    @Query("MATCH (i:Interest) RETURN i.name AS name")
+    List<String> findAllNames();
 }
