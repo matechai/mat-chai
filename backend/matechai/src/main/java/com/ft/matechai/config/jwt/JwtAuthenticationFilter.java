@@ -56,8 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (!jwtUtil.validateToken(token))
                     throw new AuthExceptions.UnauthorizedException("Unauthorized: invalid token");
 
-                User user = userRepository.findByUsername(jwtUtil.getUsernameFromToken(token))
-                        .orElseThrow(() -> new AuthExceptions.UnauthorizedException("User not found"));
+                User user = userRepository.findByUsernameOrThrow(jwtUtil.getUsernameFromToken(token));
 
                 Set<GrantedAuthority> authorities = new HashSet<>();
                 authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
