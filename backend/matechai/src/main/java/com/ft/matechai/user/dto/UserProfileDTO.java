@@ -1,7 +1,7 @@
 package com.ft.matechai.user.dto;
 
-import com.ft.matechai.user.node.Interest;
-import com.ft.matechai.user.node.SexualPreference;
+import com.ft.matechai.option.node.Interest;
+import com.ft.matechai.option.node.SexualPreference;
 import com.ft.matechai.user.node.User;
 import lombok.Builder;
 import lombok.Data;

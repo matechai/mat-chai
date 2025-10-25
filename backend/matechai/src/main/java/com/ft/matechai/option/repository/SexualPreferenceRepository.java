@@ -1,7 +1,7 @@
-package com.ft.matechai.user.repository;
+package com.ft.matechai.option.repository;
 
 import com.ft.matechai.exception.EntityNotFoundException;
-import com.ft.matechai.user.node.SexualPreference;
+import com.ft.matechai.option.node.SexualPreference;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,4 +29,8 @@ public interface SexualPreferenceRepository extends Neo4jRepository<SexualPrefer
         RETURN s.name
     """)
     List<String> findByUserUsername(@Param("username") String username);
+
+
+    @Query("MATCH (s:SexualPreference) RETURN s.name AS name")
+    List<String> findAllNames();
 }
