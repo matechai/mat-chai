@@ -33,19 +33,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // MongoDb
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
-
-    //websocket && STOMP
+    //websocket 
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
-
-
-    // Lettuce (Basic Redis Client)
-    // implementation 'io.lettuce.core:lettuce-core:6.0.0'
-
-    //websocket && STOMP
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 
     // JWT
