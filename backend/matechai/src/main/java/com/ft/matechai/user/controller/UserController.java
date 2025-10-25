@@ -1,5 +1,6 @@
 package com.ft.matechai.user.controller;
 
+import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.dto.UserProfileDTO;
 import com.ft.matechai.user.node.User;
@@ -11,6 +12,7 @@ import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,6 +60,12 @@ public class UserController {
 
 
     // ================= GraphQL =================
+
+    @QueryMapping
+    public User me(@AuthenticationPrincipal PrincipalDetails user) {
+
+        return user.getUser();
+    }
 
     @QueryMapping
     public User getUserByUsername(@Argument String username) {
