@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface ChatRepository extends MongoRepository<Chat, UUID> {
 
-    List<Chat> findChatByParticipant(String username);
+    List<Chat> findByParticipantsContaining(String username);
 
     @Query("{ 'participants': { $all: [?0, ?1] }, 'participants': { $size: 2 } }")
     Optional<Chat> findDirectChat(String user1, String user2);

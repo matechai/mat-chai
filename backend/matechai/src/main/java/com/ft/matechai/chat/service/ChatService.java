@@ -20,7 +20,7 @@ public class ChatService {
 	// GETTERS // GETTERS // GETTERS // GETTERS //
 
     public List<Chat> getChatsForUser(String username) {
-        return chatRepository.findChatByParticipant(username);
+        return chatRepository.findByParticipantsContaining(username);
     }
 
     public Optional<Chat> findDirectChat(String user1, String user2) {
