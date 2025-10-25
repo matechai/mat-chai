@@ -1,0 +1,124 @@
+{
+  "info": {
+    "name": "MateChai Chat Test",
+    "_postman_id": "a123b456-c789-0000-1111-222233334444",
+    "description": "WebSocket test for MateChai chat between users 'abc' and 'test'",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User abc",
+      "item": [
+        {
+          "name": "Connect to WebSocket (abc)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <ABC_TOKEN>",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "ws://localhost:8080/ws-chat",
+              "protocol": "ws",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["ws-chat"]
+            }
+          }
+        },
+        {
+          "name": "Subscribe to Queue (abc)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "ws://localhost:8080/ws-chat"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"SUBSCRIBE\",\n  \"id\": \"sub-abc\",\n  \"destination\": \"/user/queue/messages\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Send message to test",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "ws://localhost:8080/ws-chat"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"SEND\",\n  \"destination\": \"/app/chat.send/test\",\n  \"body\": \"Hey test, this is abc!\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User test",
+      "item": [
+        {
+          "name": "Connect to WebSocket (test)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <TEST_TOKEN>",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "ws://localhost:8080/ws-chat",
+              "protocol": "ws",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["ws-chat"]
+            }
+          }
+        },
+        {
+          "name": "Subscribe to Queue (test)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "ws://localhost:8080/ws-chat"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"SUBSCRIBE\",\n  \"id\": \"sub-test\",\n  \"destination\": \"/user/queue/messages\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Send message to abc",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "ws://localhost:8080/ws-chat"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"SEND\",\n  \"destination\": \"/app/chat.send/abc\",\n  \"body\": \"Hey abc, got your message!\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
