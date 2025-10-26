@@ -11,8 +11,8 @@ type User {
     sexualPreferences: [String]
     biography: String
     interests: [String]
-    profilePictureUrl: String
-    pictureUrls: [String]
+    profileImageUrl: String
+    imageUrls: [String]
     fame: Float
 }
 

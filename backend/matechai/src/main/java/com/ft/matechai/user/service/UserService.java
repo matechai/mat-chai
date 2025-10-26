@@ -145,7 +145,7 @@ public class UserService {
 
         try {
             boolean isFirst = true;
-            user.getPictureUrls().clear();
+            user.getImageUrls().clear();
 
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
@@ -158,10 +158,10 @@ public class UserService {
 
                     if (isFirst) {
 
-                        user.setProfilePictureUrl(uploadDir + filename);
+                        user.setProfileImageUrl(uploadDir + filename);
                         isFirst = false;
                     } else
-                        user.getPictureUrls().add(filePath.toString());
+                        user.getImageUrls().add(filePath.toString());
                 }
             }
         } catch (Exception e) {
