@@ -35,7 +35,9 @@ export class ProfileEdit implements OnInit {
 
 	// Computed values
 	canSubmit = computed(() =>
-		this.selectedGender() !== '' && !this.isLoading()
+		this.selectedGender() !== '' &&
+		this.selectedPhotos().length > 0 &&
+		!this.isLoading()
 	);
 
 	selectedSexualPrefsCount = computed(() =>
@@ -44,6 +46,10 @@ export class ProfileEdit implements OnInit {
 
 	selectedInterestsCount = computed(() =>
 		this.selectedInterests().length
+	);
+
+	selectedPhotosCount = computed(() =>
+		this.selectedPhotos().length
 	);
 
 	ngOnInit(): void {
@@ -141,7 +147,7 @@ export class ProfileEdit implements OnInit {
 	// Remove photo
 	removePhoto(index: number): void {
 		const currentPhotos = this.selectedPhotos();
-		this.selectedPhotos.set(currentPhotos.filter((_, i) => i !== index));
+		this.selectedPhotos.set(currentPhotos.filter((_: any, i: number) => i !== index));
 	}
 
 	isSexualPreferenceSelected(preference: string): boolean {
@@ -155,6 +161,11 @@ export class ProfileEdit implements OnInit {
 	submitProfile(): void {
 		if (!this.selectedGender()) {
 			this.errorMessage.set('Please select a gender');
+			return;
+		}
+
+		if (this.selectedPhotos().length === 0) {
+			this.errorMessage.set('Please select at least one photo');
 			return;
 		}
 
