@@ -23,11 +23,12 @@ public class ChatMessage
 	private String content;
 	private LocalDateTime timestamp;
 
-	public ChatMessage(String sender, String receiver, String content, LocalDateTime timestamp) {
-    this.sender = sender;
-    this.receiver = receiver;
-    this.content = content;
-    this.timestamp = timestamp;
-}
+	public ChatMessage(String sender, String receiver, String content, LocalDateTime timestamp) 
+	{
+		this.sender = sender;
+		this.receiver = receiver;
+		this.content = content;
+		this.timestamp = timestamp;
+	}
 
 }
