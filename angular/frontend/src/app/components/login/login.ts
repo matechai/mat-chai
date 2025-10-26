@@ -42,9 +42,9 @@ export class Login {
                   alert('✅ Login successful! Please complete your profile.');
                   this.router.navigate(['/profile/edit']);
                 } else {
-                  // If gender is set, redirect to matches page
+                  // If gender is set, redirect to matching page
                   alert('✅ Login successful!');
-                  this.router.navigate(['/matches']);
+                  this.router.navigate(['/matching']);
                 }
               },
               error: (err: any) => {
