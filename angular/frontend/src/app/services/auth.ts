@@ -16,7 +16,7 @@ export class Auth {
   }
 
   signin_request(credentials: { username: String, password: String }): Observable<any> {
-    return this.http.post<{ firstlogin: boolean }>(`${this.apiUrl}/auth/login`, credentials, {
+    return this.http.post(`${this.apiUrl}/auth/login`, credentials, {
       withCredentials: true
     });
   }
@@ -63,26 +63,14 @@ export class Auth {
     });
   }
 
-  // Get full user information using GraphQL me query
-  getUserInfo(): Observable<any> {
+  // Get basic auth info (lightweight for navigation decisions)
+  getUserAuthInfo(): Observable<any> {
     const query = {
       query: `query {
         me {
-          email
           username
-          firstName
-          lastName
-          dateOfBirth
-          age
           gender
-          sexualPreferences
-          biography
-          interests
-          profileImageUrl
-          imageUrls
-          fame
           enabled
-          firstLogin
         }
       }`
     };
@@ -93,6 +81,39 @@ export class Auth {
         'Content-Type': 'application/json'
       }
     });
+  }
+
+  // Get profile editable fields only (optimized for profile editing)
+  getUserEditableFields(): Observable<any> {
+    const query = {
+      query: `query {
+        me {
+          gender
+          sexualPreferences
+          biography
+          interests
+          profileImageUrl
+          imageUrls
+        }
+      }`
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/graphql`, query, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
+  // Legacy method for full profile (keep for backward compatibility)
+  getUserFullProfile(): Observable<any> {
+    return this.getUserEditableFields();
+  }
+
+  // Legacy method for backward compatibility (use getUserAuthInfo instead)
+  getUserInfo(): Observable<any> {
+    return this.getUserAuthInfo();
   }
 
   // Get username only using GraphQL
@@ -134,7 +155,7 @@ export class Auth {
   checkAuthState(): Observable<{ isAuthenticated: boolean, user?: any }> {
     // Use GraphQL to check authentication (HttpOnly cookies are sent automatically)
     return new Observable((observer: any) => {
-      this.getUserInfo().subscribe({
+      this.getUserAuthInfo().subscribe({
         next: (response: any) => {
           const user = response.data.me;
           observer.next({ isAuthenticated: true, user });
