@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { Auth } from '../../services/auth';
 import { ProfileUpdateRequest } from '../../interfaces/profile-interfaces';
@@ -16,6 +17,7 @@ export class ProfileEdit implements OnInit {
 	// Using Angular 20's new inject() function
 	private userService = inject(UserService);
 	private authService = inject(Auth);
+	private router = inject(Router);
 
 	// Using Signals for improved reactivity
 	genders = signal<string[]>([]);
@@ -192,8 +194,10 @@ export class ProfileEdit implements OnInit {
 		this.userService.updateProfile(this.currentUsername(), profileData, files).subscribe({
 			next: (response: any) => {
 				console.log('Profile updated successfully:', response);
-				this.successMessage.set('Profile updated successfully!');
 				this.isLoading.set(false);
+
+				// Redirect to matches page immediately after successful profile update
+				this.router.navigate(['/matches']);
 			},
 			error: (error: any) => {
 				console.error('Error updating profile:', error);
