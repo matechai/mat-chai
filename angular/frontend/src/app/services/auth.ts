@@ -11,14 +11,12 @@ export class Auth {
   private http = inject(HttpClient);
   private apiUrl = '/api';
 
-  signup_request(request: SignupInterface): Observable<any> 
-  {
+  signup_request(request: SignupInterface): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/signup`, request);
   }
 
-  signin_request(credentials: {username: String, password: String}): Observable<any>
-  {
-    return this.http.post<{firstlogin: boolean}>(`${this.apiUrl}/auth/login`, credentials, {
+  signin_request(credentials: { username: String, password: String }): Observable<any> {
+    return this.http.post<{ firstlogin: boolean }>(`${this.apiUrl}/auth/login`, credentials, {
       withCredentials: true
     });
   }
@@ -26,19 +24,19 @@ export class Auth {
   logout_request() // Check API URL
   {
     this.clearUserCache();
-    return this.http.post<null>(`${this.apiUrl}/auth/logout`, {}, 
-      { withCredentials: true});
+    return this.http.post<null>(`${this.apiUrl}/auth/logout`, {},
+      { withCredentials: true });
   }
 
- refresh_request() {
-  console.log("refresh call\n");
-  return this.http.post(
-    `${this.apiUrl}/auth/refresh`, {},
-    { withCredentials: true }
-  );
-}
+  refresh_request() {
+    console.log("refresh call\n");
+    return this.http.post(
+      `${this.apiUrl}/auth/refresh`, {},
+      { withCredentials: true }
+    );
+  }
 
-  // Get current user information from JWT token (simple username only)
+  // Get current user information using GraphQL (no more JWT headaches!)
   getCurrentUser(): Observable<{ username: string }> {
     // First check session storage cache
     const cachedUsername = sessionStorage.getItem('username');
@@ -50,20 +48,18 @@ export class Auth {
       });
     }
 
-    // Extract username from JWT token
-    const username = this.getUsernameFromJWT();
-    if (username) {
-      // Cache the username in session storage
-      sessionStorage.setItem('username', username);
-      return new Observable((observer: any) => {
-        observer.next({ username });
-        observer.complete();
-      });
-    }
-
-    // If no JWT or invalid JWT, return error
+    // Use GraphQL to get username
     return new Observable((observer: any) => {
-      observer.error(new Error('No valid JWT token found'));
+      console.log('Fetching username via GraphQL...');
+      this.getUsernameOnly().subscribe({
+        next: (username: string) => {
+          observer.next({ username });
+          observer.complete();
+        },
+        error: (error: any) => {
+          observer.error(error);
+        }
+      });
     });
   }
 
@@ -99,6 +95,41 @@ export class Auth {
     });
   }
 
+  // Get username only using GraphQL
+  getUsernameOnly(): Observable<string> {
+    const query = {
+      query: `query {
+        me {
+          username
+        }
+      }`
+    };
+
+    return new Observable((observer: any) => {
+      this.http.post<any>(`${this.apiUrl}/graphql`, query, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).subscribe({
+        next: (response: any) => {
+          const username = response.data?.me?.username;
+          if (username) {
+            // Cache the username
+            sessionStorage.setItem('username', username);
+            observer.next(username);
+            observer.complete();
+          } else {
+            observer.error(new Error('Username not found in response'));
+          }
+        },
+        error: (error: any) => {
+          observer.error(error);
+        }
+      });
+    });
+  }
+
   // Check authentication status and get user state
   checkAuthState(): Observable<{ isAuthenticated: boolean, user?: any }> {
     // Check if JWT token exists
@@ -127,23 +158,6 @@ export class Auth {
     });
   }
 
-  // Extract username from JWT token
-  private getUsernameFromJWT(): string | null {
-    try {
-      // Get JWT token from cookies
-      const token = this.getJWTFromCookie();
-      if (!token) {
-        return null;
-      }
-
-      // Decode JWT payload (without verification - only for client-side reading)
-      const payload = this.decodeJWTPayload(token);
-      return payload?.sub || null; // 'sub' contains the username
-    } catch (error) {
-      console.error('Error decoding JWT:', error);
-      return null;
-    }
-  }
 
   // Get JWT token from cookies
   private getJWTFromCookie(): string | null {
@@ -151,9 +165,13 @@ export class Auth {
     for (let cookie of cookies) {
       const [name, value] = cookie.trim().split('=');
       if (name === 'accessToken') { // Assuming your JWT cookie name is 'accessToken'
+        console.log('✅ Cookie Debug: Found accessToken!');
         return value;
       }
     }
+
+    console.log('❌ Cookie Debug: accessToken not found. Available cookie names:',
+      cookies.map(c => `"${c.trim().split('=')[0]}"`));
     return null;
   }
 
@@ -177,12 +195,4 @@ export class Auth {
   getCachedUsername(): string | null {
     return sessionStorage.getItem('username');
   }
-
-//testing API
-test_protected_request() {
-  return this.http.get('http://localhost:8080/api/protected/test', {
-    withCredentials: true
-  });
-}
-
 }

@@ -55,16 +55,18 @@ export class ProfileEdit implements OnInit {
 		// First check cached username (synchronously for speed)
 		const cachedUsername = this.authService.getCachedUsername();
 		if (cachedUsername) {
+			console.log('✅ Using cached username:', cachedUsername);
 			this.currentUsername.set(cachedUsername);
 		}
 
-		// Check latest info via GraphQL (asynchronously)
+		// Use GraphQL-based getCurrentUser (no more JWT headaches!)
 		this.authService.getCurrentUser().subscribe({
 			next: (user: any) => {
+				console.log('✅ GraphQL username loaded:', user.username);
 				this.currentUsername.set(user.username);
 			},
 			error: (error: any) => {
-				console.error('Error loading current user:', error);
+				console.error('❌ Error loading current user from GraphQL:', error);
 				// Show error only if no cached value and API also fails
 				if (!cachedUsername) {
 					this.errorMessage.set('Failed to load user information');
