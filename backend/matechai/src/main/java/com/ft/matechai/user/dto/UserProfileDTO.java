@@ -16,8 +16,8 @@ public class UserProfileDTO {
 
     private String gender;
     private String biography;
-    private String profilePictureUrl;
-    private List<String> pictureUrls;
+    private String profileImageUrl;
+    private List<String> imageUrls;
 
     @Builder.Default
     private List<String> sexualPreferences = new ArrayList<>();
@@ -38,8 +38,8 @@ public class UserProfileDTO {
                         user.getInterested_in().stream()
                                 .map(Interest::getName)
                                 .collect(Collectors.toList()))
-                .profilePictureUrl(user.getProfilePictureUrl())
-                .pictureUrls(user.getPictureUrls())
+                .profileImageUrl(user.getProfileImageUrl())
+                .imageUrls(user.getImageUrls())
                 .build();
     }
 }
