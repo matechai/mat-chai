@@ -57,6 +57,7 @@ export class ProfileEdit implements OnInit {
 	ngOnInit(): void {
 		this.loadCurrentUser();
 		this.loadOptions();
+		this.loadExistingProfile();
 	}
 
 	loadCurrentUser(): void {
@@ -98,6 +99,79 @@ export class ProfileEdit implements OnInit {
 			next: (data: string[]) => this.interests.set(data),
 			error: (error: any) => console.error('Error loading interests:', error)
 		});
+	}
+
+	loadExistingProfile(): void {
+		// Load existing profile data from GraphQL
+		this.authService.getUserInfo().subscribe({
+			next: (response: any) => {
+				const user = response.data?.me;
+				if (user) {
+					console.log('Loading existing profile data:', user);
+
+					// Set existing values as defaults
+					if (user.gender) {
+						this.selectedGender.set(user.gender);
+					}
+
+					if (user.biography) {
+						this.biography.set(user.biography);
+					}
+
+					if (user.sexualPreferences && Array.isArray(user.sexualPreferences)) {
+						this.selectedSexualPrefs.set(user.sexualPreferences);
+					}
+
+					if (user.interests && Array.isArray(user.interests)) {
+						this.selectedInterests.set(user.interests);
+					}
+
+					// Load existing profile images
+					this.loadExistingImages(user.profileImageUrl, user.imageUrls);
+				}
+			},
+			error: (error: any) => {
+				console.error('Error loading existing profile:', error);
+				// Don't show error to user - just use empty defaults
+			}
+		});
+	}
+
+	loadExistingImages(profileImageUrl: string | null, imageUrls: string[]): void {
+		const existingPhotos: Array<{ file: File, preview: string }> = [];
+
+		// First, add profileImageUrl as the main photo (index 0)
+		if (profileImageUrl) {
+			// Convert backend path to nginx static file path
+			// Backend: /app/uploads/profiles/xxx.jpg → nginx: /uploads/profiles/xxx.jpg
+			const mainImagePreview = profileImageUrl.replace('/app/uploads', '/uploads');
+
+			// Create a fake File object for display purposes
+			const fakeFile = new File([''], 'main-profile.jpg', { type: 'image/jpeg' });
+			existingPhotos.push({
+				file: fakeFile,
+				preview: mainImagePreview
+			});
+		}
+
+		// Then, add additional images from imageUrls array
+		if (imageUrls && Array.isArray(imageUrls)) {
+			imageUrls.forEach((imageUrl: string, index: number) => {
+				// Convert backend path to nginx static file path
+				const imagePreview = imageUrl.replace('/app/uploads', '/uploads');
+				const fakeFile = new File([''], `additional-${index}.jpg`, { type: 'image/jpeg' });
+				existingPhotos.push({
+					file: fakeFile,
+					preview: imagePreview
+				});
+			});
+		}
+
+		// Set the loaded images to selectedPhotos signal
+		if (existingPhotos.length > 0) {
+			console.log('Loading existing images:', existingPhotos);
+			this.selectedPhotos.set(existingPhotos);
+		}
 	}
 
 	selectGender(gender: string): void {
