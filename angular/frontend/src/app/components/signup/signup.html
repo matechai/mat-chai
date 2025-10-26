@@ -75,8 +75,13 @@
     }
 
     <!-- Submit Button -->
-    <button type="submit" class="submit-button" [disabled]="!isPasswordValid()" [class.disabled]="!isPasswordValid()">
-      Create Account
+    <button type="submit" class="submit-button" [disabled]="!isPasswordValid() || isLoading"
+      [class.disabled]="!isPasswordValid() || isLoading">
+      @if (isLoading) {
+      <span>Creating Account...</span>
+      } @else {
+      <span>Create Account</span>
+      }
     </button>
   </form>
 
