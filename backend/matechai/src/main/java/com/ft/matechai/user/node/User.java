@@ -51,9 +51,9 @@ public class User {
     private String biography;
     private Float fame;
     private String location;
-    private String profilePictureUrl;
+    private String profileImageUrl;
     @Builder.Default
-    private List<String> pictureUrls = new ArrayList<>();
+    private List<String> imageUrls = new ArrayList<>();
 
     @Relationship(type = "INTERESTED_IN", direction = Relationship.Direction.OUTGOING)
     private List<Interest> Interested_in = new ArrayList<>();
