@@ -175,17 +175,6 @@ export class Auth {
     return null;
   }
 
-  // Decode JWT payload without verification (client-side only)
-  private decodeJWTPayload(token: string): any {
-    try {
-      const base64Payload = token.split('.')[1];
-      const payload = atob(base64Payload);
-      return JSON.parse(payload);
-    } catch (error) {
-      throw new Error('Invalid JWT format');
-    }
-  }
-
   // Clear user cache
   clearUserCache(): void {
     sessionStorage.removeItem('username');
