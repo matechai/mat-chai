@@ -38,7 +38,7 @@ export class Auth {
   );
 }
 
-  // Get current user information from JWT token
+  // Get current user information from JWT token (simple username only)
   getCurrentUser(): Observable<{ username: string }> {
     // First check session storage cache
     const cachedUsername = sessionStorage.getItem('username');
@@ -64,6 +64,66 @@ export class Auth {
     // If no JWT or invalid JWT, return error
     return new Observable((observer: any) => {
       observer.error(new Error('No valid JWT token found'));
+    });
+  }
+
+  // Get full user information using GraphQL me query
+  getUserInfo(): Observable<any> {
+    const query = {
+      query: `query {
+        me {
+          email
+          username
+          firstName
+          lastName
+          dateOfBirth
+          age
+          gender
+          sexualPreferences
+          biography
+          interests
+          profileImageUrl
+          imageUrls
+          fame
+          enabled
+          firstLogin
+        }
+      }`
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/graphql`, query, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
+  // Check authentication status and get user state
+  checkAuthState(): Observable<{ isAuthenticated: boolean, user?: any }> {
+    // Check if JWT token exists
+    const token = this.getJWTFromCookie();
+    if (!token) {
+      return new Observable(observer => {
+        observer.next({ isAuthenticated: false });
+        observer.complete();
+      });
+    }
+
+    // Get user info from GraphQL
+    return new Observable(observer => {
+      this.getUserInfo().subscribe({
+        next: (response: any) => {
+          const user = response.data.me;
+          observer.next({ isAuthenticated: true, user });
+          observer.complete();
+        },
+        error: (error: any) => {
+          console.error('Error checking auth state:', error);
+          observer.next({ isAuthenticated: false });
+          observer.complete();
+        }
+      });
     });
   }
 
