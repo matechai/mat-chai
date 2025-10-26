@@ -20,6 +20,10 @@ WORKDIR /app
 # Copy the built jar from the build stage
 COPY --from=builder /app/matechai/build/libs/*.jar app.jar
 
+# Create uploads directory with proper permissions
+RUN mkdir -p /app/uploads/profiles && \
+    chmod -R 777 /app/uploads
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
 
