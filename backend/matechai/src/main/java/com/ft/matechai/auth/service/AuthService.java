@@ -8,7 +8,6 @@ import com.ft.matechai.user.repository.UserRepository;
 import com.ft.matechai.config.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

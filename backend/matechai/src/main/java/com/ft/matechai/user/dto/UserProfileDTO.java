@@ -16,13 +16,14 @@ public class UserProfileDTO {
 
     private String gender;
     private String biography;
+    private String profileImageUrl;
+    private List<String> imageUrls;
 
     @Builder.Default
     private List<String> sexualPreferences = new ArrayList<>();
     @Builder.Default
     private List<String> interests = new ArrayList<>();
 
-    // todo 5 images, one should be profile picture
 
     public static UserProfileDTO from(User user) {
 
@@ -37,7 +38,8 @@ public class UserProfileDTO {
                         user.getInterested_in().stream()
                                 .map(Interest::getName)
                                 .collect(Collectors.toList()))
-                // todo image
+                .profileImageUrl(user.getProfileImageUrl())
+                .imageUrls(user.getImageUrls())
                 .build();
     }
 }
