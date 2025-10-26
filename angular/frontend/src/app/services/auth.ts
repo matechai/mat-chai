@@ -132,17 +132,8 @@ export class Auth {
 
   // Check authentication status and get user state
   checkAuthState(): Observable<{ isAuthenticated: boolean, user?: any }> {
-    // Check if JWT token exists
-    const token = this.getJWTFromCookie();
-    if (!token) {
-      return new Observable(observer => {
-        observer.next({ isAuthenticated: false });
-        observer.complete();
-      });
-    }
-
-    // Get user info from GraphQL
-    return new Observable(observer => {
+    // Use GraphQL to check authentication (HttpOnly cookies are sent automatically)
+    return new Observable((observer: any) => {
       this.getUserInfo().subscribe({
         next: (response: any) => {
           const user = response.data.me;
