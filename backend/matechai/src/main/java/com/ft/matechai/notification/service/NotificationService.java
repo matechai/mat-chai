@@ -39,6 +39,6 @@ public class NotificationService {
 
 	public List<Notification> getUserNotifications(String receiver)
 	{
-		return notificationRepository.findByReceiverOrderByCreatedAtDesc(receiver);
+		return notificationRepository.findByReceiver(receiver);
 	}
 }

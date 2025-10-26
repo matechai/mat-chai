@@ -24,14 +24,5 @@ public class Notification
 	private boolean read;
 	private LocalDateTime createdAt;
 
-	// public Notification(String sender, String receiver, String type, String message, boolean read, LocalDateTime createdAt)
-	// {
-	// 	this.sender = sender;
-	// 	this.receiver = receiver;
-	// 	this.type = type;
-	// 	this.message = message;
-	// 	this.read = read;
-	// 	this.createdAt = createdAt;
-	// }
 }
 
