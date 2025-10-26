@@ -102,8 +102,8 @@ export class ProfileEdit implements OnInit {
 	}
 
 	loadExistingProfile(): void {
-		// Load existing profile data from GraphQL
-		this.authService.getUserInfo().subscribe({
+		// Load existing profile data from GraphQL (only editable fields)
+		this.authService.getUserEditableFields().subscribe({
 			next: (response: any) => {
 				const user = response.data?.me;
 				if (user) {
