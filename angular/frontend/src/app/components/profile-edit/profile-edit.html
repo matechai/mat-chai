@@ -16,7 +16,8 @@
 
 			<!-- Profile Photos Section -->
 			<div class="form-section">
-				<label>Profile Photos (Max 5)</label>
+				<label>Profile Photos (Max 5) <span class="required">*</span></label>
+				<p class="required-note">📸 At least one photo is required</p>
 				<div class="photo-upload-container">
 					<div class="photo-grid">
 						<div *ngFor="let photo of selectedPhotos(); let i = index" class="photo-item">
@@ -34,6 +35,10 @@
 								<span class="add-text">Add Photo</span>
 							</button>
 						</div>
+					</div>
+					<!-- Photo validation warning -->
+					<div *ngIf="selectedPhotos().length === 0" class="validation-warning">
+						⚠️ Please select at least one photo to continue
 					</div>
 					<small class="photo-info">The first photo will be set as your main profile picture. ({{
 						selectedPhotos().length }}/5)</small>
