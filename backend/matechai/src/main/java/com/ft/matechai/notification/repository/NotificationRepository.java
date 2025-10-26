@@ -8,9 +8,10 @@ import com.ft.matechai.notification.model.Notification;
 
 public interface NotificationRepository extends MongoRepository<Notification, String>
 {
-	// Fetch notifications for a specific user, sorted by newest first
-    List<Notification> findByReceiverOrderByCreatedAtDesc(String receiver);
+	// // Fetch notifications for a specific user, sorted by newest first
+    // List<Notification> findByReceiverOrderByCreatedAtDesc(String receiver);
 
-    // Optional: fetch only unread notifications
-    List<Notification> findByReceiverAndReadFalseOrderByCreatedAtDesc(String receiver);
+    // // Optional: fetch only unread notifications
+    // List<Notification> findByReceiverAndReadFalseOrderByCreatedAtDesc(String receiver);
+    List<Notification> findByReceiver(String receiver);
 }
