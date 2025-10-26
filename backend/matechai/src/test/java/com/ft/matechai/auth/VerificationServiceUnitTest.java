@@ -45,11 +45,7 @@ class VerificationServiceUnitTest {
         // Token 저장 확인
         ArgumentCaptor<VerificationToken> tokenCaptor = ArgumentCaptor.forClass(VerificationToken.class);
         verify(tokenRepository).save(tokenCaptor.capture());
-<<<<<<< HEAD
         assertEquals(user.getUsername(), tokenCaptor.getValue().getUsername());
-=======
-        assertEquals(user.getUsername(), tokenCaptor.getValue().getUserId());
->>>>>>> d39a80c (changed User Node ID from Long to String to use the Username as ID)
         assertNotNull(tokenCaptor.getValue().getToken());
 
         // 이메일 발송 확인
@@ -61,11 +57,7 @@ class VerificationServiceUnitTest {
         String tokenStr = UUID.randomUUID().toString();
         VerificationToken vt = new VerificationToken();
         vt.setToken(tokenStr);
-<<<<<<< HEAD
         vt.setUsername("test");
-=======
-        vt.setUserId("test");
->>>>>>> d39a80c (changed User Node ID from Long to String to use the Username as ID)
 
         User user = new User();
         user.setUsername("test");
