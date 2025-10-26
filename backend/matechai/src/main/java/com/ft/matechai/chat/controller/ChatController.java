@@ -1,7 +1,5 @@
 package com.ft.matechai.chat.controller;
 
-
-
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
