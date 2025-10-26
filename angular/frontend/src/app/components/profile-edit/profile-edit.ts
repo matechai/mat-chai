@@ -270,8 +270,8 @@ export class ProfileEdit implements OnInit {
 				console.log('Profile updated successfully:', response);
 				this.isLoading.set(false);
 
-				// Redirect to matches page immediately after successful profile update
-				this.router.navigate(['/matches']);
+				// Redirect to matching page immediately after successful profile update
+				this.router.navigate(['/matching']);
 			},
 			error: (error: any) => {
 				console.error('Error updating profile:', error);
