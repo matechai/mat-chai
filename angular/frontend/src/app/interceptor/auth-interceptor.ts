@@ -21,7 +21,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
       console.error('[Interceptor] Caught error:', err);
 
       // exclude auth endpoints from refresh logic
-      const isAuthEndpoint = req.url.includes('/signin') ||
+      const isAuthEndpoint = req.url.includes('/login') ||
         req.url.includes('/signup') ||
         req.url.includes('/refresh') ||
         req.url.includes('/logout');

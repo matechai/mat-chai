@@ -1,11 +1,12 @@
-import { Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
@@ -16,16 +17,14 @@ export class Login {
   private router = inject(Router);
   isLoading = false;
 
-  constructor(private form: FormBuilder)
-  {
+  constructor(private form: FormBuilder) {
     this.loginForm = this.form.group({
       userName: ['', Validators.required],
       password: ['', Validators.required]
     });
   }
 
-  onSubmit()
-  {
+  onSubmit() {
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.authService.signin_request({ username: this.loginForm.value.userName, password: this.loginForm.value.password })
@@ -41,7 +40,7 @@ export class Login {
                 if (userInfo.data?.me?.gender === null || userInfo.data?.me?.gender === undefined) {
                   // If gender is null, redirect to profile edit page
                   alert('✅ Login successful! Please complete your profile.');
-                  this.router.navigate(['/profile-edit']);
+                  this.router.navigate(['/profile/edit']);
                 } else {
                   // If gender is set, redirect to matches page
                   alert('✅ Login successful!');
