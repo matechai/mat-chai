@@ -17,5 +17,9 @@ public class VerificationToken {
     @Id
     private String token;
 
+<<<<<<< HEAD
     private String username;
+=======
+    private String userId;
+>>>>>>> d39a80c (changed User Node ID from Long to String to use the Username as ID)
 }

@@ -11,7 +11,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+<<<<<<< HEAD
 import java.time.LocalDate;
+=======
+>>>>>>> d39a80c (changed User Node ID from Long to String to use the Username as ID)
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -48,8 +51,11 @@ public class User {
 
 
     // Profile
+<<<<<<< HEAD
     private LocalDate birthDay;
 
+=======
+>>>>>>> d39a80c (changed User Node ID from Long to String to use the Username as ID)
     private int age;
 
     private String gender;
