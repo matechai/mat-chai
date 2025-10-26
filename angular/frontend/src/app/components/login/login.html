@@ -51,13 +51,20 @@
 
     <!-- Submit Button -->
     <button type="submit" 
-            [disabled]="loginForm.invalid"
-            style="background:#007bff; color:white; border:none; padding:1rem; border-radius:8px; cursor:pointer; font-size:16px; font-weight:600; transition:background-color 0.2s;"
+            [disabled]="loginForm.invalid || isLoading"
+            style="background:#007bff; color:white; border:none; padding:1rem; border-radius:8px; cursor:pointer; font-size:16px; font-weight:600; transition:background-color 0.2s; position:relative;"
             onmouseover="this.style.backgroundColor='#0056b3'"
             onmouseout="this.style.backgroundColor='#007bff'"
-            [style.opacity]="loginForm.invalid ? '0.6' : '1'"
-            [style.cursor]="loginForm.invalid ? 'not-allowed' : 'pointer'">
-      Sign In
+            [style.opacity]="(loginForm.invalid || isLoading) ? '0.6' : '1'"
+            [style.cursor]="(loginForm.invalid || isLoading) ? 'not-allowed' : 'pointer'">
+      @if (isLoading) {
+        <span class="loading-content">
+          <span class="loading-spinner"></span>
+          Signing In...
+        </span>
+      } @else {
+        Sign In
+      }
     </button>
   </form>
 
