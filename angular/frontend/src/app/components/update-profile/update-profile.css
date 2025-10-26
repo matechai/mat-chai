@@ -1,0 +1,401 @@
+.update-profile-container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 20px;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profile-form {
+	background: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	padding: 32px;
+}
+
+h2 {
+	text-align: center;
+	color: #2c3e50;
+	margin-bottom: 32px;
+	font-size: 28px;
+	font-weight: 600;
+}
+
+/* Message Styles */
+.message-container {
+	margin-bottom: 20px;
+}
+
+.success-message {
+	background-color: #d4edda;
+	color: #155724;
+	padding: 12px 16px;
+	border: 1px solid #c3e6cb;
+	border-radius: 8px;
+	margin-bottom: 16px;
+}
+
+.error-message {
+	background-color: #f8d7da;
+	color: #721c24;
+	padding: 12px 16px;
+	border: 1px solid #f5c6cb;
+	border-radius: 8px;
+	margin-bottom: 16px;
+}
+
+/* Form Section Styles */
+.form-section {
+	margin-bottom: 32px;
+}
+
+/* Photo Upload Styles */
+.photo-upload-container {
+	margin-bottom: 16px;
+}
+
+.photo-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: 16px;
+	margin-bottom: 12px;
+}
+
+.photo-item {
+	position: relative;
+	width: 120px;
+	height: 120px;
+	border-radius: 12px;
+	overflow: hidden;
+	border: 2px solid #e1e8ed;
+}
+
+.photo-preview {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.remove-photo-btn {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	background: rgba(255, 0, 0, 0.8);
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 24px;
+	height: 24px;
+	font-size: 16px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.main-photo-badge {
+	position: absolute;
+	bottom: 4px;
+	left: 4px;
+	background: rgba(52, 152, 219, 0.9);
+	color: white;
+	padding: 2px 6px;
+	font-size: 10px;
+	border-radius: 4px;
+	font-weight: 600;
+}
+
+.add-photo-item {
+	width: 120px;
+	height: 120px;
+}
+
+.add-photo-btn {
+	width: 100%;
+	height: 100%;
+	border: 2px dashed #bdc3c7;
+	background: transparent;
+	border-radius: 12px;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}
+
+.add-photo-btn:hover {
+	border-color: #3498db;
+	background: rgba(52, 152, 219, 0.05);
+}
+
+.plus-icon {
+	font-size: 24px;
+	color: #7f8c8d;
+	margin-bottom: 4px;
+}
+
+.add-text {
+	font-size: 12px;
+	color: #7f8c8d;
+}
+
+.photo-info {
+	color: #6c757d;
+	font-size: 12px;
+	font-style: italic;
+}
+
+label {
+	display: block;
+	font-size: 16px;
+	font-weight: 600;
+	color: #2c3e50;
+	margin-bottom: 12px;
+}
+
+/* Biography Input */
+.biography-input {
+	width: 100%;
+	padding: 12px 16px;
+	border: 2px solid #e1e8ed;
+	border-radius: 8px;
+	font-size: 14px;
+	font-family: inherit;
+	resize: vertical;
+	transition: border-color 0.2s ease;
+}
+
+.biography-input:focus {
+	outline: none;
+	border-color: #3498db;
+	box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.char-count {
+	color: #7f8c8d;
+	font-size: 12px;
+	text-align: right;
+	display: block;
+	margin-top: 4px;
+}
+
+/* Button Group Styles */
+.button-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 8px;
+}
+
+.option-button {
+	background: #f8f9fa;
+	border: 2px solid #e9ecef;
+	color: #495057;
+	padding: 10px 16px;
+	border-radius: 25px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+}
+
+.option-button:hover {
+	background: #e9ecef;
+	border-color: #adb5bd;
+	transform: translateY(-1px);
+}
+
+.option-button.selected {
+	background: #3498db;
+	border-color: #3498db;
+	color: white;
+	box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.option-button.selected:hover {
+	background: #2980b9;
+	border-color: #2980b9;
+}
+
+/* Selection Info */
+.selection-info {
+	color: #6c757d;
+	font-size: 12px;
+	font-style: italic;
+}
+
+/* Submit Section */
+.submit-section {
+	text-align: center;
+	margin-top: 40px;
+}
+
+.submit-button {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	border: none;
+	padding: 14px 32px;
+	font-size: 16px;
+	font-weight: 600;
+	border-radius: 30px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	min-width: 200px;
+}
+
+.submit-button:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.submit-button:disabled {
+	background: #95a5a6;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+.submit-button.loading {
+	background: #95a5a6;
+	cursor: wait;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.update-profile-container {
+		padding: 16px;
+	}
+
+	.profile-form {
+		padding: 24px;
+	}
+
+	h2 {
+		font-size: 24px;
+	}
+
+	.button-group {
+		gap: 8px;
+	}
+
+	.option-button {
+		padding: 8px 12px;
+		font-size: 13px;
+	}
+
+	.submit-button {
+		padding: 12px 24px;
+		font-size: 14px;
+		min-width: 160px;
+	}
+}
+
+@media (max-width: 480px) {
+	.button-group {
+		flex-direction: column;
+	}
+
+	.option-button {
+		text-align: center;
+	}
+
+	.photo-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+/* New UI Styles */
+.required {
+	color: #e74c3c;
+	font-weight: bold;
+}
+
+.validation-message {
+	color: #e74c3c;
+	font-size: 12px;
+	margin-top: 4px;
+}
+
+.limit-reached {
+	color: #e67e22;
+}
+
+.limit-text {
+	font-weight: 600;
+}
+
+.option-button.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	background: #ecf0f1;
+	border-color: #bdc3c7;
+	color: #7f8c8d;
+}
+
+.option-button.disabled:hover {
+	background: #ecf0f1;
+	border-color: #bdc3c7;
+	transform: none;
+}
+
+/* Form Summary */
+.form-summary {
+	background: #f8f9fa;
+	border: 1px solid #e9ecef;
+	border-radius: 8px;
+	padding: 20px;
+	margin-bottom: 24px;
+}
+
+.form-summary h3 {
+	color: #2c3e50;
+	font-size: 18px;
+	margin-bottom: 16px;
+	font-weight: 600;
+}
+
+.summary-item {
+	margin-bottom: 12px;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.summary-item strong {
+	color: #34495e;
+	margin-right: 8px;
+}
+
+/* Enhanced Button States */
+.option-button:focus {
+	outline: 2px solid #3498db;
+	outline-offset: 2px;
+}
+
+.submit-button:focus {
+	outline: 2px solid #667eea;
+	outline-offset: 2px;
+}
+
+/* Loading Animation */
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.submit-button.loading::after {
+	content: '';
+	width: 16px;
+	height: 16px;
+	margin-left: 8px;
+	border: 2px solid transparent;
+	border-top: 2px solid currentColor;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	display: inline-block;
+}
