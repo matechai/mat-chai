@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -48,12 +49,13 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{username}/profile")
+    @PostMapping("/{username}/profile")
     @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
     public ResponseEntity<?> updateProfile(@PathVariable String username,
-                                           @RequestBody UserProfileDTO userProfileDTO) {
+                                           @RequestPart("data") UserProfileDTO userProfileDTO,
+                                           @RequestPart("files") List<MultipartFile> files) {
 
-        UserProfileDTO updatedProfile = userService.updateProfile(username, userProfileDTO);
+        UserProfileDTO updatedProfile = userService.updateProfile(username, userProfileDTO, files);
 
         return ResponseEntity.ok(updatedProfile);
     }

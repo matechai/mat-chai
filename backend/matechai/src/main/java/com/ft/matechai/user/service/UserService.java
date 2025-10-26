@@ -11,14 +11,27 @@ import com.ft.matechai.option.repository.SexualPreferenceRepository;
 import com.ft.matechai.option.repository.InterestRepository;
 import com.ft.matechai.user.repository.UserRepository;
 
+import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 public class UserService {
+
+    @Value("${file.upload.path}")
+    private String uploadDirPath;
+
 	private final UserRepository userRepository;
     private final GenderRepository genderRepository;
     private final SexualPreferenceRepository sexualPreferenceRepository;
@@ -86,10 +99,21 @@ public class UserService {
 
 
     @Transactional
-    public UserProfileDTO updateProfile(String username, UserProfileDTO dto) {
+    public UserProfileDTO updateProfile(String username, UserProfileDTO dto, List<MultipartFile> files) {
 
         User user = userRepository.findByUsernameOrThrow(username);
 
+        updateProfileWithoutImages(user, dto);
+        saveImages(user, files);
+
+        userRepository.save(user);
+
+        return UserProfileDTO.from(user);
+    }
+
+    private void updateProfileWithoutImages(User user, UserProfileDTO dto) {
+
+        String username = user.getUsername();
         user.setBiography(dto.getBiography());
 
         // Gender (1:1)
@@ -113,11 +137,36 @@ public class UserService {
         user.setInterested_in(interests);
         userRepository.removeStaleInterests(username, dto.getInterests());
         interests.forEach(interest -> userRepository.addInterest(username, interest.getName()));
+    }
 
-        // todo image field
+    private void saveImages(User user, List<MultipartFile> files) {
 
-        userRepository.save(user);
+        String uploadDir = uploadDirPath;
 
-        return UserProfileDTO.from(user);
+        try {
+            boolean isFirst = true;
+            user.getPictureUrls().clear();
+
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+
+                    String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                    Path filePath = Paths.get(uploadDir + filename);
+
+                    Files.createDirectories(filePath.getParent());
+                    file.transferTo(filePath.toFile());
+
+                    if (isFirst) {
+
+                        user.setProfilePictureUrl(uploadDir + filename);
+                        isFirst = false;
+                    } else
+                        user.getPictureUrls().add(filePath.toString());
+                }
+            }
+        } catch (Exception e) {
+
+            log.error("[" + e + "] : " + e.getMessage());
+        }
     }
 }
