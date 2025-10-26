@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate {
 				}
 
 				// All checks passed, redirect to matches
-				this.router.navigate(['/matches']);
+				this.router.navigate(['/matching']);
 				return true;
 			}),
 			catchError(() => {
