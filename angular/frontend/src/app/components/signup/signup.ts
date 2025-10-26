@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SignupInterface } from '../../interfaces/signup-interface';
@@ -6,7 +7,7 @@ import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-signup',
-  imports: [ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './signup.html',
   styleUrl: './signup.scss'
 })
@@ -106,5 +107,29 @@ export class Signup {
       alert('❌ Please fix the form errors.');
     }
 
+  }
+
+  // 템플릿에서 사용하는 메소드들 추가
+  hasValidationErrors(): boolean {
+    return this.passwordContainsPersonalInfo() || this.passwordsMismatch();
+  }
+
+  passwordContainsPersonalInfo(): boolean {
+    const password = this.signupForm.get('password')?.value?.toLowerCase() || '';
+    const firstName = this.signupForm.get('firstName')?.value?.toLowerCase() || '';
+    const lastName = this.signupForm.get('lastName')?.value?.toLowerCase() || '';
+    const userName = this.signupForm.get('userName')?.value?.toLowerCase() || '';
+    const email = this.signupForm.get('email')?.value?.toLowerCase() || '';
+
+    return password.includes(firstName) ||
+      password.includes(lastName) ||
+      password.includes(userName) ||
+      password.includes(email);
+  }
+
+  passwordsMismatch(): boolean {
+    const password = this.signupForm.get('password')?.value;
+    const confirmPassword = this.signupForm.get('confirmPassword')?.value;
+    return password !== confirmPassword && !!confirmPassword;
   }
 }
