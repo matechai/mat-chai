@@ -1,0 +1,135 @@
+<div class="update-profile-container">
+	<div class="profile-form">
+		<h2>Update Profile</h2>
+
+		<!-- Success/Error Messages -->
+		<div class="message-container">
+			<div *ngIf="successMessage()" class="success-message">
+				{{ successMessage() }}
+			</div>
+			<div *ngIf="errorMessage()" class="error-message">
+				{{ errorMessage() }}
+			</div>
+		</div>
+
+		<form (ngSubmit)="submitProfile()" #profileForm="ngForm">
+
+			<!-- Profile Photos Section -->
+			<div class="form-section">
+				<label>Profile Photos (Max 5)</label>
+				<div class="photo-upload-container">
+					<div class="photo-grid">
+						<div *ngFor="let photo of selectedPhotos(); let i = index" class="photo-item">
+							<img [src]="photo.preview" alt="Profile photo" class="photo-preview">
+							<button type="button" class="remove-photo-btn" (click)="removePhoto(i)">×</button>
+							<div *ngIf="i === 0" class="main-photo-badge">Main</div>
+						</div>
+
+						<!-- Add Photo Button -->
+						<div *ngIf="selectedPhotos().length < 5" class="add-photo-item">
+							<input type="file" #photoInput accept="image/*" (change)="onPhotoSelected($event)"
+								style="display: none;">
+							<button type="button" class="add-photo-btn" (click)="photoInput.click()">
+								<span class="plus-icon">+</span>
+								<span class="add-text">Add Photo</span>
+							</button>
+						</div>
+					</div>
+					<small class="photo-info">The first photo will be set as your main profile picture. ({{
+						selectedPhotos().length }}/5)</small>
+				</div>
+			</div>
+
+			<!-- Biography Section -->
+			<div class="form-section">
+				<label for="biography">Biography</label>
+				<textarea id="biography" name="biography" [ngModel]="biography()"
+					(ngModelChange)="biography.set($event)" placeholder="Tell us about yourself..." rows="4"
+					class="biography-input" maxlength="500">
+        </textarea>
+				<small class="char-count">{{ biography().length }}/500</small>
+			</div>
+
+			<!-- Gender Section -->
+			<div class="form-section">
+				<label>Gender <span class="required">*</span></label>
+				<div class="button-group">
+					<button *ngFor="let gender of genders()" type="button" class="option-button"
+						[class.selected]="selectedGender() === gender" (click)="selectGender(gender)">
+						{{ gender }}
+					</button>
+				</div>
+				<small *ngIf="!selectedGender()" class="validation-message">Please select a gender.</small>
+			</div>
+
+			<!-- Sexual Preferences Section -->
+			<div class="form-section">
+				<label>Sexual Preferences (Max 5 selections)</label>
+				<div class="button-group">
+					<button *ngFor="let preference of sexualPrefs()" type="button" class="option-button"
+						[class.selected]="isSexualPreferenceSelected(preference)"
+						[class.disabled]="!isSexualPreferenceSelected(preference) && selectedSexualPrefsCount() >= 5"
+						(click)="toggleSexualPreference(preference)"
+						[disabled]="!isSexualPreferenceSelected(preference) && selectedSexualPrefsCount() >= 5">
+						{{ preference }}
+					</button>
+				</div>
+				<small class="selection-info" [class.limit-reached]="selectedSexualPrefsCount() >= 5">
+					Selected: {{ selectedSexualPrefsCount() }}/5
+					<span *ngIf="selectedSexualPrefsCount() >= 5" class="limit-text">(Maximum reached)</span>
+				</small>
+			</div>
+
+			<!-- Interests Section -->
+			<div class="form-section">
+				<label>Interests (Max 5 selections)</label>
+				<div class="button-group">
+					<button *ngFor="let interest of interests()" type="button" class="option-button"
+						[class.selected]="isInterestSelected(interest)"
+						[class.disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 5"
+						(click)="toggleInterest(interest)"
+						[disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 5">
+						{{ interest }}
+					</button>
+				</div>
+				<small class="selection-info" [class.limit-reached]="selectedInterestsCount() >= 5">
+					Selected interests: {{ selectedInterestsCount() }}/5
+					<span *ngIf="selectedInterestsCount() >= 5" class="limit-text">(Maximum reached)</span>
+				</small>
+			</div>
+
+			<!-- Form Summary -->
+			<div class="form-summary">
+				<h3>Selection Summary</h3>
+				<div class="summary-item">
+					<strong>Gender:</strong> {{ selectedGender() || 'Not selected' }}
+				</div>
+				<div class="summary-item">
+					<strong>Sexual Preferences:</strong>
+					<span *ngIf="selectedSexualPrefs().length === 0">Not selected</span>
+					<span *ngFor="let pref of selectedSexualPrefs(); let last = last">
+						{{ pref }}<span *ngIf="!last">, </span>
+					</span>
+				</div>
+				<div class="summary-item">
+					<strong>Interests:</strong>
+					<span *ngIf="selectedInterests().length === 0">Not selected</span>
+					<span *ngFor="let interest of selectedInterests(); let last = last">
+						{{ interest }}<span *ngIf="!last">, </span>
+					</span>
+				</div>
+				<div class="summary-item">
+					<strong>Photos:</strong> {{ selectedPhotos().length }} uploaded
+				</div>
+			</div>
+
+			<!-- Submit Button -->
+			<div class="submit-section">
+				<button type="submit" class="submit-button" [disabled]="!canSubmit()" [class.loading]="isLoading()">
+					<span *ngIf="!isLoading()">Update Profile</span>
+					<span *ngIf="isLoading()">Updating...</span>
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
