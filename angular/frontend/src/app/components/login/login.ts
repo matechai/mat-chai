@@ -82,11 +82,4 @@ export class Login {
       alert('❌ Please fill in all required fields.');
     }
   }
-
-  callProtected() {
-    this.authService.test_protected_request().subscribe({
-      next: (res: any) => console.log('✅ Protected response:', res),
-      error: (err: any) => console.error('❌ Error:', err)
-    });
-  }
 }
