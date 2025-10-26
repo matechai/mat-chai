@@ -215,3 +215,8 @@ e2e/*.map
 .env.example
 .env.local
 .env.staging
+
+
+
+## Backend ##
+uploads/
