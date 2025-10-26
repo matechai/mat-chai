@@ -1,45 +1,86 @@
-<div class="login-container">
-  <h2 class="title">Login</h2>
+<div style="max-width:400px; margin:4rem auto; padding:2rem; border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Arial, sans-serif; background:white;">
+  
+  <!-- Header -->
+  <div style="text-align:center; margin-bottom:2rem;">
+    <h2 style="color:#333; margin:0; font-size:28px; font-weight:600;">Welcome Back</h2>
+    <p style="color:#666; margin:0.5rem 0 0 0; font-size:16px;">Sign in to your account</p>
+  </div>
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <!-- Username -->
-    <div class="form-group">
-      <label for="username">Username</label>
+  <!-- Login Form -->
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" style="display:flex; flex-direction:column; gap:1.5rem;">
+    
+    <!-- Username Input -->
+    <div>
+      <label for="username" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">
+        Username
+      </label>
       <input
         id="username"
         type="text"
         formControlName="userName"
         placeholder="Enter your username"
+        style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='#007bff'"
+        onblur="this.style.borderColor='#ddd'"
       />
-      @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
-        <div class="error">Username is required</div>
-      }
+      <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" 
+           style="color:#dc3545; font-size:14px; margin-top:0.25rem;">
+        Username is required
+      </div>
     </div>
 
-    <!-- Password -->
-    <div class="form-group">
-      <label for="password">Password</label>
+    <!-- Password Input -->
+    <div>
+      <label for="password" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">
+        Password
+      </label>
       <input
         id="password"
         type="password"
         formControlName="password"
         placeholder="Enter your password"
+        style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='#007bff'"
+        onblur="this.style.borderColor='#ddd'"
       />
-      @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-        <div class="error">Password is required</div>
-      }
+      <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" 
+           style="color:#dc3545; font-size:14px; margin-top:0.25rem;">
+        Password is required
+      </div>
     </div>
 
-    <!-- Submit -->
-    <button type="submit" [disabled]="loginForm.invalid">
-      Login
+    <!-- Submit Button -->
+    <button type="submit" 
+            [disabled]="loginForm.invalid"
+            style="background:#007bff; color:white; border:none; padding:1rem; border-radius:8px; cursor:pointer; font-size:16px; font-weight:600; transition:background-color 0.2s;"
+            onmouseover="this.style.backgroundColor='#0056b3'"
+            onmouseout="this.style.backgroundColor='#007bff'"
+            [style.opacity]="loginForm.invalid ? '0.6' : '1'"
+            [style.cursor]="loginForm.invalid ? 'not-allowed' : 'pointer'">
+      Sign In
     </button>
   </form>
-  <br>
-  <button (click)="callProtected()">Call Protected</button>
 
-  <p class="signup-link">
-    Don’t have an account?
-    <a routerLink="/signup">Sign up</a>
-  </p>
+  <!-- Divider -->
+  <div style="margin:1.5rem 0; display:flex; align-items:center; gap:1rem;">
+    <div style="flex:1; height:1px; background:#e9ecef;"></div>
+    <span style="color:#666; font-size:14px;">or</span>
+    <div style="flex:1; height:1px; background:#e9ecef;"></div>
+  </div>
+
+  <!-- Test Button (Development) -->
+  <button (click)="callProtected()" 
+          style="width:100%; background:#6c757d; color:white; border:none; padding:0.75rem; border-radius:8px; cursor:pointer; font-size:14px; margin-bottom:1.5rem;">
+    Test Protected API
+  </button>
+
+  <!-- Sign Up Link -->
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="color:#666; margin:0; font-size:14px;">
+      Don't have an account? 
+      <a routerLink="/signup" style="color:#007bff; text-decoration:none; font-weight:600;">
+        Sign up
+      </a>
+    </p>
+  </div>
 </div>
