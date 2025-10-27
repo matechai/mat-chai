@@ -1,57 +1,95 @@
-<div style="max-width:400px; margin:2rem auto; padding:1rem; border:1px solid #ccc; border-radius:8px;">
-  <h3>Create Account</h3>
+<!-- Signup Container -->
+<div class="signup-container">
+  <!-- Header -->
+  <div class="signup-header">
+    <h2>Create Account</h2>
+    <p>Join us to find your perfect match</p>
+  </div>
+  <!-- Signup Form -->
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+    <!-- Name Row -->
+    <div class="name-row">
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input id="firstName" formControlName="firstName" type="text" placeholder="Enter your first name" required>
+      </div>
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input id="lastName" formControlName="lastName" type="text" placeholder="Enter your last name" required>
+      </div>
+    </div>
 
-  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
 
-    <label>First Name:</label>
-    <input formControlName="firstName" type="text" style="width:100%; margin-bottom:0.5rem;" required>
-
-    <label>Last Name:</label>
-    <input formControlName="lastName" type="text" style="width:100%; margin-bottom:0.5rem;" required>
-
-    <label>User Name</label>
-    <input formControlName="userName" type="text" style="width:100%; margin-bottom:0.5rem;" required>
-
-    <label>Email:</label>
-    <input formControlName="email" type="email" style="width:100%; margin-bottom:0.5rem;" required>
-
-    <label>Password:</label>
-    <input formControlName="password" type="password" (input)="onPasswordInput()" style="width:100%; margin-bottom:0.5rem;" required>
-
-    @if (signupForm.get('password')?.value) {
-      <p>
-        Strength:
-        <span [style.color]="passwordStrength === 'Weak' ? 'red' : (passwordStrength === 'Medium' ? 'orange' : 'green')" >
+    <!-- Username -->
+    <div class="form-group">
+      <label for="userName">Username</label>
+      <input id="userName" formControlName="userName" type="text" placeholder="Choose a unique username" required>
+    </div>
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input id="email" formControlName="email" type="email" placeholder="Enter your email address" required>
+    </div>
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input id="password" formControlName="password" type="password" placeholder="Create a strong password"
+        (input)="onPasswordInput()" required>
+      <!-- Password Strength Indicator -->
+      @if (signupForm.get('password')?.value) {
+      <div class="password-strength">
+        <span class="strength-label">Strength:</span>
+        <span class="strength-value" [ngClass]="{
+                                      'weak': passwordStrength === 'Weak',
+                                      'medium': passwordStrength === 'Medium', 
+                                      'strong': passwordStrength === 'Strong'
+                                    }">
           {{ passwordStrength }}
         </span>
-      </p>
-    }
-
-    <label>Confirm Password:</label>
-    <input formControlName="confirmPassword" type="password" style="width:100%; margin-bottom:0.5rem;" required>
-
-    <!-- Validation messages -->
-    <div style="color:red; font-size:0.9rem;">
-      @if (signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('firstName')?.value?.toLowerCase()) 
-      || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('lastName')?.value?.toLowerCase()) 
-      || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('userName')?.value?.toLowerCase()) 
-      || signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('email')?.value?.toLowerCase())) 
-      {
-        <p>❌ Password should not contain First/Last/User Name or Email</p>
-      }
-<!-- 
-      @if (signupForm.get('password')?.value?.toLowerCase().includes(signupForm.get('lastName')?.value?.toLowerCase())) {
-        <p>❌ Password should not contain Last Name</p>
-      } -->
-
-      @if (signupForm.get('password')?.value !== signupForm.get('confirmPassword')?.value) 
-      {
-        <p>❌ Passwords do not match</p>
+      </div>
       }
     </div>
 
-    <button type="submit" [disabled]="!isPasswordValid()" style="margin-top:1rem; padding:0.5rem 1rem;">
-      Sign Up
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input id="confirmPassword" formControlName="confirmPassword" type="password" placeholder="Confirm your password"
+        required>
+    </div>
+    <!-- Validation Messages -->
+    @if (hasValidationErrors()) {
+    <div class="validation-messages">
+      @if (passwordContainsPersonalInfo()) {
+      <div class="validation-error">
+        <span class="error-icon">⚠️</span>
+        <span>Password should not contain your personal information</span>
+      </div>
+      }
+      @if (passwordsMismatch()) {
+      <div class="validation-error">
+        <span class="error-icon">⚠️</span>
+        <span>Passwords do not match</span>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Submit Button -->
+    <button type="submit" class="submit-button" [disabled]="!isPasswordValid() || isLoading"
+      [class.disabled]="!isPasswordValid() || isLoading">
+      @if (isLoading) {
+      <span>Creating Account...</span>
+      } @else {
+      <span>Create Account</span>
+      }
     </button>
   </form>
+
+  <!-- Login Link -->
+  <div class="login-link">
+    <p>
+      Already have an account?
+      <a routerLink="/login">Sign in</a>
+      </p>
+      </div>
 </div>

@@ -1,19 +1,23 @@
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { SignupInterface } from '../../interfaces/signup-interface';
 import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-signup',
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './signup.html',
   styleUrl: './signup.scss'
 })
 export class Signup {
 
   private authService = inject(Auth);
+  private router = inject(Router);
   signupForm!: FormGroup;
   passwordStrength: String = '';
+  isLoading = false;
 
   constructor(private fb: FormBuilder)
   {
@@ -78,6 +82,7 @@ export class Signup {
   {
     if (this.signupForm.valid && this.isPasswordValid()) 
     {
+      this.isLoading = true;
       const request: SignupInterface =
       {
         firstName : this.signupForm.value.firstName,
@@ -88,15 +93,25 @@ export class Signup {
       }
       this.authService.signup_request(request)
       .subscribe({
-        next: response =>
+        next: (response: any) =>
         {
-          console.log('Form Submitted:', request);
-          alert('✅ Signup successful!');
+          this.isLoading = false;
+          console.log('Signup successful:', response);
+          alert('✅ Registration completed successfully.\nPlease complete email verification and then proceed to login.');
+          // successful signup, navigate to login page
+          this.router.navigate(['/login']);
         },
-        error: err =>
+        error: (err: any) =>
         {
-          console.log('signup failed: ', err)
-          alert('❌ Please fix the form errors.');
+          this.isLoading = false;
+          console.log('Signup failed:', err);
+          if (err.status === 409) {
+            alert('❌ Username or email already exists.');
+          } else if (err.status === 400) {
+            alert('❌ Invalid input. Please check your information.');
+          } else {
+            alert('❌ Signup failed. Please try again.');
+          }
         }
       })
     }
@@ -105,5 +120,29 @@ export class Signup {
       alert('❌ Please fix the form errors.');
     }
 
+  }
+
+  // 템플릿에서 사용하는 메소드들 추가
+  hasValidationErrors(): boolean {
+    return this.passwordContainsPersonalInfo() || this.passwordsMismatch();
+  }
+
+  passwordContainsPersonalInfo(): boolean {
+    const password = this.signupForm.get('password')?.value?.toLowerCase() || '';
+    const firstName = this.signupForm.get('firstName')?.value?.toLowerCase() || '';
+    const lastName = this.signupForm.get('lastName')?.value?.toLowerCase() || '';
+    const userName = this.signupForm.get('userName')?.value?.toLowerCase() || '';
+    const email = this.signupForm.get('email')?.value?.toLowerCase() || '';
+
+    return password.includes(firstName) ||
+      password.includes(lastName) ||
+      password.includes(userName) ||
+      password.includes(email);
+  }
+
+  passwordsMismatch(): boolean {
+    const password = this.signupForm.get('password')?.value;
+    const confirmPassword = this.signupForm.get('confirmPassword')?.value;
+    return password !== confirmPassword && !!confirmPassword;
   }
 }
