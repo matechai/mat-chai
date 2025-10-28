@@ -26,5 +26,4 @@ public class EmailService {
         message.setText("Click the link to verify your account: " + link);
         mailSender.send(message);
     }
-
 }
