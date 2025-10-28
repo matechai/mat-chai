@@ -86,6 +86,7 @@ public class UserController {
 
         return userService.getSexualPreference(user.getUsername());
     }
+
     @SchemaMapping(typeName = "User", field = "interests")
     public List<String> getInterests(User user) {
 
