@@ -75,11 +75,13 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     void removeStaleInterests(@Param("username") String username,
                               @Param("newInterests") List<String> newInterests);
 
+
     // Like
     @Transactional
     @Query ("""
-                MATCH (a:User {username: $username})-[:LIKED]->(b:User {username: $targetUsername})
-                RETURN a, b
+                MATCH (a:User {username: $username})
+                MATCH (b:User {username: $targetUsername})
+                MERGE (a)-[:LIKED]->(b)
             """)
     void like(@Param("username") String username,
               @Param("targetUsername") String targetUsername);
