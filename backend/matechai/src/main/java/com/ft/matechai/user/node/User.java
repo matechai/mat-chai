@@ -67,4 +67,7 @@ public class User {
 	private Set<User> Viewed;
 	@JsonIgnore	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Liked;
+    @JsonIgnore	@Relationship(type = "MATCHED", direction = Relationship.Direction.OUTGOING)
+    private Set<User> matched;
+
 }

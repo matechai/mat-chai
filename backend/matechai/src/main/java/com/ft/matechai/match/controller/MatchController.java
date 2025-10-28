@@ -1,6 +1,7 @@
 package com.ft.matechai.match.controller;
 
 import com.ft.matechai.config.auth.PrincipalDetails;
+import com.ft.matechai.match.dto.LikeResponseDTO;
 import com.ft.matechai.match.service.MatchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,11 +22,11 @@ public class MatchController {
 
 
     @PostMapping("/users/{targetUsername}/like")
-    public ResponseEntity<?> like(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<LikeResponseDTO> like(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                   @PathVariable String targetUsername) {
 
-        matchService.like(principalDetails.getUser(), targetUsername);
+        LikeResponseDTO response = matchService.like(principalDetails.getUser(), targetUsername);
 
-        return ResponseEntity.status(201).build();
+        return ResponseEntity.ok(response);
     }
 }
