@@ -30,5 +30,4 @@ public class EmailService {
         log.info("Click the link to verify your account: " + link);
         mailSender.send(message);
     }
-
 }
