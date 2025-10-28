@@ -5,10 +5,7 @@ import com.ft.matechai.match.dto.LikeResponseDTO;
 import com.ft.matechai.match.service.MatchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -28,5 +25,14 @@ public class MatchController {
         LikeResponseDTO response = matchService.like(principalDetails.getUser(), targetUsername);
 
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/users/{targetUsername}/like")
+    public ResponseEntity<?> removeLike(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                         @PathVariable String targetUsername) {
+
+        matchService.removeLike(principalDetails.getUser(), targetUsername);
+
+        return ResponseEntity.noContent().build();
     }
 }
