@@ -46,4 +46,22 @@ public class MatchService {
                 .targetUsername(targetUser.getUsername())
                 .build();
     }
+
+    public void removeLike(User user, String targetUsername) {
+
+        if (user.getUsername().equals(targetUsername))
+            throw new MatchExceptions.SelfLikeException();
+
+        User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
+
+        userRepository.deleteLike(user.getUsername(), targetUser.getUsername());
+
+        if (userRepository.isMatchBetween(user.getUsername(), targetUser.getUsername())) {
+
+            userRepository.deleteMatch(user.getUsername(), targetUser.getUsername());
+
+            // todo should remove chat room, block notification
+            // This will prevent further notifications from that user, and the chat function between them will be disabled.
+        }
+    }
 }

@@ -107,6 +107,28 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                            @Param("targetUsername") String targetUsername);
 
 
+    @Query ("""
+                MATCH (a:User {username:$username})-[r:LIKED]->(b:User {username:$targetUsername})
+                DELETE r
+            """)
+    void deleteLike(@Param("username") String username,
+                    @Param("targetUsername") String targetUsername);
+
+
+    @Query ("""
+                MATCH (a:User {username:$username})-[:MATCHED]-(b:User {username:$targetUsername})
+                RETURN count(b) > 0
+            """)
+    boolean isMatchBetween(@Param("username") String username,
+                           @Param("targetUsername") String targetUsername);
+
+
+    @Query ("""
+                MATCH (a:User {username:$username})-[r: MATCHED]-(b:User {username:$targetUsername})
+                DELETE r
+            """)
+    void deleteMatch(@Param("username") String username,
+                     @Param("targetUsername") String targetUsername);
 
 
     @Query("MATCH (a:User) RETURN a")
