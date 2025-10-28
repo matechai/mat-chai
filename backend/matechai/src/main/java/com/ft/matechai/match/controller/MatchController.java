@@ -1,6 +1,7 @@
 package com.ft.matechai.match.controller;
 
 import com.ft.matechai.config.auth.PrincipalDetails;
+import com.ft.matechai.exception.MatchExceptions;
 import com.ft.matechai.match.dto.LikeResponseDTO;
 import com.ft.matechai.match.service.MatchService;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,10 @@ public class MatchController {
 
     @PostMapping("/users/{targetUsername}/like")
     public ResponseEntity<LikeResponseDTO> like(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                  @PathVariable String targetUsername) {
+                                                @PathVariable String targetUsername) {
+
+        if (principalDetails.getUsername().equals(targetUsername))
+            throw new MatchExceptions.SelfLikeException();
 
         LikeResponseDTO response = matchService.like(principalDetails.getUser(), targetUsername);
 
