@@ -87,6 +87,27 @@ public interface UserRepository extends Neo4jRepository<User, String> {
               @Param("targetUsername") String targetUsername);
 
 
+    @Transactional
+    @Query ("""
+                MATCH (a:User {username:$username})
+                MATCH (b:User {username:$targetUsername})
+                MERGE (a)-[:MATCHED]->(b)
+            """)
+    void match(@Param("username") String username,
+              @Param("targetUsername") String targetUsername);
+
+
+    // Checks if a MATCHED relationship exists between two users
+    @Query ("""
+                MATCH (a:User {username:$username})-[:LIKED]->(b:User {username:$targetUsername}),
+                (b)-[:LIKED]->(a)
+                RETURN count(b) > 0 AS isMatched
+            """)
+    boolean isLikedBetween(@Param("username") String username,
+                               @Param("targetUsername") String targetUsername);
+
+
+
 
     @Query("MATCH (a:User) RETURN a")
     List<User> findAllUsers();
