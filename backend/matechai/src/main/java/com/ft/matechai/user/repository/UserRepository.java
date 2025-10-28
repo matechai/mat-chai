@@ -94,7 +94,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                 MERGE (a)-[:MATCHED]->(b)
             """)
     void match(@Param("username") String username,
-              @Param("targetUsername") String targetUsername);
+               @Param("targetUsername") String targetUsername);
 
 
     // Checks if a MATCHED relationship exists between two users
@@ -104,7 +104,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                 RETURN count(b) > 0 AS isMatched
             """)
     boolean isLikedBetween(@Param("username") String username,
-                               @Param("targetUsername") String targetUsername);
+                           @Param("targetUsername") String targetUsername);
 
 
 
