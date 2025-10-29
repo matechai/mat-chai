@@ -63,7 +63,7 @@ public class User {
     private List<SexualPreference> sexualPreferences = new ArrayList<>();;
 
 
-    @JsonIgnore @Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
+    @JsonIgnore @Relationship(type = "VIEWED", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Viewed;
 	@JsonIgnore	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Liked;

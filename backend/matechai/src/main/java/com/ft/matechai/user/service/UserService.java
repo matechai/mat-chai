@@ -11,6 +11,7 @@ import com.ft.matechai.option.repository.SexualPreferenceRepository;
 import com.ft.matechai.option.repository.InterestRepository;
 import com.ft.matechai.user.repository.UserRepository;
 
+import graphql.schema.DataFetchingEnvironment;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class UserService {
     private final SexualPreferenceRepository sexualPreferenceRepository;
     private final InterestRepository interestRepository;
 
+
 	public UserService(UserRepository userRepository,
                        GenderRepository genderRepository,
                        SexualPreferenceRepository sexualPreferenceRepository,
@@ -49,10 +51,15 @@ public class UserService {
 
 	// GETTERS // GETTERS // GETTERS // GETTERS //
 
-	@Transactional(readOnly = true)
-    public User getUser(String username) {
+	@Transactional
+    public User getUser(User user, String targetUsername, DataFetchingEnvironment env) {
 
-        return userRepository.findByUsernameOrThrow(username);
+        User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
+
+        if (env.getSelectionSet().contains("interests") && !user.getUsername().equals(targetUsername))
+            userRepository.view(user.getUsername(), targetUsername);
+
+        return targetUser;
     }
 
 	@Transactional(readOnly = true)
