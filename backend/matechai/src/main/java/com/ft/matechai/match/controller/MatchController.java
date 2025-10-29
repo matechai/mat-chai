@@ -35,4 +35,13 @@ public class MatchController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/users/{targetUsername}/block")
+    public ResponseEntity<?> block(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                   @PathVariable String targetUsername) {
+
+        matchService.block(principalDetails.getUser(), targetUsername);
+
+        return ResponseEntity.noContent().build();
+    }
 }
