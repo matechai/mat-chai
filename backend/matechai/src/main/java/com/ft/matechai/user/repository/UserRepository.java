@@ -133,61 +133,6 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                      @Param("targetUsername") String targetUsername);
 
 
-    // Like
-    @Transactional
-    @Query ("""
-                MATCH (a:User {username: $username})
-                MATCH (b:User {username: $targetUsername})
-                MERGE (a)-[:LIKED]->(b)
-            """)
-    void like(@Param("username") String username,
-              @Param("targetUsername") String targetUsername);
-
-
-    @Transactional
-    @Query ("""
-                MATCH (a:User {username:$username})
-                MATCH (b:User {username:$targetUsername})
-                MERGE (a)-[:MATCHED]->(b)
-            """)
-    void match(@Param("username") String username,
-               @Param("targetUsername") String targetUsername);
-
-
-    // Checks if a MATCHED relationship exists between two users
-    @Query ("""
-                MATCH (a:User {username:$username})-[:LIKED]->(b:User {username:$targetUsername}),
-                (b)-[:LIKED]->(a)
-                RETURN count(b) > 0 AS isMatched
-            """)
-    boolean isLikedBetween(@Param("username") String username,
-                           @Param("targetUsername") String targetUsername);
-
-
-    @Query ("""
-                MATCH (a:User {username:$username})-[r:LIKED]->(b:User {username:$targetUsername})
-                DELETE r
-            """)
-    void deleteLike(@Param("username") String username,
-                    @Param("targetUsername") String targetUsername);
-
-
-    @Query ("""
-                MATCH (a:User {username:$username})-[:MATCHED]-(b:User {username:$targetUsername})
-                RETURN count(b) > 0
-            """)
-    boolean isMatchBetween(@Param("username") String username,
-                           @Param("targetUsername") String targetUsername);
-
-
-    @Query ("""
-                MATCH (a:User {username:$username})-[r: MATCHED]-(b:User {username:$targetUsername})
-                DELETE r
-            """)
-    void deleteMatch(@Param("username") String username,
-                     @Param("targetUsername") String targetUsername);
-
-
     @Query ("""
                 MATCH (a:User {username: $username})
                 MATCH (b:User {username: $targetUsername})
@@ -195,32 +140,6 @@ public interface UserRepository extends Neo4jRepository<User, String> {
             """)
     void block(@Param("username") String username,
                @Param("targetUsername") String targetUsername);
-
-
-    // View
-    @Transactional
-    @Query ("""
-                MATCH (viewer:User {username: $username})
-                MATCH (target:User {username: $targetUsername})
-                MERGE (viewer)-[v:VIEWED]->(target)
-                SET v.viewedAt = timestamp()
-            """)
-    void view(@Param("username") String username,
-              @Param("targetUsername") String targetUsername);
-
-    @Query (
-            value = """
-                        MATCH (viewer:User)-[v:VIEWED]->(me:User {username: $username})
-                        RETURN viewer, v.viewedAt AS viewedAt
-                        ORDER BY v.viewedAt DESC
-                    """,
-            countQuery = """
-                            MATCH (viewer:User)-[v:VIEWED]->(me:User {username: $username})
-                            RETURN count(viewer)
-                         """
-    )
-    Page<User> findViewersByUserId(@Param("username") String username, Pageable pageable);
-
 
 
     @Query("MATCH (a:User) RETURN a")
