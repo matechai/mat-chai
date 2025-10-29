@@ -1,8 +1,5 @@
 package com.ft.matechai.exception;
 
-import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 public class AuthExceptions {
 
