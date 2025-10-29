@@ -61,7 +61,6 @@ public interface UserRepository extends Neo4jRepository<User, String> {
         void removeGender(@Param("username") String username);
 
 
-<<<<<<< HEAD
         // Sexual Preference
         @Transactional
         @Query("MATCH (u:User {username: $username}), (s:SexualPreference {name: $prefName}) " +
@@ -77,23 +76,6 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                 """)
         void removeStaleSexualPreferences(@Param("username") String username,
                                         @Param("newPrefs") List<String> newPrefs);
-=======
-    // Interest
-    @Transactional
-    @Query("MATCH (u:User {username: $username}), (i:Interest {name: $interestName}) " +
-            "MERGE (u)-[:INTERESTED_IN]->(i)")
-    void addInterest(@Param("username") String username,
-                     @Param("interestName") String interestName);
-
-    @Transactional
-    @Query("""
-            MATCH (u:User {username: $username})-[r:INTERESTED_IN]->(i:Interest)
-            WHERE NOT i.name IN $newInterests
-            DELETE r
-            """)
-    void removeStaleInterests(@Param("username") String username,
-                              @Param("newInterests") List<String> newInterests);
->>>>>>> 8d7df69 (refcator: code refactoring)
 
 
         // Interest

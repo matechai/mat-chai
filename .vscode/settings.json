@@ -1,5 +1,8 @@
 {
 	"java.configuration.updateBuildConfiguration": "interactive",
 	"java.compile.nullAnalysis.mode": "automatic"
+<<<<<<< HEAD
 	"java.configuration.updateBuildConfiguration": "interactive"
+=======
+>>>>>>> 2c0c284 (working on notifcations)
 }
