@@ -30,6 +30,18 @@
       <label for="email">Email Address</label>
       <input id="email" formControlName="email" type="email" placeholder="Enter your email address" required>
     </div>
+
+    <!-- Date of Birth -->
+    <div class="form-group">
+      <label for="dateOfBirth">Date of Birth</label>
+      <input id="dateOfBirth" formControlName="dateOfBirth" type="date" required>
+      @if (signupForm.get('dateOfBirth')?.value) {
+        <div class="age-display">
+          <span class="age-label">Age: </span>
+          <span class="age-value">{{ calculateAge(signupForm.get('dateOfBirth')?.value) }} years old</span>
+        </div>
+      }
+    </div>
     <!-- Password -->
     <div class="form-group">
       <label for="password">Password</label>
