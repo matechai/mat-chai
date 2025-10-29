@@ -3,6 +3,7 @@ package com.ft.matechai.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -26,7 +27,7 @@ public class SignUpRequestDTO {
     @NotBlank(message = "Password is required")
     private String password;
 
-    @NotBlank(message = "Date of Birth is required")
+    @NotNull
     private LocalDate dateOfBirth;
 
     private int age;
