@@ -7,4 +7,10 @@ public class MatchExceptions {
             super("Cannot like yourself");
         }
     }
+
+    public static class SelfBlockException extends RuntimeException {
+        public SelfBlockException() {
+            super("Cannot block yourself");
+        }
+    }
 }
