@@ -62,12 +62,19 @@ public class MatchService {
 
     public void block(User user, String targetUsername) {
 
-        if (user.getUsername().equals(targetUsername))
-            throw new MatchExceptions.SelfLikeException();
+        validateSelfRelation(user.getUsername(), targetUsername, "can't block yourself");
 
         User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
+        String username = user.getUsername();
+        targetUsername = targetUser.getUsername();
 
-        userRepository.block(user.getUsername(), targetUser.getUsername());
+        userRepository.block(username, targetUsername);
+        userRepository.deleteLike(username, targetUsername);
+
+        if (userRepository.isMatchBetween(username, targetUsername))
+            handleUnmatch(username, targetUsername);
+    }
+
     private void validateSelfRelation(String username, String targetUsername, String message) {
 
         if (username.equals(targetUsername))
