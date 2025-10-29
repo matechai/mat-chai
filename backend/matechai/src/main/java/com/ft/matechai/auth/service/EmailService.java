@@ -1,5 +1,6 @@
 package com.ft.matechai.auth.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -29,5 +30,7 @@ public class EmailService {
         message.setText("Click the link to verify your account: " + link);
         log.info("Click the link to verify your account: " + link);
         mailSender.send(message);
+
+        log.info("Email verify address : " + link);
     }
 }
