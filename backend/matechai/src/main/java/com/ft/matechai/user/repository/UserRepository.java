@@ -131,6 +131,15 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                      @Param("targetUsername") String targetUsername);
 
 
+    @Query ("""
+                MATCH (a:User {username: $username})
+                MATCH (b:User {username: $targetUsername})
+                MERGE (a)-[:BLOCKED]->(b)
+            """)
+    void block(@Param("username") String username,
+               @Param("targetUsername") String targetUsername);
+
+
     @Query("MATCH (a:User) RETURN a")
     List<User> findAllUsers();
 }

@@ -69,5 +69,6 @@ public class User {
 	private Set<User> Liked;
     @JsonIgnore	@Relationship(type = "MATCHED", direction = Relationship.Direction.OUTGOING)
     private Set<User> matched;
-
+    @JsonIgnore	@Relationship(type = "BLOCKED", direction = Relationship.Direction.OUTGOING)
+    private Set<User> blocked;
 }
