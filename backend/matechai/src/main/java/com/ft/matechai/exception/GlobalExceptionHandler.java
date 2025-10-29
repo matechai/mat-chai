@@ -39,8 +39,8 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", e.getMessage()));
     }
 
-    @ExceptionHandler(MatchExceptions.SelfLikeException.class)
-    public ResponseEntity<Map<String, String>> handleSelfLike(MatchExceptions.SelfLikeException e) {
+    @ExceptionHandler(MatchExceptions.SelfRelationException.class)
+    public ResponseEntity<Map<String, String>> handleSelfRelation(MatchExceptions.SelfRelationException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("message", e.getMessage()));
