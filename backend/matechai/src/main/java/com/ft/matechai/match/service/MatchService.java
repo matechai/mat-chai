@@ -19,19 +19,18 @@ public class MatchService {
     @Transactional
     public LikeResponseDTO like(User user, String targetUsername) {
 
-        if (user.getUsername().equals(targetUsername))
-            throw new MatchExceptions.SelfLikeException();
+        validateSelfRelation(user.getUsername(), targetUsername, "can't like yourself");
 
         User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
 
         userRepository.like(user.getUsername(), targetUser.getUsername());
-        // todo should send notification
+        // todo should send notification (don't send when they have block relation)
 
         if (userRepository.isLikedBetween(user.getUsername(), targetUser.getUsername())) {
 
             userRepository.match(user.getUsername(), targetUser.getUsername());
             // todo should create chat room
-            // todo should send notification
+            // todo should send notification (don't send when they have block relation)
 
             return LikeResponseDTO.builder()
                     .liked(true)
@@ -49,20 +48,16 @@ public class MatchService {
 
     public void removeLike(User user, String targetUsername) {
 
-        if (user.getUsername().equals(targetUsername))
-            throw new MatchExceptions.SelfLikeException();
+        validateSelfRelation(user.getUsername(), targetUsername, "can't remove like yourself");
 
         User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
+        String username = user.getUsername();
+        targetUsername = targetUser.getUsername();
 
-        userRepository.deleteLike(user.getUsername(), targetUser.getUsername());
+        userRepository.deleteLike(username, targetUsername);
 
-        if (userRepository.isMatchBetween(user.getUsername(), targetUser.getUsername())) {
-
-            userRepository.deleteMatch(user.getUsername(), targetUser.getUsername());
-
-            // todo should remove chat room, block notification
-            // This will prevent further notifications from that user, and the chat function between them will be disabled.
-        }
+        if (userRepository.isMatchBetween(username, targetUsername))
+            handleUnmatch(username, targetUsername);
     }
 
     public void block(User user, String targetUsername) {
@@ -73,6 +68,17 @@ public class MatchService {
         User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
 
         userRepository.block(user.getUsername(), targetUser.getUsername());
+    private void validateSelfRelation(String username, String targetUsername, String message) {
 
+        if (username.equals(targetUsername))
+            throw new MatchExceptions.SelfRelationException(message);
+    }
+
+    private void handleUnmatch(String username, String targetUsername) {
+
+        userRepository.deleteMatch(username, targetUsername);
+
+        // todo should remove chat room, block notification
+        // This will prevent further notifications from that user, and the chat function between them will be disabled.;
     }
 }
