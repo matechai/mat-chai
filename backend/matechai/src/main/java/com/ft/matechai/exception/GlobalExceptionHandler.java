@@ -43,4 +43,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("message", e.getMessage()));
     }
+
+    @ExceptionHandler(MatchExceptions.SelfBlockException.class)
+    public ResponseEntity<Map<String, String>> handleSelfBlock(MatchExceptions.SelfBlockException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", e.getMessage()));
+    }
 }
