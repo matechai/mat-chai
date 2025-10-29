@@ -1,6 +1,7 @@
 package com.ft.matechai.user.repository;
 
 import com.ft.matechai.exception.AuthExceptions;
+import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.user.node.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -145,12 +146,26 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     // View
     @Transactional
     @Query ("""
-                MATCH (a:User {username: $username})
-                MATCH (b:User {username: $targetUsername})
-                MERGE (a)-[:VIEWED]->(b)
+                MATCH (viewer:User {username: $username})
+                MATCH (target:User {username: $targetUsername})
+                MERGE (viewer)-[v:VIEWED]->(target)
+                SET v.viewedAt = timestamp()
             """)
     void view(@Param("username") String username,
               @Param("targetUsername") String targetUsername);
+
+    @Query (
+            value = """
+                        MATCH (viewer:User)-[v:VIEWED]->(me:User {username: $username})
+                        RETURN viewer, v.viewedAt AS viewedAt
+                        ORDER BY v.viewedAt DESC
+                    """,
+            countQuery = """
+                            MATCH (viewer:User)-[v:VIEWED]->(me:User {username: $username})
+                            RETURN count(viewer)
+                         """
+    )
+    Page<User> findViewersByUserId(@Param("username") String username, Pageable pageable);
 
 
 
