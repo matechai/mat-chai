@@ -4,12 +4,18 @@ import com.ft.matechai.auth.dto.*;
 import com.ft.matechai.auth.service.AuthService;
 import com.ft.matechai.auth.service.VerificationService;
 import com.ft.matechai.config.auth.PrincipalDetails;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -53,9 +59,11 @@ public class AuthController {
 
     @DeleteMapping("/logout")
 
-    public ResponseEntity<?> logout(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<?> logout(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                    HttpServletResponse response) {
 
-        authService.logout(principalDetails.getUser());
+        List<ResponseCookie> cookies = authService.logout(principalDetails.getUser());
+        cookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString()));
 
         return ResponseEntity.noContent().build();
     }

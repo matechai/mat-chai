@@ -9,8 +9,11 @@ import com.ft.matechai.config.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -86,10 +89,26 @@ public class AuthService {
 
 
     // Log Out
-    public void logout(User user) {
+    public List<ResponseCookie> logout(User user) {
 
         user.setRefreshToken(null);
         userRepository.save(user);
+
+        ResponseCookie accessToken = ResponseCookie.from("accessToken", "")
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0)
+                .build();
+
+        ResponseCookie refreshToken = ResponseCookie.from("refreshToken", "")
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0)
+                .build();
+
+        return List.of(accessToken, refreshToken);
     }
 
 
