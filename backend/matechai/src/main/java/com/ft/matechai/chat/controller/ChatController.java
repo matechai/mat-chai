@@ -1,10 +1,5 @@
 package com.ft.matechai.chat.controller;
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 6744fdc (chat with mongodb)
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
