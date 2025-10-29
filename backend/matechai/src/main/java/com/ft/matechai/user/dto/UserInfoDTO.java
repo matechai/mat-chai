@@ -19,6 +19,4 @@ public class UserInfoDTO {
     private String firstName;
 
     private String lastName;
-
-    private LocalDate dateOfBirth;
 }
