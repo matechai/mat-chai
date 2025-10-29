@@ -36,8 +36,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     @Transactional
     @Query("""
-            MATCH (u:User {username: $username})-[r:HAS_GENDER]->(g:Gender)
-            DELETE r
+                MATCH (u:User {username: $username})-[r:HAS_GENDER]->(g:Gender)
+                DELETE r
             """)
     void removeGender(@Param("username") String username);
 
@@ -51,9 +51,9 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     @Transactional
     @Query("""        
-           MATCH (u:User {username: $username})-[r:HAS_PREFERENCE]->(s:SexualPreference)
-           WHERE NOT s.name IN $newPrefs
-           DELETE r
+               MATCH (u:User {username: $username})-[r:HAS_PREFERENCE]->(s:SexualPreference)
+               WHERE NOT s.name IN $newPrefs
+               DELETE r
            """)
     void removeStaleSexualPreferences(@Param("username") String username,
                                       @Param("newPrefs") List<String> newPrefs);
@@ -68,12 +68,67 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     @Transactional
     @Query("""
-            MATCH (u:User {username: $username})-[r:INTERESTED_IN]->(i:Interest)
-            WHERE NOT i.name IN $newInterests
-            DELETE r
+                MATCH (u:User {username: $username})-[r:INTERESTED_IN]->(i:Interest)
+                WHERE NOT i.name IN $newInterests
+                DELETE r
             """)
     void removeStaleInterests(@Param("username") String username,
                               @Param("newInterests") List<String> newInterests);
+
+
+    // Like
+    @Transactional
+    @Query ("""
+                MATCH (a:User {username: $username})
+                MATCH (b:User {username: $targetUsername})
+                MERGE (a)-[:LIKED]->(b)
+            """)
+    void like(@Param("username") String username,
+              @Param("targetUsername") String targetUsername);
+
+
+    @Transactional
+    @Query ("""
+                MATCH (a:User {username:$username})
+                MATCH (b:User {username:$targetUsername})
+                MERGE (a)-[:MATCHED]->(b)
+            """)
+    void match(@Param("username") String username,
+               @Param("targetUsername") String targetUsername);
+
+
+    // Checks if a MATCHED relationship exists between two users
+    @Query ("""
+                MATCH (a:User {username:$username})-[:LIKED]->(b:User {username:$targetUsername}),
+                (b)-[:LIKED]->(a)
+                RETURN count(b) > 0 AS isMatched
+            """)
+    boolean isLikedBetween(@Param("username") String username,
+                           @Param("targetUsername") String targetUsername);
+
+
+    @Query ("""
+                MATCH (a:User {username:$username})-[r:LIKED]->(b:User {username:$targetUsername})
+                DELETE r
+            """)
+    void deleteLike(@Param("username") String username,
+                    @Param("targetUsername") String targetUsername);
+
+
+    @Query ("""
+                MATCH (a:User {username:$username})-[:MATCHED]-(b:User {username:$targetUsername})
+                RETURN count(b) > 0
+            """)
+    boolean isMatchBetween(@Param("username") String username,
+                           @Param("targetUsername") String targetUsername);
+
+
+    @Query ("""
+                MATCH (a:User {username:$username})-[r: MATCHED]-(b:User {username:$targetUsername})
+                DELETE r
+            """)
+    void deleteMatch(@Param("username") String username,
+                     @Param("targetUsername") String targetUsername);
 
 
     @Query("MATCH (a:User) RETURN a")
