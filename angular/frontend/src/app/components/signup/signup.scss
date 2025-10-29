@@ -190,6 +190,42 @@
 	}
 }
 
+// Age Display Styles
+.age-display {
+	margin-top: 8px;
+	padding: 8px 12px;
+	background: #f8f9fa;
+	border: 1px solid #e9ecef;
+	border-radius: 6px;
+	font-size: 14px;
+
+	.age-label {
+		color: #6c757d;
+		font-weight: 500;
+	}
+
+	.age-value {
+		color: #28a745;
+		font-weight: 600;
+	}
+}
+
+// Date input specific styling
+input[type="date"] {
+	cursor: pointer;
+	position: relative;
+
+	&::-webkit-calendar-picker-indicator {
+		cursor: pointer;
+		filter: invert(0.5);
+		transition: filter 0.3s ease;
+
+		&:hover {
+			filter: invert(0.3);
+		}
+	}
+}
+
 // Responsive Design
 @media (max-width: 768px) {
 	.signup-container {
