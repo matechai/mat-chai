@@ -35,7 +35,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String password;
-    private LocalDate DateOfBirth;
+    private LocalDate dateOfBirth;
     private int age;
     private Role role;
     private String refreshToken;
