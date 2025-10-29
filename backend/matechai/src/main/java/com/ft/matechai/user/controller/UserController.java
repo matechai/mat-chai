@@ -6,6 +6,7 @@ import com.ft.matechai.user.dto.UserProfileDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.service.UserService;
 
+import graphql.schema.DataFetchingEnvironment;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
@@ -70,9 +71,11 @@ public class UserController {
     }
 
     @QueryMapping
-    public User getUserByUsername(@Argument String username) {
+    public User getUserByUsername(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                  @Argument String username,
+                                  DataFetchingEnvironment env) {
 
-        return userService.getUser(username);
+        return userService.getUser(principalDetails.getUser(), username, env);
     }
 
     @SchemaMapping(typeName = "User", field = "gender")
