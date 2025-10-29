@@ -64,4 +64,15 @@ public class MatchService {
             // This will prevent further notifications from that user, and the chat function between them will be disabled.
         }
     }
+
+    public void block(User user, String targetUsername) {
+
+        if (user.getUsername().equals(targetUsername))
+            throw new MatchExceptions.SelfLikeException();
+
+        User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
+
+        userRepository.block(user.getUsername(), targetUser.getUsername());
+
+    }
 }
