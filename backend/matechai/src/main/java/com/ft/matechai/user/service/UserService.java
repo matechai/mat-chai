@@ -71,7 +71,6 @@ public class UserService {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .dateOfBirth(user.getDateOfBirth())
                 .build();
     }
 
@@ -101,7 +100,6 @@ public class UserService {
         user.setEmail(dto.getEmail());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
-        user.setDateOfBirth(dto.getDateOfBirth());
 
         userRepository.save(user);
     }

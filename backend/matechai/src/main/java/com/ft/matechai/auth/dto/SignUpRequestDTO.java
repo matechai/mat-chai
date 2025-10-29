@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class SignUpRequestDTO {
 
@@ -23,6 +25,11 @@ public class SignUpRequestDTO {
 
     @NotBlank(message = "Password is required")
     private String password;
+
+    @NotBlank(message = "Date of Birth is required")
+    private LocalDate dateOfBirth;
+
+    private int age;
 
     private boolean enabled = false;
 }
