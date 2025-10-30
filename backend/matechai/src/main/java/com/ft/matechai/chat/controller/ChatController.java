@@ -1,40 +1,31 @@
 package com.ft.matechai.chat.controller;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-
 import com.ft.matechai.chat.service.ChatService;
-import com.ft.matechai.config.jwt.JwtUtil;
+import com.ft.matechai.config.auth.PrincipalDetails;
 
 
 
 @Controller
 public class ChatController
 {
-	 private final ChatService chatService;
-    private final JwtUtil jwtService;
+	private final ChatService chatService;
 
-    public ChatController(ChatService chatService, JwtUtil jwtService) {
+    public ChatController(ChatService chatService) {
         this.chatService = chatService;
-        this.jwtService = jwtService;
     }
 
     @MessageMapping("/api/chat.send/{receiverId}")
-    public void sendMessage(@Header("Authorization") String jwt,
+    
+    public void sendMessage(@AuthenticationPrincipal PrincipalDetails principalDetails,
                             @DestinationVariable String receiver,
                             @Payload String content) 
     {
-
-        if (jwt == null || !jwt.startsWith("Bearer ")) 
-        {
-            throw new RuntimeException("JWT missing");
-        }
-        String sender = jwtService.getUsernameFromToken(jwt);
-        chatService.sendMessage(sender, receiver, content);
+        chatService.sendMessage(principalDetails.getUser(), receiver, content);
     }
 
 }
