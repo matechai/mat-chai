@@ -151,6 +151,8 @@ public class AuthService {
                         .firstName(dto.getFirstName())
                         .lastName(dto.getLastName())
                         .password(hash)
+                        .dateOfBirth(dto.getDateOfBirth())
+                        .age(dto.getAge())
                         .role(Role.ROLE_USER)
                         .refreshToken(null)
                         .build();

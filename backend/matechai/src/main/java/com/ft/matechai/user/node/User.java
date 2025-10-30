@@ -35,7 +35,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String password;
-    private LocalDate DateOfBirth;
+    private LocalDate dateOfBirth;
     private int age;
     private Role role;
     private String refreshToken;
@@ -63,7 +63,7 @@ public class User {
     private List<SexualPreference> sexualPreferences = new ArrayList<>();;
 
 
-    @JsonIgnore @Relationship(type = "Viewed", direction = Relationship.Direction.OUTGOING)
+    @JsonIgnore @Relationship(type = "VIEWED", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Viewed;
 	@JsonIgnore	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Liked;
