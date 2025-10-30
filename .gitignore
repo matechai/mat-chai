@@ -9,6 +9,7 @@
 .idea/**/dictionaries
 .idea/**/shelf
 .vscode
+.vscode/*
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -216,6 +217,3 @@ e2e/*.map
 .env.local
 .env.staging
 
-#some node js files to check sockets
-websocket-test/*
-package-lock.json
