@@ -58,7 +58,6 @@ public class AuthController {
     }
 
     @DeleteMapping("/logout")
-
     public ResponseEntity<?> logout(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                     HttpServletResponse response) {
 
