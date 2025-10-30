@@ -2,8 +2,9 @@ package com.ft.matechai.chat.controller;
 
 import com.ft.matechai.chat.model.ChatMessage;
 import com.ft.matechai.chat.service.ChatHistoryService;
-import com.ft.matechai.config.jwt.JwtUtil;
+import com.ft.matechai.config.auth.PrincipalDetails;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,29 +14,27 @@ import java.util.List;
 public class ChatHistoryController {
 
     private final ChatHistoryService chatHistoryService;
-    private final JwtUtil jwtUtil;
 
-    public ChatHistoryController(ChatHistoryService chatHistoryService, JwtUtil jwtUtil) 
+    public ChatHistoryController(ChatHistoryService chatHistoryService) 
 	{
         this.chatHistoryService = chatHistoryService;
-        this.jwtUtil = jwtUtil;
     }
 
     // Get all messages for logged-in user
-    @GetMapping("/api/history")
-    public ResponseEntity<List<ChatMessage>> getMyChats(@CookieValue("accessToken") String token) 
+    @GetMapping("/history")
+    public ResponseEntity<List<ChatMessage>> getMyChats(@AuthenticationPrincipal PrincipalDetails principalDetails) 
 	{
-        String username = jwtUtil.getUsernameFromToken(token);
-        return ResponseEntity.ok(chatHistoryService.getAllChatsForUser(username));
+
+        List<ChatMessage> response = chatHistoryService.getAllChatsForUser(principalDetails.getUser());
+        return ResponseEntity.ok(response);
     }
 
     // Get chat with one specific user
-    @GetMapping("/api/history/{receiver}")
+    @GetMapping("/history/{receiver}")
     public ResponseEntity<List<ChatMessage>> getChatWithUser(
-            @CookieValue("accessToken") String token,
-            @PathVariable String receiver) {
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable String receiverUsername) {
 
-        String username = jwtUtil.getUsernameFromToken(token);
-        return ResponseEntity.ok(chatHistoryService.getChatBetween(username, receiver));
+        return ResponseEntity.ok(chatHistoryService.getChatBetween(principalDetails.getUser(), receiverUsername));
     }
 }
