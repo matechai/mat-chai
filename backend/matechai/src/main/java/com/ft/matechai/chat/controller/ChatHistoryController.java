@@ -22,7 +22,7 @@ public class ChatHistoryController {
     }
 
     // Get all messages for logged-in user
-    @GetMapping("/history")
+    @GetMapping("/api/history")
     public ResponseEntity<List<ChatMessage>> getMyChats(@CookieValue("accessToken") String token) 
 	{
         String username = jwtUtil.getUsernameFromToken(token);
@@ -30,7 +30,7 @@ public class ChatHistoryController {
     }
 
     // Get chat with one specific user
-    @GetMapping("/history/{receiver}")
+    @GetMapping("/api/history/{receiver}")
     public ResponseEntity<List<ChatMessage>> getChatWithUser(
             @CookieValue("accessToken") String token,
             @PathVariable String receiver) {

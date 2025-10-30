@@ -23,7 +23,7 @@ public class ChatController
         this.jwtService = jwtService;
     }
 
-    @MessageMapping("/chat.send/{receiverId}")
+    @MessageMapping("/api/chat.send/{receiverId}")
     public void sendMessage(@Header("Authorization") String jwt,
                             @DestinationVariable String receiver,
                             @Payload String content) 
