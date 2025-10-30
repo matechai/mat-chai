@@ -26,6 +26,7 @@ export class Signup {
       lastName : ['', [Validators.required]],
       userName : ['', [Validators.required]],
       email : ['', [Validators.required, Validators.email]],
+      dateOfBirth: ['', [Validators.required]],
       password : ['', [Validators.required]],
       confirmPassword : ['', [Validators.required]],
     });
@@ -83,12 +84,17 @@ export class Signup {
     if (this.signupForm.valid && this.isPasswordValid()) 
     {
       this.isLoading = true;
+      const dateOfBirth = this.signupForm.value.dateOfBirth;
+      const calculatedAge = this.calculateAge(dateOfBirth);
+
       const request: SignupInterface =
       {
         firstName : this.signupForm.value.firstName,
         lastName : this.signupForm.value.lastName,
         username : this.signupForm.value.userName,
         email : this.signupForm.value.email,
+        dateOfBirth: dateOfBirth,
+        age: calculatedAge,
         password : this.signupForm.value.password
       }
       this.authService.signup_request(request)
@@ -144,5 +150,21 @@ export class Signup {
     const password = this.signupForm.get('password')?.value;
     const confirmPassword = this.signupForm.get('confirmPassword')?.value;
     return password !== confirmPassword && !!confirmPassword;
+  }
+
+  // Calculate age from date of birth
+  calculateAge(dateOfBirth: string): number {
+    if (!dateOfBirth) return 0;
+
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age;
   }
 }
