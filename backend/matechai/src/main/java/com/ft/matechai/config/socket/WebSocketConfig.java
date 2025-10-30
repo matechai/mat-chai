@@ -19,12 +19,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-chat")
+        registry.addEndpoint("/api/ws-chat")
                 .addInterceptors(jwtHandshakeInterceptor) 
                 .setAllowedOrigins("*");
                 // .withSockJS(); 
-                //uncomment when use Frontend keep .withSockJS() —
-                // but make sure your frontend uses a SockJS client (e.g., @stomp/stompjs or sockjs-client).
     }
 
     @Override
