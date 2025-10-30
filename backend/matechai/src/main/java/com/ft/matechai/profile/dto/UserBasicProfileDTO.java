@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -15,7 +16,7 @@ import java.util.List;
 public class UserBasicProfileDTO {
 
     private String username;
-    private int age;
+    private LocalDate dateOfBirth;
     private String profileImage;
     private List<String> imageUrls;
 
