@@ -5,7 +5,6 @@ type User {
     firstName: String
     lastName: String
     dateOfBirth: String
-    age: Int
 
     gender: String
     sexualPreferences: [String]
