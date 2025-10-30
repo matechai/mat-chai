@@ -84,17 +84,13 @@ export class Signup {
     if (this.signupForm.valid && this.isPasswordValid()) 
     {
       this.isLoading = true;
-      const dateOfBirth = this.signupForm.value.dateOfBirth;
-      const calculatedAge = this.calculateAge(dateOfBirth);
-
       const request: SignupInterface =
       {
         firstName : this.signupForm.value.firstName,
         lastName : this.signupForm.value.lastName,
         username : this.signupForm.value.userName,
         email : this.signupForm.value.email,
-        dateOfBirth: dateOfBirth,
-        age: calculatedAge,
+        dateOfBirth: this.signupForm.value.dateOfBirth,
         password : this.signupForm.value.password
       }
       this.authService.signup_request(request)
