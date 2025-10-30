@@ -1,5 +1,6 @@
 package com.ft.matechai.chat.interceptor;
 
+import java.net.http.HttpHeaders;
 import java.util.List;
 import java.util.Map;
 
@@ -25,20 +26,47 @@ public class JwtHandShakeInterceptor implements HandshakeInterceptor {
                                    ServerHttpResponse response,
                                    WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) throws Exception {
-
+        
+        String jwt = null;
         List<String> authHeaders = request.getHeaders().get("Authorization");
-        if (authHeaders != null && !authHeaders.isEmpty()) {
-            String jwt = authHeaders.get(0).replace("Bearer ", "");
-            if (jwtService.validateToken(jwt)) {
-                // Use getUsernameFromToken instead of getUserIdFromJwt
-                attributes.put("userId", jwtService.getUsernameFromToken(jwt));
-                System.out.println("JWT validated, user: ......... " + jwtService.getUsernameFromToken(jwt));
-                return true;
+        if (authHeaders != null && !authHeaders.isEmpty()) 
+            jwt = authHeaders.get(0).replace("Bearer ", "");
+        
+           // 2️⃣ If not present, try reading from cookies
+        if (jwt == null) 
+        {
+            List<String> cookies = request.getHeaders().get("cookie");
+            if (cookies != null) 
+            {
+                for (String cookie : cookies) 
+                {
+                    for (String c : cookie.split(";")) 
+                    {
+                        c = c.trim();
+                        if (c.startsWith("accessToken=")) 
+                        {
+                            jwt = c.substring("accessToken=".length());
+                            break;
+                        }
+                    }
+                    if (jwt != null) break;
+                }
             }
         }
-        System.out.println("JWT validated, user nothing.......... ");
 
-        return false; // reject connection if JWT invalid
+        // 3️⃣ Validate and extract username
+        if (jwt != null && jwtService.validateToken(jwt)) 
+        {
+            String username = jwtService.getUsernameFromToken(jwt);
+            attributes.put("userId", username);
+            System.out.println("✅ JWT validated from header/cookie, user: " + username);
+            return true;
+        }
+        else 
+        {
+            System.out.println("❌ No valid JWT found in header or cookie");
+            return false;
+        }
     }
 
     @Override
