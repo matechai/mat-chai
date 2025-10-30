@@ -49,7 +49,8 @@ public class User {
     // Profile
     private String biography;
     private Float fame;
-    private String location;
+    private Double latitude;
+    private Double longitude;
     private String profileImageUrl;
     @Builder.Default
     private List<String> imageUrls = new ArrayList<>();
