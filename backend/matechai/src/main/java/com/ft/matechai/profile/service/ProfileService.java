@@ -1,5 +1,6 @@
 package com.ft.matechai.profile.service;
 
+import com.ft.matechai.profile.dto.LocationDTO;
 import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
@@ -30,5 +31,25 @@ public class ProfileService {
                         viewed.getProfileImageUrl(),
                         viewed.getImageUrls()
                 ));
+    }
+
+    public void updateLocation(String username, LocationDTO location, String xForwardedFor) {
+
+        User user = userRepository.findByUsernameOrThrow(username);
+
+        if (location.getLatitude() == null || location.getLongitude() == null) {
+
+            String ip = null;
+            if (xForwardedFor != null && !xForwardedFor.isEmpty())
+                ip = xForwardedFor.split(",")[0];
+
+            GeoService geoService = new GeoService();
+            GeoService.IpApiResponse response = geoService.getLocation(ip);
+            location.setLatitude(response.lat);
+            location.setLongitude(response.lon);
+        }
+        user.setLatitude(location.getLatitude());
+        user.setLongitude(location.getLongitude());
+        userRepository.save(user);
     }
 }
