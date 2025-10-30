@@ -30,7 +30,5 @@ public class SignUpRequestDTO {
     @NotNull
     private LocalDate dateOfBirth;
 
-    private int age;
-
     private boolean enabled = false;
 }
