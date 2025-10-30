@@ -27,7 +27,7 @@ public class ProfileService {
         return userRepository.findViewersByUserId(user.getUsername(), pageable)
                 .map(viewed -> new UserBasicProfileDTO(
                         viewed.getUsername(),
-                        viewed.getAge(),
+                        viewed.getDateOfBirth(),
                         viewed.getProfileImageUrl(),
                         viewed.getImageUrls()
                 ));
