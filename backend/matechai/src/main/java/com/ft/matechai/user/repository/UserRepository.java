@@ -167,7 +167,13 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     )
     Page<User> findViewersByUserId(@Param("username") String username, Pageable pageable);
 
-
+    // Check if a user has blocked another user
+    @Query("""
+        MATCH (a:User {username: $username})-[:BLOCKED]->(b:User {username: $targetUsername})
+        RETURN count(b) > 0
+        """)
+    boolean isBlocked(@Param("username") String username,
+                  @Param("targetUsername") String targetUsername);
 
     @Query("MATCH (a:User) RETURN a")
     List<User> findAllUsers();

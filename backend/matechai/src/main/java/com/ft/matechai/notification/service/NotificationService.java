@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.ft.matechai.notification.enums.NotificationType;
 import com.ft.matechai.notification.model.Notification;
 import com.ft.matechai.notification.repository.NotificationRepository;
 
@@ -23,7 +24,7 @@ public class NotificationService {
 	}
 
 
-	public void createAndSendNotification(String sender, String receiver, String type, String message)
+	public void createAndSendNotification(String sender, String receiver, NotificationType type, String message)
 	{
 		Notification notif = new Notification();
 		notif.setSender(sender);

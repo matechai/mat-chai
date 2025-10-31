@@ -2,6 +2,8 @@ package com.ft.matechai.match.service;
 
 import com.ft.matechai.exception.MatchExceptions;
 import com.ft.matechai.match.dto.LikeResponseDTO;
+import com.ft.matechai.notification.enums.NotificationType;
+import com.ft.matechai.notification.service.NotificationService;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -11,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class MatchService {
 
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public MatchService(UserRepository userRepository) {
+    public MatchService(UserRepository userRepository, NotificationService notificationService) {
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -24,13 +28,15 @@ public class MatchService {
         User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
 
         userRepository.like(user.getUsername(), targetUser.getUsername());
-        // todo should send notification (don't send when they have block relation)
+        String likeMessage = user.getUsername() + " Likes you";
+        notificationService.createAndSendNotification(user.getUsername(), targetUser.getUsername(), NotificationType.LIKE, likeMessage);
 
         if (userRepository.isLikedBetween(user.getUsername(), targetUser.getUsername())) {
 
             userRepository.match(user.getUsername(), targetUser.getUsername());
-            // todo should create chat room
-            // todo should send notification (don't send when they have block relation)
+            String matchMessage = "you have matched with ";
+            notificationService.createAndSendNotification(user.getUsername(), targetUser.getUsername(), NotificationType.MATCH, user.getUsername() + matchMessage);
+            notificationService.createAndSendNotification(targetUser.getUsername(), user.getUsername(), NotificationType.MATCH, targetUser.getUsername() + matchMessage);
 
             return LikeResponseDTO.builder()
                     .liked(true)
@@ -57,7 +63,7 @@ public class MatchService {
         userRepository.deleteLike(username, targetUsername);
 
         if (userRepository.isMatchBetween(username, targetUsername))
-            handleUnmatch(username, targetUsername);
+            handleUnmatch(username, targetUsername, false);
     }
 
     public void block(User user, String targetUsername) {
@@ -72,7 +78,8 @@ public class MatchService {
         userRepository.deleteLike(username, targetUsername);
 
         if (userRepository.isMatchBetween(username, targetUsername))
-            handleUnmatch(username, targetUsername);
+            handleUnmatch(username, targetUsername, true);
+        
     }
 
     private void validateSelfRelation(String username, String targetUsername, String message) {
@@ -81,11 +88,13 @@ public class MatchService {
             throw new MatchExceptions.SelfRelationException(message);
     }
 
-    private void handleUnmatch(String username, String targetUsername) {
-
+    private void handleUnmatch(String username, String targetUsername, Boolean block) {
         userRepository.deleteMatch(username, targetUsername);
-
-        // todo should remove chat room, block notification
-        // This will prevent further notifications from that user, and the chat function between them will be disabled.;
+        if (!block)
+        {
+            String message = username + " unlike you. :( ";
+            notificationService.createAndSendNotification(username, targetUsername, NotificationType.UNLIKE, message);
+        }
+       
     }
 }
