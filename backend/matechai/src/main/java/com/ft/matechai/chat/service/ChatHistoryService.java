@@ -25,40 +25,54 @@ public class ChatHistoryService {
 		this.userRepository = userRepository;
 	}
 
-	//Get Chat Between two users (both directions)
-	public List<ChatMessage> getChatBetween(User user, String receiverUsername)
+	// Get chat messages between two users, excluding messages from blocked users
+    public List<ChatMessage> getChatBetween(User user, String receiverUsername) 
 	{
-		User receiver = userRepository.findByUsernameOrThrow(receiverUsername);
-		return chatRepository.findBySenderAndReceiverOrReceiverAndSender(user.getUsername(), receiver.getUsername(), receiver.getUsername(), user.getUsername());
-	}
+        User receiver = userRepository.findByUsernameOrThrow(receiverUsername);
 
-	public List<ChatPartnerDto> getChatPartners(User currentUser)
+        // Fetch all messages between the two users
+        List<ChatMessage> messages = chatRepository.findBySenderAndReceiverOrReceiverAndSender(
+                user.getUsername(), receiver.getUsername(),
+                receiver.getUsername(), user.getUsername()
+        );
+
+        // Remove messages where sender is blocked by the current user
+        messages.removeIf(msg -> userRepository.isBlocked(user.getUsername(), msg.getSender()));
+
+        return messages;
+    }
+
+	// Get chat partners with the last message, excluding blocked users
+    public List<ChatPartnerDto> getChatPartners(User currentUser) 
 	{
-		String username = currentUser.getUsername();
+        String username = currentUser.getUsername();
 
-		List<ChatMessage> allMessages = chatRepository.findBySenderAndReceiver(username, username);
+        // Fetch all messages where the user is sender or receiver
+        List<ChatMessage> allMessages = chatRepository.findBySenderOrReceiver(username, username);
 
-		 Map<String, ChatMessage> lastMessages = new HashMap<>();
-		
-		for (ChatMessage msg: allMessages)
-		{
-			String partner = msg.getSender().equals(username) ? msg.getReceiver() : msg.getSender();
-			
-			ChatMessage existing = lastMessages.get(partner);
-			if (existing == null || msg.getTimestamp().isAfter(existing.getTimestamp()))
-				lastMessages.put(partner, msg);
-		}
+        Map<String, ChatMessage> lastMessages = new HashMap<>();
+        for (ChatMessage msg : allMessages) {
+            String partner = msg.getSender().equals(username) ? msg.getReceiver() : msg.getSender();
 
-		return lastMessages.entrySet().stream()
-				.map(entry -> {
-					ChatMessage msg = entry.getValue();
-					return new ChatPartnerDto(
-						entry.getKey(),
-						msg.getContent(),
-						msg.getTimestamp()
-					);
-				})
-				.sorted((a, b) -> b.getLastMessageTime().compareTo(a.getLastMessageTime())) // latest first
+            // Skip partner if blocked by current user
+            if (userRepository.isBlocked(username, partner)) continue;
+
+            ChatMessage existing = lastMessages.get(partner);
+            if (existing == null || msg.getTimestamp().isAfter(existing.getTimestamp())) {
+                lastMessages.put(partner, msg);
+            }
+        }
+
+        return lastMessages.entrySet().stream()
+                .map(entry -> {
+                    ChatMessage msg = entry.getValue();
+                    return new ChatPartnerDto(
+                            entry.getKey(),
+                            msg.getContent(),
+                            msg.getTimestamp()
+                    );
+                })
+                .sorted((a, b) -> b.getLastMessageTime().compareTo(a.getLastMessageTime())) // latest first
                 .collect(Collectors.toList());
-	}
+    }
 }
