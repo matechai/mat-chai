@@ -13,88 +13,88 @@ import java.util.Optional;
 
 public interface UserRepository extends Neo4jRepository<User, String> {
 
-        //Add Relationship
-        @Transactional
-        @Query("MATCH (a:User {username: $viewer}), (b:User {username: $viewed}) " +
-        "MERGE (a)-[:VIEWED]->(b)")
-        void addViewRelation(@Param("viewer") String viewer, @Param("viewed") String viewed);
+	//Add Relationship
+	@Transactional
+	@Query("MATCH (a:User {username: $viewer}), (b:User {username: $viewed}) " +
+	"MERGE (a)-[:VIEWED]->(b)")
+	void addViewRelation(@Param("viewer") String viewer, @Param("viewed") String viewed);
 
-        @Transactional
-        @Query("MATCH (a:User {username: $sender}), (b:User {username: $receiver}) " +
-        "MERGE (a)-[:LIKED]->(b)")
-        void addLikeRelation(@Param("sender") String sender, @Param("receiver") String receiver);
+	@Transactional
+	@Query("MATCH (a:User {username: $sender}), (b:User {username: $receiver}) " +
+	"MERGE (a)-[:LIKED]->(b)")
+	void addLikeRelation(@Param("sender") String sender, @Param("receiver") String receiver);
 
-        @Transactional
-        @Query("MATCH (a:User {username: $sender})-[r:LIKED]->(b:User {username: $receiver}) DELETE r")
-        void removeLikeRelation(@Param("sender") String sender, @Param("receiver") String receiver);
+	@Transactional
+	@Query("MATCH (a:User {username: $sender})-[r:LIKED]->(b:User {username: $receiver}) DELETE r")
+	void removeLikeRelation(@Param("sender") String sender, @Param("receiver") String receiver);
 
-        @Query("MATCH (a:User {username: $sender})-[:LIKED]->(b:User {username: $receiver}) RETURN count(a) > 0")
-        boolean existsLikeRelation(@Param("sender") String sender, @Param("receiver") String receiver);
-
-
-        // Find by username
-        @Query("MATCH (a:User {username: $username}) Return a")
-        Optional<User> findByUsername(@Param("username") String username);
-
-        default User findByUsernameOrThrow(String username) {
-                return findByUsername(username)
-                        .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid username"));
-        }
-
-        boolean existsByUsername(String username);
-
-        boolean existsByEmail(String email);
+	@Query("MATCH (a:User {username: $sender})-[:LIKED]->(b:User {username: $receiver}) RETURN count(a) > 0")
+	boolean existsLikeRelation(@Param("sender") String sender, @Param("receiver") String receiver);
 
 
-        // Gender
-        @Transactional
-        @Query("MATCH (u:User {username: $username}), (g:Gender {gender: $gender}) " +
-                "MERGE (u)-[:HAS_GENDER]->(g)")
-        void setGender(@Param("username") String username,
-                        @Param("gender") String gender);
+	// Find by username
+	@Query("MATCH (a:User {username: $username}) Return a")
+	Optional<User> findByUsername(@Param("username") String username);
 
-        @Transactional
-        @Query("""
-                MATCH (u:User {username: $username})-[r:HAS_GENDER]->(g:Gender)
-                DELETE r
-                """)
-        void removeGender(@Param("username") String username);
+	default User findByUsernameOrThrow(String username) {
+			return findByUsername(username)
+					.orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid username"));
+	}
 
+	boolean existsByUsername(String username);
 
-        // Sexual Preference
-        @Transactional
-        @Query("MATCH (u:User {username: $username}), (s:SexualPreference {name: $prefName}) " +
-                "MERGE (u)-[:HAS_PREFERENCE]->(s)")
-        void addSexualPreference(@Param("username") String username,
-                                @Param("prefName") String prefName);
-
-        @Transactional
-        @Query("""        
-                MATCH (u:User {username: $username})-[r:HAS_PREFERENCE]->(s:SexualPreference)
-                WHERE NOT s.name IN $newPrefs
-                DELETE r
-                """)
-        void removeStaleSexualPreferences(@Param("username") String username,
-                                        @Param("newPrefs") List<String> newPrefs);
+	boolean existsByEmail(String email);
 
 
-        // Interest
-        @Transactional
-        @Query("MATCH (u:User {username: $username}), (i:Interest {name: $interestName}) " +
-                "MERGE (u)-[:INTERESTED_IN]->(i)")
-        void addInterest(@Param("username") String username,
-                        @Param("interestName") String interestName);
+	// Gender
+	@Transactional
+	@Query("MATCH (u:User {username: $username}), (g:Gender {gender: $gender}) " +
+			"MERGE (u)-[:HAS_GENDER]->(g)")
+	void setGender(@Param("username") String username,
+					@Param("gender") String gender);
 
-        @Transactional
-        @Query("""
-                MATCH (u:User {username: $username})-[r:INTERESTED_IN]->(i:Interest)
-                WHERE NOT i.name IN $newInterests
-                DELETE r
-                """)
-        void removeStaleInterests(@Param("username") String username,
-                                @Param("newInterests") List<String> newInterests);
+	@Transactional
+	@Query("""
+			MATCH (u:User {username: $username})-[r:HAS_GENDER]->(g:Gender)
+			DELETE r
+			""")
+	void removeGender(@Param("username") String username);
 
 
-        @Query("MATCH (a:User) RETURN a")
-        List<User> findAllUsers();
+	// Sexual Preference
+	@Transactional
+	@Query("MATCH (u:User {username: $username}), (s:SexualPreference {name: $prefName}) " +
+			"MERGE (u)-[:HAS_PREFERENCE]->(s)")
+	void addSexualPreference(@Param("username") String username,
+							@Param("prefName") String prefName);
+
+	@Transactional
+	@Query("""        
+			MATCH (u:User {username: $username})-[r:HAS_PREFERENCE]->(s:SexualPreference)
+			WHERE NOT s.name IN $newPrefs
+			DELETE r
+			""")
+	void removeStaleSexualPreferences(@Param("username") String username,
+									@Param("newPrefs") List<String> newPrefs);
+
+
+	// Interest
+	@Transactional
+	@Query("MATCH (u:User {username: $username}), (i:Interest {name: $interestName}) " +
+			"MERGE (u)-[:INTERESTED_IN]->(i)")
+	void addInterest(@Param("username") String username,
+					@Param("interestName") String interestName);
+
+	@Transactional
+	@Query("""
+			MATCH (u:User {username: $username})-[r:INTERESTED_IN]->(i:Interest)
+			WHERE NOT i.name IN $newInterests
+			DELETE r
+			""")
+	void removeStaleInterests(@Param("username") String username,
+							@Param("newInterests") List<String> newInterests);
+
+
+	@Query("MATCH (a:User) RETURN a")
+	List<User> findAllUsers();
 }
