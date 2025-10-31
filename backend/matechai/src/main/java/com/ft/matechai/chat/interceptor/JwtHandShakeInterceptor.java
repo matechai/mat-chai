@@ -25,7 +25,10 @@ public class JwtHandShakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request,
                                    ServerHttpResponse response,
                                    WebSocketHandler wsHandler,
-                                   Map<String, Object> attributes) throws Exception {
+                                   Map<String, Object> attributes) throws Exception 
+    {
+        System.out.println("🔹 Incoming WebSocket handshake headers:");
+        request.getHeaders().forEach((k, v) -> System.out.println(k + ": " + v));
         
         String jwt = null;
         List<String> authHeaders = request.getHeaders().get("Authorization");

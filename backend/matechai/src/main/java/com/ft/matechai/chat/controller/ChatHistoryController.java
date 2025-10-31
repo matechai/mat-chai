@@ -1,5 +1,6 @@
 package com.ft.matechai.chat.controller;
 
+import com.ft.matechai.chat.dto.ChatPartnerDto;
 import com.ft.matechai.chat.model.ChatMessage;
 import com.ft.matechai.chat.service.ChatHistoryService;
 import com.ft.matechai.config.auth.PrincipalDetails;
@@ -20,12 +21,11 @@ public class ChatHistoryController {
         this.chatHistoryService = chatHistoryService;
     }
 
-    // Get all messages for logged-in user
+   
     @GetMapping("/history")
-    public ResponseEntity<List<ChatMessage>> getMyChats(@AuthenticationPrincipal PrincipalDetails principalDetails) 
-	{
-
-        List<ChatMessage> response = chatHistoryService.getAllChatsForUser(principalDetails.getUser());
+    public ResponseEntity<List<ChatPartnerDto>> getChatPartners(@AuthenticationPrincipal PrincipalDetails principalDetails) 
+    {
+        List<ChatPartnerDto> response = chatHistoryService.getChatPartners(principalDetails.getUser());
         return ResponseEntity.ok(response);
     }
 

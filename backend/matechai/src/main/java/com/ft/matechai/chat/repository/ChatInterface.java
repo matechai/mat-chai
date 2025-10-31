@@ -11,6 +11,5 @@ public interface ChatInterface extends MongoRepository<ChatMessage, String>
     // all messages between two users (both directions)
     List<ChatMessage> findBySenderAndReceiverOrReceiverAndSender(String sender1, String receiver1, String sender2, String receiver2);
     List<ChatMessage> findBySenderAndReceiver(String sender, String receiverer);
-    List<ChatMessage> findBySenderOrReceiver(String sender, String receiver);
 
 }
