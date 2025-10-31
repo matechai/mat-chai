@@ -64,7 +64,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/auth/logout").authenticated()
                     .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN", "GOD")
                     .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "GOD")
-                    .requestMatchers("/ws-chat/**").permitAll()
+                    .requestMatchers("/ws-chat/**").authenticated()
                     .anyRequest().authenticated();
 
         return http.build();
