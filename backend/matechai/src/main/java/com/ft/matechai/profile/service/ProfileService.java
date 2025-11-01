@@ -22,13 +22,13 @@ public class ProfileService {
     public Page<UserBasicProfileDTO> getViewers(User user, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return null;
-        // return userRepository.findViewersByUserId(user.getUsername(), pageable)
-        //         .map(viewed -> new UserBasicProfileDTO(
-        //                 viewed.getUsername(),
-        //                 viewed.getAge(),
-        //                 viewed.getProfileImageUrl(),
-        //                 viewed.getImageUrls()
-        //         ));
+
+        return userRepository.findViewersByUserId(user.getUsername(), pageable)
+                .map(viewed -> new UserBasicProfileDTO(
+                        viewed.getUsername(),
+                        viewed.getAge(),
+                        viewed.getProfileImageUrl(),
+                        viewed.getImageUrls()
+                ));
     }
 }
