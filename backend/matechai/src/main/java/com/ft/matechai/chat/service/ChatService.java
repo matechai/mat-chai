@@ -29,11 +29,22 @@ public class ChatService
     public void sendMessage(User sender, String receiverUsername, String content) 
     {
         User receiver = userRepository.findByUsernameOrThrow(receiverUsername);
-        ChatMessage message = new ChatMessage(sender.getUsername(), receiver.getUsername(), content, LocalDateTime.now());
+
+        ChatMessage message = new ChatMessage(
+            sender.getUsername(), 
+            receiver.getUsername(), 
+            content, 
+            LocalDateTime.now()
+        );
+
         messageRepository.save(message);
         messagingTemplate.convertAndSendToUser(receiver.getUsername(), "/queue/messages", message);
+
         String notifyMessage = "you got a message from " + sender.getUsername();
         if (!userRepository.isBlocked(receiverUsername, sender.getUsername()))
             notificationService.createAndSendNotification(sender.getUsername(), receiverUsername, NotificationType.CHAT, notifyMessage);
     }
+
+
+
 }

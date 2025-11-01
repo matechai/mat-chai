@@ -5,6 +5,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+
+import com.ft.matechai.chat.dto.ChatMessageDto;
 import com.ft.matechai.chat.service.ChatService;
 import com.ft.matechai.config.auth.PrincipalDetails;
 
@@ -19,13 +21,12 @@ public class ChatController
         this.chatService = chatService;
     }
 
-    @MessageMapping("/chat.send/{receiverId}")
-    
+    @MessageMapping("/chat.send/{receiver}")
     public void sendMessage(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                            @DestinationVariable String receiver,
-                            @Payload String content) 
+                        @DestinationVariable String receiver,
+                        @Payload ChatMessageDto payload)  
     {
-        chatService.sendMessage(principalDetails.getUser(), receiver, content);
+        chatService.sendMessage(principalDetails.getUser(), receiver, payload.getContent());
     }
 
 }
