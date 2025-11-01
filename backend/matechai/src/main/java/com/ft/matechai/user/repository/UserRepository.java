@@ -1,7 +1,6 @@
 package com.ft.matechai.user.repository;
 
 import com.ft.matechai.exception.AuthExceptions;
-import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.user.node.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

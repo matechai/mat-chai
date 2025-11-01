@@ -425,3 +425,93 @@ label {
 	animation: spin 1s linear infinite;
 	display: inline-block;
 }
+/* Location Permission Styles */
+.location-container {
+	background: #f8f9fa;
+	border: 2px solid #e9ecef;
+	border-radius: 8px;
+	padding: 20px;
+	margin-top: 8px;
+}
+
+.location-status {
+	margin-bottom: 16px;
+}
+
+.location-message {
+	font-size: 14px;
+	font-weight: 500;
+	padding: 8px 12px;
+	border-radius: 6px;
+	background: #fff;
+	border: 1px solid #dee2e6;
+	display: inline-block;
+}
+
+.location-actions {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 16px;
+	flex-wrap: wrap;
+}
+
+.location-btn {
+	padding: 10px 16px;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	text-align: center;
+	min-width: 120px;
+}
+
+.allow-btn {
+	background: #28a745;
+	color: white;
+}
+
+.allow-btn:hover {
+	background: #218838;
+	transform: translateY(-1px);
+}
+
+.deny-btn {
+	background: #dc3545;
+	color: white;
+}
+
+.deny-btn:hover {
+	background: #c82333;
+	transform: translateY(-1px);
+}
+
+.info-btn {
+	background: #6c757d;
+	color: white;
+}
+
+.info-btn:hover {
+	background: #5a6268;
+	transform: translateY(-1px);
+}
+
+.location-info {
+	color: #6c757d;
+	font-size: 13px;
+	line-height: 1.4;
+	display: block;
+}
+
+/* Responsive location buttons */
+@media (max-width: 768px) {
+	.location-actions {
+		flex-direction: column;
+	}
+
+	.location-btn {
+		width: 100%;
+		min-width: unset;
+	}
+}
