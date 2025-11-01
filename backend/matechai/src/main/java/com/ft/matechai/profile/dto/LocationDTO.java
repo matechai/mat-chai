@@ -1,4 +1,4 @@
-package com.ft.matechai.user.dto;
+package com.ft.matechai.profile.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,11 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfoDTO {
+public class LocationDTO {
 
-    private String email;
-
-    private String firstName;
-
-    private String lastName;
+    private Double latitude;
+    private Double longitude;
 }
