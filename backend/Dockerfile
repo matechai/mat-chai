@@ -3,7 +3,8 @@ FROM eclipse-temurin:17-jdk AS builder
 
 WORKDIR /app
 
-# Copy Gradle wrapper scripts and wrapper folder (contains gradle-wrapper.jar)
+
+# Copy source code
 COPY matechai ./matechai
 
 WORKDIR /app/matechai
