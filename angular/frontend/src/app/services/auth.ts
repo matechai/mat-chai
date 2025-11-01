@@ -21,11 +21,12 @@ export class Auth {
     });
   }
 
-  logout_request() // Check API URL
+  logout_request() // Using DELETE method as requested
   {
     this.clearUserCache();
-    return this.http.post<null>(`${this.apiUrl}/auth/logout`, {},
-      { withCredentials: true });
+    return this.http.delete<null>(`${this.apiUrl}/auth/logout`, {
+      withCredentials: true
+    });
   }
 
   refresh_request() {
