@@ -33,10 +33,9 @@ public class ProfileController {
     @PostMapping("/users/{username}/location")
     @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
     public ResponseEntity<?> updateLocation(@PathVariable String username,
-                                            @RequestBody LocationDTO location,
-                                            @RequestHeader(value = "X-Forwarded-For", required = false) String xForwardedFor) {
+                                            @RequestBody LocationDTO location) {
 
-        profileService.updateLocation(username, location, xForwardedFor);
+        profileService.updateLocation(username, location);
 
         return ResponseEntity.noContent().build();
     }

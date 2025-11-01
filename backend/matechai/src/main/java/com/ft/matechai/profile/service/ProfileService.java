@@ -33,23 +33,13 @@ public class ProfileService {
                 ));
     }
 
-    public void updateLocation(String username, LocationDTO location, String xForwardedFor) {
+    public void updateLocation(String username, LocationDTO location) {
 
         User user = userRepository.findByUsernameOrThrow(username);
 
-        if (location.getLatitude() == null || location.getLongitude() == null) {
-
-            String ip = null;
-            if (xForwardedFor != null && !xForwardedFor.isEmpty())
-                ip = xForwardedFor.split(",")[0];
-
-            GeoService geoService = new GeoService();
-            GeoService.IpApiResponse response = geoService.getLocation(ip);
-            location.setLatitude(response.lat);
-            location.setLongitude(response.lon);
-        }
         user.setLatitude(location.getLatitude());
         user.setLongitude(location.getLongitude());
+
         userRepository.save(user);
     }
 }
