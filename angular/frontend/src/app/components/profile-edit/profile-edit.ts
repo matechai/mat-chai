@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { Auth } from '../../services/auth';
 import { ProfileUpdateRequest } from '../../interfaces/profile-interfaces';
@@ -18,6 +19,7 @@ export class ProfileEdit implements OnInit {
 	private userService = inject(UserService);
 	private authService = inject(Auth);
 	private router = inject(Router);
+	private http = inject(HttpClient);
 
 	// Using Signals for improved reactivity
 	genders = signal<string[]>([]);
@@ -34,6 +36,12 @@ export class ProfileEdit implements OnInit {
 	successMessage = signal<string>('');
 	errorMessage = signal<string>('');
 	currentUsername = signal<string>('');
+
+	// Location-related signals (for internal use only)
+	locationPermission = signal<'granted' | 'denied' | 'prompt' | 'unknown'>('unknown');
+	currentLocation = signal<{ latitude: number, longitude: number } | null>(null);
+	locationRequestInProgress = signal<boolean>(false);
+	locationRequestCompleted = signal<boolean>(false);
 
 	// Computed values
 	canSubmit = computed(() =>
@@ -58,26 +66,31 @@ export class ProfileEdit implements OnInit {
 		this.loadCurrentUser();
 		this.loadOptions();
 		this.loadExistingProfile();
+		this.checkLocationPermission();
 	}
 
 	loadCurrentUser(): void {
-		// First check cached username (synchronously for speed)
-		const cachedUsername = this.authService.getCachedUsername();
-		if (cachedUsername) {
-			console.log('✅ Using cached username:', cachedUsername);
-			this.currentUsername.set(cachedUsername);
-		}
-
-		// Use GraphQL-based getCurrentUser (no more JWT headaches!)
+		// Use GraphQL-based getCurrentUser (authoritative source)
 		this.authService.getCurrentUser().subscribe({
 			next: (user: any) => {
 				console.log('✅ GraphQL username loaded:', user.username);
 				this.currentUsername.set(user.username);
+
+				// Update cache with fresh data to ensure consistency
+				sessionStorage.setItem('username', user.username);
 			},
 			error: (error: any) => {
 				console.error('❌ Error loading current user from GraphQL:', error);
-				// Show error only if no cached value and API also fails
-				if (!cachedUsername) {
+
+				// Clear potentially stale cache
+				this.authService.clearUserCache();
+
+				// Only use cached username as fallback if GraphQL fails
+				const cachedUsername = this.authService.getCachedUsername();
+				if (cachedUsername) {
+					console.log('⚠️ Using cached username as fallback:', cachedUsername);
+					this.currentUsername.set(cachedUsername);
+				} else {
 					this.errorMessage.set('Failed to load user information');
 				}
 			}
@@ -267,17 +280,277 @@ export class ProfileEdit implements OnInit {
 
 		this.userService.updateProfile(this.currentUsername(), profileData, files).subscribe({
 			next: (response: any) => {
-				console.log('Profile updated successfully:', response);
+				console.log('Profile update successful:', response);
 				this.isLoading.set(false);
 
-				// Redirect to matching page immediately after successful profile update
+				// Navigate to matching page immediately after successful profile update
 				this.router.navigate(['/matching']);
 			},
 			error: (error: any) => {
-				console.error('Error updating profile:', error);
-				this.errorMessage.set('Failed to update profile. Please try again.');
+				console.error('Profile update error:', error);
+				this.errorMessage.set('Profile update failed. Please try again.');
 				this.isLoading.set(false);
 			}
 		});
 	}
+
+	// Location permission and handling methods
+	async checkLocationPermission(): Promise<void> {
+		console.log('📍 Location request started');
+
+		// Prevent concurrent requests
+		if (this.locationRequestInProgress() || this.locationRequestCompleted()) {
+			console.log('🚫 Location request already in progress or completed');
+			return;
+		}
+
+		if (!navigator.geolocation) {
+			console.log('❌ Browser does not support geolocation, using IP-based location');
+			this.sendLocationDataWithIP();
+			return;
+		}
+
+		this.locationRequestInProgress.set(true);
+
+		// First check permission status
+		if ('permissions' in navigator) {
+			try {
+				const permission = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
+				console.log('🔍 Current permission state:', permission.state);
+
+				// Register permission change listener
+				permission.addEventListener('change', () => {
+					console.log('🔄 Permission state changed:', permission.state);
+					this.handlePermissionChange(permission.state);
+				});
+
+				// Handle based on current state
+				await this.handlePermissionState(permission.state);
+			} catch (error) {
+				console.log('⚠️ Permission API failed, requesting location directly');
+				await this.requestLocationDirectly();
+			}
+		} else {
+			console.log('ℹ️ Permissions API not supported, requesting location directly');
+			await this.requestLocationDirectly();
+		}
+	}
+
+	// Handle permission state
+	private async handlePermissionState(state: string): Promise<void> {
+		switch (state) {
+			case 'granted':
+				console.log('✅ Permission granted - requesting location directly');
+				await this.requestLocationDirectly();
+				break;
+
+			case 'denied':
+				console.log('❌ Permission denied - using IP-based location');
+				this.sendLocationDataWithIP();
+				break;
+
+			case 'prompt':
+			default:
+				console.log('🔄 Permission prompt required - waiting for user approval');
+				await this.requestLocationWithPrompt();
+				break;
+		}
+	}
+
+	// Handle permission changes (when user changes permission in settings)
+	private handlePermissionChange(newState: string): void {
+		console.log(`🔄 Permission changed to ${newState}`);
+
+		// Re-process if not already completed
+		if (!this.locationRequestCompleted()) {
+			this.handlePermissionState(newState);
+		} else {
+			console.log('ℹ️ Location processing already completed, ignoring permission change');
+		}
+	}
+
+	// Request location directly when permission is granted
+	private async requestLocationDirectly(): Promise<void> {
+		try {
+			await this.getLocation();
+		} catch (error: any) {
+			console.log('❌ Location acquisition failed, using IP-based location:', error.code, error.message);
+			this.sendLocationDataWithIP();
+		}
+	}
+
+	// When permission prompt is required
+	private async requestLocationWithPrompt(): Promise<void> {
+		try {
+			// First attempt (ignored)
+			console.log('🔄 First attempt (permission popup)');
+			await this.getLocation();
+		} catch (error: any) {
+			console.log('❌ First attempt failed:', error.code);
+
+			// Second attempt after 2 seconds
+			setTimeout(async () => {
+				try {
+					console.log('🔄 Second attempt (actual use)');
+					await this.getLocation();
+				} catch (retryError: any) {
+					console.log('❌ Second attempt also failed, using IP-based location:', retryError.code);
+					this.sendLocationDataWithIP();
+				}
+			}, 2000);
+		}
+	}
+
+	// Get location (first request for position)
+	private async getLocation(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					console.log('🔍 getLocation result:', {
+						latitude: position.coords.latitude.toFixed(6),
+						longitude: position.coords.longitude.toFixed(6)
+					});
+					this.sendLocationData(position.coords.latitude, position.coords.longitude);
+					resolve();
+				},
+				(error) => {
+					console.log('🔍 getLocation error:', error.code, error.message);
+					reject(error); // Pass error object
+				},
+				{
+					enableHighAccuracy: false,
+					timeout: 5000,
+					maximumAge: 0
+				}
+			);
+		});
+	}
+
+	// Get external IP-based location information (multiple service fallback)
+	private async getLocationByIP(): Promise<{ latitude: number, longitude: number } | null> {
+		// Try multiple IP geolocation services in order
+		const services = [
+			{
+				url: 'https://ip-api.com/json/',
+				name: 'ip-api.com',
+				parse: (data: any) => ({
+					latitude: data.lat,
+					longitude: data.lon,
+					city: data.city,
+					country: data.country
+				})
+			},
+			{
+				url: 'https://ipinfo.io/json',
+				name: 'ipinfo.io',
+				parse: (data: any) => {
+					const [lat, lon] = data.loc ? data.loc.split(',') : [null, null];
+					return {
+						latitude: parseFloat(lat),
+						longitude: parseFloat(lon),
+						city: data.city,
+						country: data.country
+					};
+				}
+			}
+		];
+
+		for (const service of services) {
+			try {
+				console.log(`🌐 Requesting IP-based location from ${service.name}...`);
+
+				const response = await this.http.get<any>(service.url).toPromise();
+
+				if (response) {
+					const parsed = service.parse(response);
+
+					if (parsed.latitude && parsed.longitude &&
+						!isNaN(parsed.latitude) && !isNaN(parsed.longitude)) {
+						console.log(`✅ Location acquired from ${service.name}:`, parsed.city, parsed.country);
+						return {
+							latitude: parsed.latitude,
+							longitude: parsed.longitude
+						};
+					}
+				}
+
+				console.log(`⚠️ Incomplete response from ${service.name}:`, response);
+
+			} catch (error) {
+				console.error(`❌ Request to ${service.name} failed:`, error);
+				// Continue to next service
+			}
+		}
+
+		console.error('❌ All IP geolocation services failed');
+		return null;
+	}
+
+	// Send IP-based location data (alternative when GPS permission is unavailable)
+	private async sendLocationDataWithIP(): Promise<void> {
+		const username = this.currentUsername();
+		if (!username) {
+			console.error('❌ No username available');
+			return;
+		}
+
+		// Get location information based on external IP
+		const ipLocation = await this.getLocationByIP();
+
+		if (ipLocation) {
+			console.log('📡 Sending IP-based location:', ipLocation.latitude.toFixed(6), ipLocation.longitude.toFixed(6));
+		} else {
+			console.log('📡 No IP location information, sending null');
+		}
+
+		const locationData = ipLocation ? {
+			latitude: ipLocation.latitude,
+			longitude: ipLocation.longitude
+		} : { latitude: null, longitude: null };
+
+		this.userService.updateUserLocation(username, locationData).subscribe({
+			next: () => {
+				console.log('✅ Location data sent successfully');
+				this.locationRequestInProgress.set(false);
+				this.locationRequestCompleted.set(true);
+			},
+			error: (error: any) => {
+				console.error('❌ Location data transmission failed:', error);
+				this.locationRequestInProgress.set(false);
+				this.locationRequestCompleted.set(true);
+			}
+		});
+	}
+
+	// Send location data (coordinates or null)
+	private sendLocationData(latitude: number | null, longitude: number | null): void {
+
+		const username = this.currentUsername();
+		if (!username) {
+			console.error('❌ No username available');
+			return;
+		}
+
+		const locationData = { latitude, longitude };
+		const logMessage = latitude && longitude ?
+			`Sending GPS location: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}` :
+			'GPS location transmission failed';
+
+		console.log('📡', logMessage);
+
+		this.userService.updateUserLocation(username, locationData).subscribe({
+			next: () => {
+				console.log('✅ Location data sent successfully');
+				this.locationRequestInProgress.set(false);
+				this.locationRequestCompleted.set(true);
+			},
+			error: (error: any) => {
+				console.error('❌ Location data transmission failed:', error);
+				this.locationRequestInProgress.set(false);
+				this.locationRequestCompleted.set(true);
+			}
+		});
+	}
+
+
 }

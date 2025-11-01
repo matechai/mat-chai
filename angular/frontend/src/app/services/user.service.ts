@@ -88,4 +88,12 @@ export class UserService {
       withCredentials: true
     });
   }
+
+  // Update user location
+  updateUserLocation(username: string, locationData: { latitude: number | null, longitude: number | null }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users/${username}/location`, locationData, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 }
