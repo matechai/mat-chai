@@ -33,4 +33,11 @@ public interface InterestRepository extends Neo4jRepository<Interest, Long> {
 
     @Query("MATCH (i:Interest) RETURN i.name AS name")
     List<String> findAllNames();
+
+    @Query("""
+                MATCH (u1:User {username: $user1})-[:INTERESTED_IN]->(i:Interest)<-[:INTERESTED_IN]-(u2:User {username: $user2})
+                RETURN count(i) AS commonTagCount
+            """)
+    int getSameInterestCount(@Param("user1") String user1, @Param("user2") String user2);
+
 }
