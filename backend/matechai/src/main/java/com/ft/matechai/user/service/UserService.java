@@ -1,5 +1,6 @@
 package com.ft.matechai.user.service;
 
+import com.ft.matechai.profile.service.FameService;
 import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.dto.UserProfileDTO;
 import com.ft.matechai.option.node.Gender;
@@ -12,6 +13,7 @@ import com.ft.matechai.option.repository.InterestRepository;
 import com.ft.matechai.user.repository.UserRepository;
 
 import graphql.schema.DataFetchingEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,17 +39,20 @@ public class UserService {
     private final GenderRepository genderRepository;
     private final SexualPreferenceRepository sexualPreferenceRepository;
     private final InterestRepository interestRepository;
+    private final FameService fameService;
 
 
 	public UserService(UserRepository userRepository,
                        GenderRepository genderRepository,
                        SexualPreferenceRepository sexualPreferenceRepository,
-                       InterestRepository interestRepository) {
+                       InterestRepository interestRepository,
+                       FameService fameService) {
 		this.userRepository = userRepository;
         this.genderRepository = genderRepository;
         this.sexualPreferenceRepository = sexualPreferenceRepository;
         this.interestRepository = interestRepository;
-	}
+        this.fameService = fameService;
+    }
 
 	// GETTERS // GETTERS // GETTERS // GETTERS //
 
@@ -112,6 +117,7 @@ public class UserService {
 
         updateProfileWithoutImages(user, dto);
         saveImages(user, files);
+        fameService.updateProfile(user);
 
         userRepository.save(user);
 
