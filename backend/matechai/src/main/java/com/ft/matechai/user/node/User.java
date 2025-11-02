@@ -48,7 +48,7 @@ public class User {
 
     // Profile
     private String biography;
-    private Float fame;
+    private Double fame;
     private Double latitude;
     private Double longitude;
     private String profileImageUrl;

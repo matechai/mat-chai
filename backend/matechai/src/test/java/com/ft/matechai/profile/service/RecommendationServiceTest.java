@@ -35,13 +35,13 @@ class RecommendationServiceTest {
         user1.setUsername("alice");
         user1.setLatitude(37.5);
         user1.setLongitude(127.0);
-        user1.setFame(80f);
+        user1.setFame(80d);
 
         user2 = new User();
         user2.setUsername("bob");
         user2.setLatitude(37.6);
         user2.setLongitude(127.1);
-        user2.setFame(50f);
+        user2.setFame(50d);
     }
 
     @Test
