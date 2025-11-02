@@ -47,10 +47,6 @@ public class Neo4jInitializer implements CommandLineRunner {
                 "Heterosexual",
                 "Homosexual",
                 "Bisexual",
-                "Pansexual",
-                "Asexual",
-                "Demisexual",
-                "Queer",
                 "Prefer not to say",
                 "Other"
         };
