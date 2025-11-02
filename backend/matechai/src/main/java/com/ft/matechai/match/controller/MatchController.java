@@ -2,6 +2,7 @@ package com.ft.matechai.match.controller;
 
 import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.match.dto.LikeResponseDTO;
+import com.ft.matechai.match.dto.PaginatedUserDTO;
 import com.ft.matechai.match.service.MatchService;
 import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.profile.service.RecommendationService;
@@ -24,10 +25,12 @@ public class MatchController {
 
 
     @GetMapping("/matching")
-    public UserBasicProfileDTO getNextMatch(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                            @RequestParam(defaultValue = "0") int page) {
+    public PaginatedUserDTO getNextMatch(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "fame") String sortBy,         // fame, age, distance, interest
+                                         @RequestParam(defaultValue = "desc") String order) {        // asc, desc
 
-        return recommendationService.getRecommendedUsers(principalDetails.getUser(), page);
+        return recommendationService.getRecommendedUsers(principalDetails.getUser(), page, sortBy, order);
     }
 
     @PostMapping("/users/{targetUsername}/like")

@@ -1,5 +1,6 @@
 package com.ft.matechai.profile.service;
 
+import com.ft.matechai.match.dto.PaginatedUserDTO;
 import com.ft.matechai.option.repository.InterestRepository;
 import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.user.node.User;
@@ -8,6 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 
 @Service
@@ -30,22 +35,41 @@ public class RecommendationService {
      * 2. Filter by gender and sexual preference.
      * 3. Sort by fame score in descending order.
      */
-    public UserBasicProfileDTO getRecommendedUsers(User user, int page) {
+    public PaginatedUserDTO getRecommendedUsers(User user, int page, String sortBy, String order) {
 
         Pageable pageable = PageRequest.of(page, 1);
         Page<User> usersPage = userRepository.getUsersForMatching(user.getUsername(), pageable);
 
-        if (!usersPage.hasContent()) {
+        if (!usersPage.hasContent())
             return null;
-        }
 
-        User targetUser = usersPage.getContent().get(0);
+        List<User> sortedList = new ArrayList<>(usersPage.getContent());
 
-        return UserBasicProfileDTO.builder()
+        Comparator<User> comparator = switch (sortBy) {
+            case "age" -> Comparator.comparing(User::getDateOfBirth);
+            case "distance" -> Comparator.comparing(u -> distance(user.getLatitude(), user.getLongitude(), u.getLatitude(), u.getLongitude()));
+            case "interest" -> Comparator.comparing(u -> calculateCommonTagsScore(user, u));
+            default -> Comparator.comparing(User::getFame);
+        };
+
+        if ("desc".equalsIgnoreCase(order))
+            comparator = comparator.reversed();
+        sortedList.sort(comparator);
+
+        User targetUser = sortedList.get(0);
+
+        UserBasicProfileDTO userProfileDto = UserBasicProfileDTO.builder()
                 .username(targetUser.getUsername())
                 .profileImage(targetUser.getProfileImageUrl())
                 .imageUrls(targetUser.getImageUrls())
                 .dateOfBirth(targetUser.getDateOfBirth())
+                .build();
+
+        return PaginatedUserDTO.builder()
+                .user(userProfileDto)
+                .currentPage(page)
+                .totalPages(usersPage.getTotalPages())
+                .hasNext(usersPage.hasNext())
                 .build();
     }
 
