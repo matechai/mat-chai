@@ -3,6 +3,9 @@ package com.ft.matechai.match.controller;
 import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.match.dto.LikeResponseDTO;
 import com.ft.matechai.match.service.MatchService;
+import com.ft.matechai.profile.dto.UserBasicProfileDTO;
+import com.ft.matechai.profile.service.RecommendationService;
+import com.ft.matechai.user.node.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +15,20 @@ import org.springframework.web.bind.annotation.*;
 public class MatchController {
 
     private final MatchService matchService;
+    private final RecommendationService recommendationService;
 
-    public MatchController(MatchService matchService) {
+    public MatchController(MatchService matchService, RecommendationService recommendationService) {
         this.matchService = matchService;
+        this.recommendationService = recommendationService;
     }
 
+
+    @GetMapping("/matching")
+    public UserBasicProfileDTO getNextMatch(@AuthenticationPrincipal User currentUser,
+                                            @RequestParam(defaultValue = "0") int page) {
+
+        return recommendationService.getRecommendedUsers(currentUser, page);
+    }
 
     @PostMapping("/users/{targetUsername}/like")
     public ResponseEntity<LikeResponseDTO> like(@AuthenticationPrincipal PrincipalDetails principalDetails,
