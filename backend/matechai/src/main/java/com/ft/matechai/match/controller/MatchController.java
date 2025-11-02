@@ -24,10 +24,10 @@ public class MatchController {
 
 
     @GetMapping("/matching")
-    public UserBasicProfileDTO getNextMatch(@AuthenticationPrincipal User currentUser,
+    public UserBasicProfileDTO getNextMatch(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                             @RequestParam(defaultValue = "0") int page) {
 
-        return recommendationService.getRecommendedUsers(currentUser, page);
+        return recommendationService.getRecommendedUsers(principalDetails.getUser(), page);
     }
 
     @PostMapping("/users/{targetUsername}/like")
