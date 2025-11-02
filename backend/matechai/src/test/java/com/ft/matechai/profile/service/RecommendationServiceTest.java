@@ -1,5 +1,6 @@
 package com.ft.matechai.profile.service;
 
+import com.ft.matechai.match.dto.PaginatedUserDTO;
 import com.ft.matechai.option.repository.InterestRepository;
 import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.user.node.User;
@@ -16,6 +17,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.time.LocalDate;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,48 +61,19 @@ class RecommendationServiceTest {
 
         user = User.builder()
                 .username("alice")
-                .dateOfBirth(LocalDate.of(1995, 5, 20))
+                .latitude(37.5)
+                .longitude(127.0)
                 .build();
 
         targetUser = User.builder()
                 .username("bob")
-                .dateOfBirth(LocalDate.of(1994, 3, 10))
-                .profileImageUrl("profile_bob.jpg")
+                .dateOfBirth(LocalDate.of(1995, 5, 20))
+                .profileImageUrl("profile.jpg")
                 .imageUrls(List.of("img1.jpg", "img2.jpg"))
+                .fame(12.0)
+                .latitude(37.6)
+                .longitude(127.1)
                 .build();
-    }
-
-    @Test
-    void getRecommendedUsers_shouldReturnDTO() {
-
-        Pageable pageable = PageRequest.of(0, 1);
-        Page<User> page = new PageImpl<>(List.of(targetUser), pageable, 1);
-
-        when(userRepository.getUsersForMatching(user.getUsername(), pageable)).thenReturn(page);
-
-        UserBasicProfileDTO dto = recommendationService.getRecommendedUsers(user, 0);
-
-        assertNotNull(dto);
-        assertEquals("bob", dto.getUsername());
-        assertEquals("profile_bob.jpg", dto.getProfileImage());
-        assertEquals(2, dto.getImageUrls().size());
-        assertEquals(LocalDate.of(1994, 3, 10), dto.getDateOfBirth());
-
-        verify(userRepository).getUsersForMatching(user.getUsername(), pageable);
-    }
-
-    @Test
-    void getRecommendedUsers_noUsers_shouldReturnNull() {
-
-        Pageable pageable = PageRequest.of(0, 1);
-        Page<User> page = new PageImpl<>(List.of(), pageable, 0);
-
-        when(userRepository.getUsersForMatching(user.getUsername(), pageable)).thenReturn(page);
-
-        UserBasicProfileDTO dto = recommendationService.getRecommendedUsers(user, 0);
-
-        assertNull(dto);
-        verify(userRepository).getUsersForMatching(user.getUsername(), pageable);
     }
 
     @Test
@@ -132,5 +107,35 @@ class RecommendationServiceTest {
         double dist = RecommendationService.distance(37.5, 127.0, 37.6, 127.1);
         // Expected distance approximately 14 km
         assertEquals(14, dist, 1.0);
+    }
+
+    @Test
+    void testGetRecommendedUsers_returnsPaginatedDTO() {
+        // Page 설정
+        Page<User> mockPage = new PageImpl<>(List.of(targetUser), PageRequest.of(0, 1), 1);
+        when(userRepository.getUsersForMatching(eq("alice"), any(Pageable.class))).thenReturn(mockPage);
+
+        PaginatedUserDTO result = recommendationService.getRecommendedUsers(user, 0, "fame", "desc");
+
+        assertNotNull(result);
+        assertEquals(0, result.getCurrentPage());
+        assertEquals(1, result.getTotalPages());
+        assertTrue(result.isHasNext() == false);
+
+        UserBasicProfileDTO dto = result.getUser();
+        assertNotNull(dto);
+        assertEquals("bob", dto.getUsername());
+        assertEquals("profile.jpg", dto.getProfileImage());
+        assertEquals(2, dto.getImageUrls().size());
+        assertEquals(LocalDate.of(1995, 5, 20), dto.getDateOfBirth());
+    }
+
+    @Test
+    void testGetRecommendedUsers_noContent_returnsNull() {
+        Page<User> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 1), 0);
+        when(userRepository.getUsersForMatching(eq("alice"), any(Pageable.class))).thenReturn(emptyPage);
+
+        PaginatedUserDTO result = recommendationService.getRecommendedUsers(user, 0, "fame", "desc");
+        assertNull(result);
     }
 }
