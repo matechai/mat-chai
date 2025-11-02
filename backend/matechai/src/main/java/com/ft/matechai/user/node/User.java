@@ -48,7 +48,8 @@ public class User {
 
     // Profile
     private String biography;
-    private Double fame;
+    @Builder.Default
+    private Double fame = 10d;
     private Double latitude;
     private Double longitude;
     private String profileImageUrl;
