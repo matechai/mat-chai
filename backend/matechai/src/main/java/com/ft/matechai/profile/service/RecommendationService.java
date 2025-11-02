@@ -1,7 +1,12 @@
 package com.ft.matechai.profile.service;
 
 import com.ft.matechai.option.repository.InterestRepository;
+import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.user.node.User;
+import com.ft.matechai.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -10,11 +15,39 @@ public class RecommendationService {
 
     private static final double EARTH_RADIUS_KM = 6371.0;
     private final InterestRepository interestRepository;
+    private final UserRepository userRepository;
 
-    public RecommendationService(InterestRepository interestRepository) {
+    public RecommendationService(InterestRepository interestRepository, UserRepository userRepository) {
         this.interestRepository = interestRepository;
+        this.userRepository = userRepository;
     }
 
+
+    /**
+     * Returns a list of recommended users for the given user.
+     * Steps:
+     * 1. Exclude blocked users.
+     * 2. Filter by gender and sexual preference.
+     * 3. Sort by fame score in descending order.
+     */
+    public UserBasicProfileDTO getRecommendedUsers(User user, int page) {
+
+        Pageable pageable = PageRequest.of(page, 1);
+        Page<User> usersPage = userRepository.getUsersForMatching(user.getUsername(), pageable);
+
+        if (!usersPage.hasContent()) {
+            return null;
+        }
+
+        User targetUser = usersPage.getContent().get(0);
+
+        return UserBasicProfileDTO.builder()
+                .username(targetUser.getUsername())
+                .profileImage(targetUser.getProfileImageUrl())
+                .imageUrls(targetUser.getImageUrls())
+                .dateOfBirth(targetUser.getDateOfBirth())
+                .build();
+    }
 
     public double calculateRecommendationScore(User user, User targetUser) {
 
