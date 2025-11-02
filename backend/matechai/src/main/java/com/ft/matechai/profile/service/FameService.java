@@ -37,6 +37,16 @@ public class FameService {
     }
 
     /**
+     * When a received like is canceled, decrease fame.
+     */
+    public void cancelLike(User user) {
+
+        double newFame = Math.max(user.getFame() - LIKE_INCREMENT, MIN_FAME);
+        user.setFame(newFame);
+        userRepository.save(user);
+    }
+
+    /**
      * Increase fame when matched
      */
     public void receiveMatch(User user) {
