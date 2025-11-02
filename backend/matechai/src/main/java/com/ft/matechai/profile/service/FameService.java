@@ -61,7 +61,7 @@ public class FameService {
      * Fame increases proportionally to the number of photos (up to 4).
      * The resulting fame will not exceed MAX_FAME.
      */
-    public void completeProfile(User user) {
+    public void updateProfile(User user) {
 
         int maxPhotos = 4;
         int photoCount = user.getImageUrls() != null ? user.getImageUrls().size() : 0;

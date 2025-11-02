@@ -54,7 +54,7 @@ class FameServiceTest {
         // User with 2 profile photos
         user.setImageUrls(List.of("url1", "url2"));
 
-        fameService.completeProfile(user);
+        fameService.updateProfile(user);
 
         // Expected fame: INITIAL_FAME + PROFILE_INCREMENT * (2/4)
         double expectedFame = Math.min(10.0 + 2.0 * 2 / 4, 15.0);
