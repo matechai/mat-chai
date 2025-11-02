@@ -1,37 +1,26 @@
-<div style="max-width:500px; margin:2rem auto; padding:1rem; border:1px solid #ccc; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); font-family:Arial, sans-serif;">
-
-  <h2 style="text-align:center; margin-bottom:1rem;">Chats</h2>
-
-  <!-- Chat List -->
-  <div style="display:flex; flex-direction:column; gap:1rem; max-height:400px; overflow-y:auto;">
-    
-    <!-- Example Chat -->
-    <div style="display:flex; gap:1rem; align-items:center; padding:0.5rem; border-bottom:1px solid #eee;">
-      <img src="https://randomuser.me/api/portraits/women/44.jpg" 
-           alt="User" 
-           style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
-      <div>
-        <strong>Jane Doe</strong>
-        <p style="margin:0; color:#666; font-size:0.9rem;">Hey! Are you free this weekend?</p>
-      </div>
-    </div>
-
-    <div style="display:flex; gap:1rem; align-items:center; padding:0.5rem; border-bottom:1px solid #eee;">
-      <img src="https://randomuser.me/api/portraits/men/45.jpg" 
-           alt="User" 
-           style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
-      <div>
-        <strong>Mike Smith</strong>
-        <p style="margin:0; color:#666; font-size:0.9rem;">Looking forward to our meeting!</p>
-      </div>
-    </div>
-
+<div class="chat-container">
+  <div class="chat-partners">
+    <h3>Chats</h3>
+    <ul>
+      <li *ngFor="let partner of chatPartners" 
+          [class.active]="selectedPartner?.username === partner.username"
+          (click)="selectPartner(partner)">
+        <div>{{ partner.username }}</div>
+        <small>{{ partner.lastMessage }}</small>
+      </li>
+    </ul>
   </div>
 
-  <!-- Input Box -->
-  <div style="display:flex; margin-top:1rem;">
-    <input type="text" placeholder="Type a message..." 
-           style="flex:1; padding:0.5rem; border:1px solid #ccc; border-radius:8px 0 0 8px;">
-    <button style="padding:0.5rem 1rem; background:#4CAF50; color:white; border:none; border-radius:0 8px 8px 0; cursor:pointer;">Send</button>
+  <div class="chat-window" *ngIf="selectedPartner">
+    <h3>Chat with {{ selectedPartner.username }}</h3>
+    <div class="messages">
+      <div *ngFor="let msg of messages" [class.self]="msg.sender !== selectedPartner.username">
+        <span>{{ msg.sender }}:</span> {{ msg.content }}
+      </div>
+    </div>
+    <div class="input-box">
+      <input [(ngModel)]="messageText" placeholder="Type a message..." />
+      <button (click)="sendMessage()">Send</button>
+    </div>
   </div>
 </div>

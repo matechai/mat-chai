@@ -45,6 +45,22 @@ services:
       mongodb:
         condition: service_healthy
     restart: unless-stopped
+  
+  frontend:
+    build:
+      context: ./angular
+      dockerfile: Dockerfile
+    container_name: angular-frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./angular/frontend:/app/frontend
+      - /app/frontend/node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
+    restart: unless-stopped
 
   neo4j:
     image: neo4j:5
@@ -95,17 +111,17 @@ services:
       ME_CONFIG_MONGODB_SERVER: ${ME_CONFIG_MONGODB_SERVER}
 
 
-  # nginx:
-  #   build:
-  #     context: ./nginx
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-  #     - ./backend/uploads:/uploads
-  #   depends_on:
-  #     - backend
-  #     - frontend
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./backend/uploads:/uploads
+    depends_on:
+      - backend
+      - frontend
 
 volumes:
   neo4j_data:

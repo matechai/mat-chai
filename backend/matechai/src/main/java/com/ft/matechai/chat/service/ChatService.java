@@ -26,12 +26,12 @@ public class ChatService
         this.notificationService = notificationService;
     }
 
-    public void sendMessage(User sender, String receiverUsername, String content) 
+    public void sendMessage(String sender, String receiverUsername, String content) 
     {
         User receiver = userRepository.findByUsernameOrThrow(receiverUsername);
 
         ChatMessage message = new ChatMessage(
-            sender.getUsername(), 
+            sender, 
             receiver.getUsername(), 
             content, 
             LocalDateTime.now()
@@ -40,9 +40,9 @@ public class ChatService
         messageRepository.save(message);
         messagingTemplate.convertAndSendToUser(receiver.getUsername(), "/queue/messages", message);
 
-        String notifyMessage = "you got a message from " + sender.getUsername();
-        if (!userRepository.isBlocked(receiverUsername, sender.getUsername()))
-            notificationService.createAndSendNotification(sender.getUsername(), receiverUsername, NotificationType.CHAT, notifyMessage);
+        String notifyMessage = "you got a message from " + sender;
+        if (!userRepository.isBlocked(receiverUsername, sender))
+            notificationService.createAndSendNotification(sender, receiverUsername, NotificationType.CHAT, notifyMessage);
     }
 
 
