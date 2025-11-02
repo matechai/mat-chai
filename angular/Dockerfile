@@ -9,7 +9,9 @@ RUN npm install -g @angular/cli && npm install
 # COPY frontend/ .
 
 # ---- DEV Mode (hot reload) ----
-CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]
+CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000", "--proxy-config", "proxy.conf.json"]
+
+# CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]
 
 # ---- PROD Mode ----
 # RUN ng build --configuration=production
