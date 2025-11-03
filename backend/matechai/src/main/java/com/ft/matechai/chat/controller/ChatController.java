@@ -19,7 +19,7 @@ public class ChatController
         this.chatService = chatService;
     }
 
-    @MessageMapping("/chat.send/{receiverId}")
+    @MessageMapping("/chat.send/{receiver}")
     
     public void sendMessage(@AuthenticationPrincipal PrincipalDetails principalDetails,
                             @DestinationVariable String receiver,
