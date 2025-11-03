@@ -33,8 +33,8 @@ public class ChatHistoryController {
     @GetMapping("/history/{receiver}")
     public ResponseEntity<List<ChatMessage>> getChatWithUser(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @PathVariable String receiverUsername) {
+            @PathVariable String receiver) {
 
-        return ResponseEntity.ok(chatHistoryService.getChatBetween(principalDetails.getUser(), receiverUsername));
+        return ResponseEntity.ok(chatHistoryService.getChatBetween(principalDetails.getUser(), receiver));
     }
 }
