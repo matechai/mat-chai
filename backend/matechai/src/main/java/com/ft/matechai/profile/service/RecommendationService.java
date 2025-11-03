@@ -56,7 +56,7 @@ public class RecommendationService {
             comparator = comparator.reversed();
         sortedList.sort(comparator);
 
-        User targetUser = sortedList.get(0);
+        User targetUser = sortedList.get(page);
 
         UserBasicProfileDTO userProfileDto = UserBasicProfileDTO.builder()
                 .username(targetUser.getUsername())
