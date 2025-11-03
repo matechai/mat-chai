@@ -32,10 +32,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.notificationService.getNotifications()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (notifications) => {
+        next: (notifications : any) => {
           this.notifications = notifications;
         },
-        error: (err) => console.error('Error loading notifications:', err)
+        error: (err : any) => console.error('Error loading notifications:', err)
       });
   }
 
@@ -43,17 +43,17 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.notificationService.getUnreadCount()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (count) => {
+        next: (count : any) => {
           this.unreadCount = count;
         },
-        error: (err) => console.error('Error loading unread count:', err)
+        error: (err : any) => console.error('Error loading unread count:', err)
       });
   }
 
   subscribeToNewNotifications(): void {
     this.websocketService.notifications$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(notification => {
+      .subscribe((notification : any) => {
         if (notification) {
           this.notificationService.addNotification(notification);
           this.loadNotifications();
@@ -62,7 +62,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     this.notificationService.unreadCount$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(count => {
+      .subscribe((count : any) => {
         this.unreadCount = count;
       });
   }
@@ -80,7 +80,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.notificationService.markAsRead(notification.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          error: (err) => console.error('Error marking notification as read:', err)
+          error: (err : any) => console.error('Error marking notification as read:', err)
         });
     }
   }
@@ -89,7 +89,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.notificationService.markAllAsRead()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        error: (err) => console.error('Error marking all as read:', err)
+        error: (err : any) => console.error('Error marking all as read:', err)
       });
   }
 
