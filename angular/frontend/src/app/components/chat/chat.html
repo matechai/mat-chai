@@ -1,37 +1,64 @@
-<div style="max-width:500px; margin:2rem auto; padding:1rem; border:1px solid #ccc; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); font-family:Arial, sans-serif;">
-
-  <h2 style="text-align:center; margin-bottom:1rem;">Chats</h2>
-
-  <!-- Chat List -->
-  <div style="display:flex; flex-direction:column; gap:1rem; max-height:400px; overflow-y:auto;">
-    
-    <!-- Example Chat -->
-    <div style="display:flex; gap:1rem; align-items:center; padding:0.5rem; border-bottom:1px solid #eee;">
-      <img src="https://randomuser.me/api/portraits/women/44.jpg" 
-           alt="User" 
-           style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
-      <div>
-        <strong>Jane Doe</strong>
-        <p style="margin:0; color:#666; font-size:0.9rem;">Hey! Are you free this weekend?</p>
+<div class="chat-container">
+  <!-- Chat Partners List -->
+  <div class="partners-panel">
+    <div class="panel-header">
+      <h2>Chats</h2>
+    </div>
+    <div class="partners-list">
+      <div
+        *ngFor="let partner of chatPartners"
+        (click)="selectPartner(partner.username)"
+        [class.active]="selectedPartner === partner.username"
+        class="partner-item">
+        <div class="partner-info">
+          <div class="partner-name">{{ partner.username }}</div>
+          <div class="last-message">{{ partner.lastMessage }}</div>
+          <div class="timestamp">{{ partner.lastMessageTime | date:'short' }}</div>
+        </div>
+      </div>
+      <div *ngIf="chatPartners.length === 0" class="no-chats">
+        No conversations yet
       </div>
     </div>
-
-    <div style="display:flex; gap:1rem; align-items:center; padding:0.5rem; border-bottom:1px solid #eee;">
-      <img src="https://randomuser.me/api/portraits/men/45.jpg" 
-           alt="User" 
-           style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
-      <div>
-        <strong>Mike Smith</strong>
-        <p style="margin:0; color:#666; font-size:0.9rem;">Looking forward to our meeting!</p>
-      </div>
-    </div>
-
   </div>
 
-  <!-- Input Box -->
-  <div style="display:flex; margin-top:1rem;">
-    <input type="text" placeholder="Type a message..." 
-           style="flex:1; padding:0.5rem; border:1px solid #ccc; border-radius:8px 0 0 8px;">
-    <button style="padding:0.5rem 1rem; background:#4CAF50; color:white; border:none; border-radius:0 8px 8px 0; cursor:pointer;">Send</button>
+  <!-- Chat Messages Area -->
+  <div class="chat-panel">
+    <div *ngIf="selectedPartner" class="chat-header">
+      <h3>{{ selectedPartner }}</h3>
+    </div>
+
+    <div class="messages-area">
+      <div *ngIf="!selectedPartner" class="no-chat-selected">
+        <svg width="100" height="100" viewBox="0 0 24 24" fill="#ccc">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+        <p>Select a chat to start messaging</p>
+      </div>
+
+      <div *ngIf="selectedPartner" class="messages-list">
+        <div *ngFor="let message of currentChat"
+             [class.sent]="message.sender !== selectedPartner"
+             [class.received]="message.sender === selectedPartner"
+             class="message-bubble">
+          <p>{{ message.content }}</p>
+          <small>{{ message.timestamp | date:'short' }}</small>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="selectedPartner" class="message-input-area">
+      <input
+        type="text"
+        [(ngModel)]="newMessage"
+        placeholder="Type a message..."
+        (keyup.enter)="sendMessage()"
+        class="message-input">
+      <button (click)="sendMessage()" class="send-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </div>
   </div>
 </div>

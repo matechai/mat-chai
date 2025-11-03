@@ -42,4 +42,30 @@ public class NotificationService {
 	{
 		return notificationRepository.findByReceiver(receiver);
 	}
+
+    //changes + tests to read notifications
+    public void markAsRead(String notificationId, String username)
+    {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+
+        if (!notification.getReceiver().equals(username))
+        {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        notification.setRead(true);
+        notificationRepository.save(notification);
+    }
+
+    public void markAllAsRead(String username)
+    {
+        List<Notification> notifications = notificationRepository.findByReceiver(username);
+        notifications.forEach(n -> n.setRead(true));
+        notificationRepository.saveAll(notifications);
+    }
+
+    public long getUnreadCount(String username) {
+        return notificationRepository.countByReceiverAndReadFalse(username);
+    }
 }

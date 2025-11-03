@@ -1,0 +1,45 @@
+﻿<div class="notification-container">
+  <button class="notification-bell" (click)="toggleDropdown()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+    </svg>
+    <span *ngIf="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+  </button>
+
+  <div *ngIf="isDropdownOpen" class="dropdown">
+    <div class="dropdown-header">
+      <h3>Notifications</h3>
+      <button *ngIf="notifications.length > 0" (click)="markAllAsRead()" class="mark-all-btn">
+        Mark all read
+      </button>
+    </div>
+
+    <div class="notifications-list">
+      <div *ngFor="let notification of notifications"
+           [class.unread]="!notification.read"
+           class="notification-item"
+           (click)="markAsRead(notification)">
+        <div class="notification-icon" [class]="getNotificationClass(notification.type)">
+          {{ getNotificationIcon(notification.type) }}
+        </div>
+        <div class="notification-content">
+          <div class="notification-message">{{ notification.message }}</div>
+          <div class="notification-meta">
+            <span class="notification-sender">{{ notification.sender }}</span>
+            <span class="notification-time">{{ notification.createdAt | date:'short' }}</span>
+          </div>
+        </div>
+        <div *ngIf="!notification.read" class="unread-dot"></div>
+      </div>
+
+      <div *ngIf="notifications.length === 0" class="no-notifications">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="#ccc">
+          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+        </svg>
+        <p>No notifications yet</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isDropdownOpen" class="backdrop" (click)="closeDropdown()"></div>
+</div>
