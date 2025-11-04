@@ -184,6 +184,10 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           AND NOT (me)-[:LIKED]->(u)
                           AND NOT (me)-[:MATCHED]->(u)
                           AND u.username <> me.username
+                          AND (date().year - u.dateOfBirth.year) >= $minAge
+                          AND (date().year - u.dateOfBirth.year) <= $maxAge
+                          AND u.fame >= $minFame
+                          AND u.fame <= $maxFame
                         WITH me, u
                         OPTIONAL MATCH (me)-[:HAS_GENDER]->(meGender:Gender)
                         OPTIONAL MATCH (u)-[:HAS_GENDER]->(uGender:Gender)
@@ -221,6 +225,10 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           AND NOT (me)-[:LIKED]->(u)
                           AND NOT (me)-[:MATCHED]->(u)
                           AND u.username <> me.username
+                          AND (date().year - u.dateOfBirth.year) >= $minAge
+                          AND (date().year - u.dateOfBirth.year) <= $maxAge
+                        AND u.fame >= $minFame
+                        AND u.fame <= $maxFame
                         WITH me, u
                         OPTIONAL MATCH (me)-[:HAS_GENDER]->(meGender:Gender)
                         OPTIONAL MATCH (u)-[:HAS_GENDER]->(uGender:Gender)
