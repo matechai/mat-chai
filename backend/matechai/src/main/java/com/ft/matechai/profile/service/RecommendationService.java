@@ -35,10 +35,10 @@ public class RecommendationService {
      * 2. Filter by gender and sexual preference.
      * 3. Sort by fame score in descending order.
      */
-    public PaginatedUserDTO getRecommendedUsers(User user, int page, String sortBy, String order) {
+    public PaginatedUserDTO getRecommendedUsers(User user, int page, String sortBy, String order, int minAge, int maxAge, int minFame, int maxFame, double distance, List<String> interests) {
 
         Pageable pageable = PageRequest.of(page, 1);
-        Page<User> usersPage = userRepository.getUsersForMatching(user.getUsername(), pageable);
+        Page<User> usersPage = userRepository.getUsersForMatching(user.getUsername(), minAge, maxAge, minFame, maxFame, distance, interests, pageable);
 
         if (!usersPage.hasContent())
             return null;
