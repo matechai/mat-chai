@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class MatchController {
@@ -28,9 +30,15 @@ public class MatchController {
     public PaginatedUserDTO getNextMatch(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                          @RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "fame") String sortBy,         // fame, age, distance, interest
-                                         @RequestParam(defaultValue = "desc") String order) {        // asc, desc
+                                         @RequestParam(defaultValue = "desc") String order,        // asc, desc
+                                         @RequestParam(defaultValue = "1") int minAge,
+                                         @RequestParam(defaultValue = "99") int maxAge,
+                                         @RequestParam(defaultValue = "0") int minFame,
+                                         @RequestParam(defaultValue = "15") int maxFame,
+                                         @RequestParam(defaultValue = "100") double distance,
+                                         @RequestParam(required = false) List<String> interests) {
 
-        return recommendationService.getRecommendedUsers(principalDetails.getUser(), page, sortBy, order);
+        return recommendationService.getRecommendedUsers(principalDetails.getUser(), page, sortBy, order, minAge, maxAge, minFame, maxFame, distance, interests);
     }
 
     @PostMapping("/users/{targetUsername}/like")

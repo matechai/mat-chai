@@ -249,7 +249,14 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           )
                         RETURN count(u)
                     """)
-    Page<User> getUsersForMatching(@Param("username") String username, Pageable pageable);
+    Page<User> getUsersForMatching(@Param("username") String username,
+                                   @Param("minAge") Integer minAge,
+                                   @Param("maxAge") Integer maxAge,
+                                   @Param("minFame") Integer minFame,
+                                   @Param("maxFame") Integer maxFame,
+                                   @Param("distance") Double distance,
+                                   @Param("interests") List<String> interests,
+                                   Pageable pageable);
 
     @Query("MATCH (a:User) RETURN a")
     List<User> findAllUsers();
