@@ -192,6 +192,10 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           point({longitude: me.longitude, latitude: me.latitude}) AS mePoint,
                           point({longitude: u.longitude, latitude: u.latitude}) AS uPoint
                         WHERE round(point.distance(mePoint, uPoint)) <= $distance * 1000
+                        OPTIONAL MATCH (u)-[:INTERESTED_IN]->(uInterest:Interest)
+                        WITH me, u, collect(DISTINCT uInterest.name) AS uInterests
+                        WHERE $interests IS NULL OR ANY(i IN uInterests WHERE i IN $interests)
+                        
                         WITH me, u
                         OPTIONAL MATCH (me)-[:HAS_GENDER]->(meGender:Gender)
                         OPTIONAL MATCH (u)-[:HAS_GENDER]->(uGender:Gender)
@@ -237,6 +241,9 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           point({longitude: me.longitude, latitude: me.latitude}) AS mePoint,
                           point({longitude: u.longitude, latitude: u.latitude}) AS uPoint
                         WHERE round(point.distance(mePoint, uPoint)) <= $distance * 1000
+                        OPTIONAL MATCH (u)-[:INTERESTED_IN]->(uInterest:Interest)
+                        WITH me, u, collect(DISTINCT uInterest.name) AS uInterests
+                        WHERE $interests IS NULL OR ANY(i IN uInterests WHERE i IN $interests)
                         WITH me, u
                         OPTIONAL MATCH (me)-[:HAS_GENDER]->(meGender:Gender)
                         OPTIONAL MATCH (u)-[:HAS_GENDER]->(uGender:Gender)
