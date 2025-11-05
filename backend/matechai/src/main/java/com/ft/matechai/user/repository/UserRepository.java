@@ -1,5 +1,6 @@
 package com.ft.matechai.user.repository;
 
+import com.ft.matechai.admin.dto.BanResponseDTO;
 import com.ft.matechai.admin.dto.ReportResponseDTO;
 import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
@@ -172,6 +173,13 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                 ORDER BY reportCount DESC
             """)
     List<ReportResponseDTO> getReportedUsers();
+
+    @Query ("""
+                MATCH (u:User {username: $username})
+                SET u.isBanned = true
+                RETURN u.username AS username, u.isBanned AS isBanned;
+            """)
+    BanResponseDTO ban(@Param("username") String username);
 
     // View
     @Transactional
