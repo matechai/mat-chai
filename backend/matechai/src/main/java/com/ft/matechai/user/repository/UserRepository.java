@@ -181,6 +181,13 @@ public interface UserRepository extends Neo4jRepository<User, String> {
             """)
     BanResponseDTO ban(@Param("username") String username);
 
+    @Query ("""
+                MATCH (u:User {username: $username})
+                SET u.isBanned = false
+                RETURN u.username AS username, u.isBanned AS isBanned;
+            """)
+    BanResponseDTO unban(@Param("username") String username);
+
     // View
     @Transactional
     @Query ("""
