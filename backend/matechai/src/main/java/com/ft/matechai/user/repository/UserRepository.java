@@ -1,5 +1,6 @@
 package com.ft.matechai.user.repository;
 
+import com.ft.matechai.admin.dto.ReportResponseDTO;
 import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -163,6 +165,13 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     void report(@Param("reporter") String reporterUsername,
                 @Param("target") String targetUsername,
                 @Param("reason") String reason);
+
+    @Query ("""
+                MATCH (r:User)-[rep:REPORTED]->(u:User)
+                RETURN u.username AS username, count(rep) AS reportCount, collect(rep.reason) AS reasons
+                ORDER BY reportCount DESC
+            """)
+    List<ReportResponseDTO> getReportedUsers();
 
     // View
     @Transactional
