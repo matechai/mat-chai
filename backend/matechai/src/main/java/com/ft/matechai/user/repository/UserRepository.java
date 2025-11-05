@@ -174,6 +174,113 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     boolean isBlocked(@Param("username") String username,
                   @Param("targetUsername") String targetUsername);
 
+
+    @Query(
+            value = """
+                        MATCH (me:User {username: $username})
+                        MATCH (u:User)
+                        WHERE NOT (me)-[:BLOCKED]->(u)
+                          AND NOT (u)-[:BLOCKED]->(me)
+                          AND NOT (me)-[:LIKED]->(u)
+                          AND NOT (me)-[:MATCHED]->(u)
+                          AND u.username <> me.username
+                          AND (date().year - u.dateOfBirth.year) >= $minAge
+                          AND (date().year - u.dateOfBirth.year) <= $maxAge
+                          AND u.fame >= $minFame
+                          AND u.fame <= $maxFame
+                        WITH me, u,
+                          point({longitude: me.longitude, latitude: me.latitude}) AS mePoint,
+                          point({longitude: u.longitude, latitude: u.latitude}) AS uPoint
+                        WHERE round(point.distance(mePoint, uPoint)) <= $distance * 1000
+                        OPTIONAL MATCH (u)-[:INTERESTED_IN]->(uInterest:Interest)
+                        WITH me, u, collect(DISTINCT uInterest.name) AS uInterests
+                        WHERE $interests IS NULL OR ANY(i IN uInterests WHERE i IN $interests)
+                        
+                        WITH me, u
+                        OPTIONAL MATCH (me)-[:HAS_GENDER]->(meGender:Gender)
+                        OPTIONAL MATCH (u)-[:HAS_GENDER]->(uGender:Gender)
+                        OPTIONAL MATCH (me)-[:HAS_PREFERENCE]->(mePref:SexualPreference)
+                        OPTIONAL MATCH (u)-[:HAS_PREFERENCE]->(uPref:SexualPreference)
+                        WITH me, u, meGender, uGender,
+                             collect(DISTINCT mePref.name) AS myPrefs,
+                             collect(DISTINCT uPref.name) AS uPrefs
+                        WHERE
+                          size(myPrefs) = 0 OR
+                          (
+                            ('Heterosexual' IN myPrefs) AND (
+                              (meGender.gender = 'Male' AND uGender.gender = 'Female' AND 'Heterosexual' IN uPrefs) OR
+                              (meGender.gender = 'Female' AND uGender.gender = 'Male' AND 'Heterosexual' IN uPrefs) OR
+                              (meGender.gender = 'Others' AND uGender.gender = 'Others' AND 'Heterosexual' IN uPrefs)
+                            )
+                          ) OR
+                          (
+                            ('Homosexual' IN myPrefs)
+                            AND meGender.gender = uGender.gender
+                            AND 'Homosexual' IN uPrefs
+                          ) OR
+                          (
+                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Others'])
+                            AND uGender.gender IN ['Male', 'Female', 'Others']
+                          )
+                        RETURN u
+                        ORDER BY u.fame DESC
+                    """,
+            countQuery = """
+                        MATCH (me:User {username: $username})
+                        MATCH (u:User)
+                        WHERE NOT (me)-[:BLOCKED]->(u)
+                          AND NOT (u)-[:BLOCKED]->(me)
+                          AND NOT (me)-[:LIKED]->(u)
+                          AND NOT (me)-[:MATCHED]->(u)
+                          AND u.username <> me.username
+                          AND (date().year - u.dateOfBirth.year) >= $minAge
+                          AND (date().year - u.dateOfBirth.year) <= $maxAge
+                        AND u.fame >= $minFame
+                        AND u.fame <= $maxFame
+                        WITH me, u,
+                          point({longitude: me.longitude, latitude: me.latitude}) AS mePoint,
+                          point({longitude: u.longitude, latitude: u.latitude}) AS uPoint
+                        WHERE round(point.distance(mePoint, uPoint)) <= $distance * 1000
+                        OPTIONAL MATCH (u)-[:INTERESTED_IN]->(uInterest:Interest)
+                        WITH me, u, collect(DISTINCT uInterest.name) AS uInterests
+                        WHERE $interests IS NULL OR ANY(i IN uInterests WHERE i IN $interests)
+                        WITH me, u
+                        OPTIONAL MATCH (me)-[:HAS_GENDER]->(meGender:Gender)
+                        OPTIONAL MATCH (u)-[:HAS_GENDER]->(uGender:Gender)
+                        OPTIONAL MATCH (me)-[:HAS_PREFERENCE]->(mePref:SexualPreference)
+                        OPTIONAL MATCH (u)-[:HAS_PREFERENCE]->(uPref:SexualPreference)
+                        WITH me, u, meGender, uGender,
+                             collect(DISTINCT mePref.name) AS myPrefs,
+                             collect(DISTINCT uPref.name) AS uPrefs
+                        WHERE
+                          size(myPrefs) = 0 OR
+                          (
+                            ('Heterosexual' IN myPrefs) AND (
+                              (meGender.gender = 'Male' AND uGender.gender = 'Female' AND 'Heterosexual' IN uPrefs) OR
+                              (meGender.gender = 'Female' AND uGender.gender = 'Male' AND 'Heterosexual' IN uPrefs) OR
+                              (meGender.gender = 'Others' AND uGender.gender = 'Others' AND 'Heterosexual' IN uPrefs)
+                            )
+                          ) OR
+                          (
+                            ('Homosexual' IN myPrefs)
+                            AND meGender.gender = uGender.gender
+                            AND 'Homosexual' IN uPrefs
+                          ) OR
+                          (
+                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Others'])
+                            AND uGender.gender IN ['Male', 'Female', 'Others']
+                          )
+                        RETURN count(u)
+                    """)
+    Page<User> getUsersForMatching(@Param("username") String username,
+                                   @Param("minAge") Integer minAge,
+                                   @Param("maxAge") Integer maxAge,
+                                   @Param("minFame") Integer minFame,
+                                   @Param("maxFame") Integer maxFame,
+                                   @Param("distance") Double distance,
+                                   @Param("interests") List<String> interests,
+                                   Pageable pageable);
+
     @Query("MATCH (a:User) RETURN a")
     List<User> findAllUsers();
 }

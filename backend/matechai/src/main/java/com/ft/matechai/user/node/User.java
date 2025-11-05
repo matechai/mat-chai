@@ -42,13 +42,12 @@ public class User {
     private String lastOnline;
     @Builder.Default
     private boolean enabled = false;
-    @Builder.Default
-    private boolean firstLogin = true;
 
 
     // Profile
     private String biography;
-    private Float fame;
+    @Builder.Default
+    private Double fame = 10d;
     private Double latitude;
     private Double longitude;
     private String profileImageUrl;
