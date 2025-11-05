@@ -43,6 +43,8 @@ public class User {
     private OffsetDateTime lastOnline;
     @Builder.Default
     private boolean enabled = false;
+    @Builder.Default
+    private boolean isBanned = false;
 
 
     // Profile
