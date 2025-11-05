@@ -33,4 +33,11 @@ public class AdminService {
         User user = userRepository.findByUsernameOrThrow(username);
         return userRepository.ban(user.getUsername());
     }
+
+    @Transactional
+    public BanResponseDTO unbanUser(String username) {
+
+        User user = userRepository.findByUsernameOrThrow(username);
+        return userRepository.unban(user.getUsername());
+    }
 }
