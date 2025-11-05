@@ -111,9 +111,9 @@ class RecommendationServiceTest {
     void testGetRecommendedUsers_returnsPaginatedDTO() {
         // Page 설정
         Page<User> mockPage = new PageImpl<>(List.of(targetUser), PageRequest.of(0, 1), 1);
-        when(userRepository.getUsersForMatching(eq("alice"), any(Pageable.class))).thenReturn(mockPage);
+        when(userRepository.getUsersForMatching(eq("alice"), eq(0), eq(99), eq(0), eq(15), eq(10000d), isNull(), any(Pageable.class))).thenReturn(mockPage);
 
-        PaginatedUserDTO result = recommendationService.getRecommendedUsers(user, 0, "fame", "desc");
+        PaginatedUserDTO result = recommendationService.getRecommendedUsers(user, 0, "fame", "desc", 0, 99, 0, 15, 10000d, null);
 
         assertNotNull(result);
         assertEquals(0, result.getCurrentPage());
@@ -131,9 +131,9 @@ class RecommendationServiceTest {
     @Test
     void testGetRecommendedUsers_noContent_returnsNull() {
         Page<User> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 1), 0);
-        when(userRepository.getUsersForMatching(eq("alice"), any(Pageable.class))).thenReturn(emptyPage);
+        when(userRepository.getUsersForMatching(eq("alice"), eq(0), eq(99), eq(0), eq(15), eq(10000d), isNull(), any(Pageable.class))).thenReturn(emptyPage);
 
-        PaginatedUserDTO result = recommendationService.getRecommendedUsers(user, 0, "fame", "desc");
+        PaginatedUserDTO result = recommendationService.getRecommendedUsers(user, 0, "fame", "desc", 0, 99, 0, 15, 10000d, null);
         assertNull(result);
     }
 }
