@@ -19,6 +19,7 @@
           "options": {
             "browser": "src/main.ts",
             "polyfills": [
+              "src/polyfills-global.ts",
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",

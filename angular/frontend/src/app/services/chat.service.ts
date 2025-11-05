@@ -2,8 +2,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { ChatMessage } from '../models/chat-message.model';
-import { ChatPartner } from '../models/chat-partner.model';
+import { ChatMessage } from '../interfaces/chat-message.model';
+import { ChatPartner } from '../interfaces/chat-partner.model';
 
 @Injectable({
   providedIn: 'root'

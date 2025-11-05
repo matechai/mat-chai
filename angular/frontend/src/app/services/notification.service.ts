@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Notification } from '../models/notification.model';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +34,15 @@ export class NotificationService {
     return this.http.patch<void>(`${this.apiUrl}/read-all`, {}).pipe(
       tap(() => this.unreadCount.next(0))
     );
+  }
+
+  //test later
+  addNotification(notification: Notification): void {
+  // Optionally: you could maintain a BehaviorSubject<Notification[]> if you want reactive updates.
+  this.incrementUnreadCount();
+
+  // If you want to store locally:
+  // (you can add a BehaviorSubject<Notification[]> in the service for this)
   }
 
   incrementUnreadCount(): void {
