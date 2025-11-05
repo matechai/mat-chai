@@ -1,6 +1,7 @@
 package com.ft.matechai.profile.service;
 
 import com.ft.matechai.profile.dto.LocationDTO;
+import com.ft.matechai.profile.dto.ReportRequestDTO;
 import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
@@ -43,5 +44,13 @@ public class ProfileService {
         user.setLongitude(location.getLongitude());
 
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void report(User user, ReportRequestDTO dto) {
+
+        User targetUser = userRepository.findByUsernameOrThrow(dto.getTargetUsername());
+
+        userRepository.report(user.getUsername(), targetUser.getUsername(), dto.getReason());
     }
 }
