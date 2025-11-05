@@ -188,6 +188,10 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           AND (date().year - u.dateOfBirth.year) <= $maxAge
                           AND u.fame >= $minFame
                           AND u.fame <= $maxFame
+                        WITH me, u,
+                          point({longitude: me.longitude, latitude: me.latitude}) AS mePoint,
+                          point({longitude: u.longitude, latitude: u.latitude}) AS uPoint
+                        WHERE round(point.distance(mePoint, uPoint)) <= $distance * 1000
                         WITH me, u
                         OPTIONAL MATCH (me)-[:HAS_GENDER]->(meGender:Gender)
                         OPTIONAL MATCH (u)-[:HAS_GENDER]->(uGender:Gender)
@@ -229,6 +233,10 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           AND (date().year - u.dateOfBirth.year) <= $maxAge
                         AND u.fame >= $minFame
                         AND u.fame <= $maxFame
+                        WITH me, u,
+                          point({longitude: me.longitude, latitude: me.latitude}) AS mePoint,
+                          point({longitude: u.longitude, latitude: u.latitude}) AS uPoint
+                        WHERE round(point.distance(mePoint, uPoint)) <= $distance * 1000
                         WITH me, u
                         OPTIONAL MATCH (me)-[:HAS_GENDER]->(meGender:Gender)
                         OPTIONAL MATCH (u)-[:HAS_GENDER]->(uGender:Gender)
