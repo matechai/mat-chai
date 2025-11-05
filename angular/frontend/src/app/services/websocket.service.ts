@@ -31,7 +31,7 @@ export class WebSocketService {
         return new SockJS('http://localhost:8080/ws-chat');
       },
       connectHeaders: {}, // No headers needed - cookies are sent automatically
-      debug: (str) => console.log('STOMP: ' + str),
+      debug: (str: any) => console.log('STOMP: ' + str),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -40,7 +40,7 @@ export class WebSocketService {
         this.connected.next(true);
         this.subscribeToChannels();
       },
-      onStompError: (frame) => {
+      onStompError: (frame: any) => {
         console.error('❌ STOMP error:', frame);
         this.connected.next(false);
       },
@@ -48,7 +48,7 @@ export class WebSocketService {
         console.log('🔌 WebSocket closed');
         this.connected.next(false);
       },
-      onWebSocketError: (error) => {
+      onWebSocketError: (error: any) => {
         console.error('❌ WebSocket error:', error);
         this.connected.next(false);
       }

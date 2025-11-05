@@ -1,10 +1,11 @@
 import { Component, signal, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { Auth } from './services/auth';
+import { NotificationsComponent } from "./components/notifications/notfications";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NotificationsComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
