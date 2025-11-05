@@ -1,12 +1,11 @@
 package com.ft.matechai.admin.controller;
 
+import com.ft.matechai.admin.dto.BanResponseDTO;
 import com.ft.matechai.admin.dto.ReportResponseDTO;
 import com.ft.matechai.admin.service.AdminService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,4 +28,11 @@ public class AdminController {
 
         return ResponseEntity.ok(response);
     }
-}
+
+    @PostMapping("/users/{username}/ban")
+    public ResponseEntity<BanResponseDTO> banUser(@PathVariable String username) {
+
+        BanResponseDTO dto = admin.banUser(username);
+
+        return ResponseEntity.ok(dto);
+    }
