@@ -40,4 +40,9 @@ public class AdminService {
         User user = userRepository.findByUsernameOrThrow(username);
         return userRepository.unban(user.getUsername());
     }
+
+    public List<BanResponseDTO> getBannedUsers() {
+
+        return userRepository.getBannedUsers();
+    }
 }
