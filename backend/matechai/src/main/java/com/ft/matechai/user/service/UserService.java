@@ -1,5 +1,6 @@
 package com.ft.matechai.user.service;
 
+import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.profile.service.FameService;
 import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.dto.UserProfileDTO;
@@ -13,9 +14,9 @@ import com.ft.matechai.option.repository.InterestRepository;
 import com.ft.matechai.user.repository.UserRepository;
 
 import graphql.schema.DataFetchingEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,6 +93,18 @@ public class UserService {
     public List<String> getInterests(String username) {
 
         return interestRepository.findByUsername(username);
+    }
+
+    public Boolean getLiked(String targetUsername) {
+
+        User me = ((PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        return userRepository.isLiked(me.getUsername(), targetUsername);
+    }
+
+    public Boolean getMatched(String targetUsername) {
+
+        User me = ((PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        return userRepository.isMatched(me.getUsername(), targetUsername);
     }
 
 
