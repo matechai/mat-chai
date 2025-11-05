@@ -15,6 +15,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class User {
     private Role role;
     private String refreshToken;
 
-    private String lastOnline;
+    private OffsetDateTime lastOnline;
     @Builder.Default
     private boolean enabled = false;
 
