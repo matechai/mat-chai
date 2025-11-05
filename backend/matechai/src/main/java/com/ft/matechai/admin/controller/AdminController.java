@@ -36,3 +36,11 @@ public class AdminController {
 
         return ResponseEntity.ok(dto);
     }
+
+    @DeleteMapping("/users/{username}/ban")
+    public ResponseEntity<BanResponseDTO> unbanUser(@PathVariable String username) {
+
+        BanResponseDTO dto = admin.unbanUser(username);
+
+        return ResponseEntity.ok(dto);
+    }
