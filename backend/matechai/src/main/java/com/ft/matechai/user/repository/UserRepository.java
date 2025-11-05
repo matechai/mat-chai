@@ -88,6 +88,13 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     void like(@Param("username") String username,
               @Param("targetUsername") String targetUsername);
 
+    @Query ("""
+                MATCH (me:User {username: $username})-[r:LIKED]->(target:User {username: $targetUsername})
+                RETURN COUNT(r) > 0 AS isLiked
+            """)
+    boolean isLiked(@Param("username") String username,
+                    @Param("targetUsername") String targetUsername);
+
 
     @Transactional
     @Query ("""
