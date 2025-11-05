@@ -42,8 +42,6 @@ public class User {
     private String lastOnline;
     @Builder.Default
     private boolean enabled = false;
-    @Builder.Default
-    private boolean firstLogin = true;
 
 
     // Profile
