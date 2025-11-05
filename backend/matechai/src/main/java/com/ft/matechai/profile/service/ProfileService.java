@@ -16,9 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProfileService {
 
     private final UserRepository userRepository;
+    private final FameService fameService;
 
-    public ProfileService(UserRepository userRepository) {
+    public ProfileService(UserRepository userRepository,
+                          FameService fameService) {
         this.userRepository = userRepository;
+        this.fameService = fameService;
     }
 
 
@@ -52,5 +55,6 @@ public class ProfileService {
         User targetUser = userRepository.findByUsernameOrThrow(dto.getTargetUsername());
 
         userRepository.report(user.getUsername(), targetUser.getUsername(), dto.getReason());
+        fameService.getReported(targetUser);
     }
 }
