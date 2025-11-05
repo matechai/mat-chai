@@ -155,6 +155,14 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     void block(@Param("username") String username,
                @Param("targetUsername") String targetUsername);
 
+    @Query ("""                
+                MATCH (reporter:User {username: $reporter})
+                MATCH (target:User {username: $target})
+                MERGE (reporter)-[r:REPORTED {reason: $reason, createdAt: datetime()}]->(target)
+            """)
+    void report(@Param("reporter") String reporterUsername,
+                @Param("target") String targetUsername,
+                @Param("reason") String reason);
 
     // View
     @Transactional
