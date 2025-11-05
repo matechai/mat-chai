@@ -44,3 +44,12 @@ public class AdminController {
 
         return ResponseEntity.ok(dto);
     }
+
+    @GetMapping("/users/banned")
+    public ResponseEntity<List<BanResponseDTO>> getBannedUsers() {
+
+        List<BanResponseDTO> dto = admin.getBannedUsers();
+
+        return ResponseEntity.ok(dto);
+    }
+}
