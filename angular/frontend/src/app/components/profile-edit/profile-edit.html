@@ -84,19 +84,19 @@
 
 			<!-- Interests Section -->
 			<div class="form-section">
-				<label>Interests (Max 5 selections)</label>
+				<label>Interests (Max 10 selections)</label>
 				<div class="button-group">
 					<button *ngFor="let interest of interests()" type="button" class="option-button"
 						[class.selected]="isInterestSelected(interest)"
-						[class.disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 5"
+						[class.disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 10"
 						(click)="toggleInterest(interest)"
-						[disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 5">
+						[disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 10">
 						{{ interest }}
 					</button>
 				</div>
-				<small class="selection-info" [class.limit-reached]="selectedInterestsCount() >= 5">
-					Selected interests: {{ selectedInterestsCount() }}/5
-					<span *ngIf="selectedInterestsCount() >= 5" class="limit-text">(Maximum reached)</span>
+				<small class="selection-info" [class.limit-reached]="selectedInterestsCount() >= 10">
+					Selected interests: {{ selectedInterestsCount() }}/10
+					<span *ngIf="selectedInterestsCount() >= 10" class="limit-text">(Maximum reached)</span>
 				</small>
 			</div>
 

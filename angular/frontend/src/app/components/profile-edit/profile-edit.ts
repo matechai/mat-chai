@@ -201,8 +201,8 @@ export class ProfileEdit implements OnInit {
 		if (index > -1) {
 			// Remove if already selected
 			this.selectedInterests.set(currentInterests.filter((i: string) => i !== interest));
-		} else if (currentInterests.length < 5) {
-			// Add if less than 5
+		} else if (currentInterests.length < 10) {
+			// Add if less than 10
 			this.selectedInterests.set([...currentInterests, interest]);
 		}
 	}
