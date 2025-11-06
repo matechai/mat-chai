@@ -27,7 +27,7 @@ export class ProfileEdit implements OnInit {
 	interests = signal<string[]>([]);
 
 	selectedGender = signal<string>('');
-	selectedSexualPrefs = signal<string[]>([]);
+	selectedSexualPref = signal<string>('');
 	selectedInterests = signal<string[]>([]);
 	biography = signal<string>('');
 	selectedPhotos = signal<Array<{ file: File, preview: string }>>([]);
@@ -50,8 +50,8 @@ export class ProfileEdit implements OnInit {
 		!this.isLoading()
 	);
 
-	selectedSexualPrefsCount = computed(() =>
-		this.selectedSexualPrefs().length
+	selectedSexualPrefCount = computed(() =>
+		this.selectedSexualPref() ? 1 : 0
 	);
 
 	selectedInterestsCount = computed(() =>
@@ -131,8 +131,8 @@ export class ProfileEdit implements OnInit {
 						this.biography.set(user.biography);
 					}
 
-					if (user.sexualPreferences && Array.isArray(user.sexualPreferences)) {
-						this.selectedSexualPrefs.set(user.sexualPreferences);
+					if (user.sexualPreferences && Array.isArray(user.sexualPreferences) && user.sexualPreferences.length > 0) {
+						this.selectedSexualPref.set(user.sexualPreferences[0]);
 					}
 
 					if (user.interests && Array.isArray(user.interests)) {
@@ -191,16 +191,8 @@ export class ProfileEdit implements OnInit {
 		this.selectedGender.set(gender);
 	}
 
-	toggleSexualPreference(preference: string): void {
-		const currentPrefs = this.selectedSexualPrefs();
-		const index = currentPrefs.indexOf(preference);
-		if (index > -1) {
-			// Remove if already selected
-			this.selectedSexualPrefs.set(currentPrefs.filter((p: string) => p !== preference));
-		} else if (currentPrefs.length < 5) {
-			// Add if less than 5
-			this.selectedSexualPrefs.set([...currentPrefs, preference]);
-		}
+	selectSexualPreference(preference: string): void {
+		this.selectedSexualPref.set(preference);
 	}
 
 	toggleInterest(interest: string): void {
@@ -240,7 +232,7 @@ export class ProfileEdit implements OnInit {
 	}
 
 	isSexualPreferenceSelected(preference: string): boolean {
-		return this.selectedSexualPrefs().includes(preference);
+		return this.selectedSexualPref() === preference;
 	}
 
 	isInterestSelected(interest: string): boolean {
@@ -271,7 +263,7 @@ export class ProfileEdit implements OnInit {
 		const profileData = {
 			gender: this.selectedGender(),
 			biography: this.biography(),
-			sexualPreferences: this.selectedSexualPrefs(),
+			sexualPreferences: this.selectedSexualPref() ? [this.selectedSexualPref()] : [],
 			interests: this.selectedInterests()
 		};
 
