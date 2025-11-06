@@ -1,5 +1,7 @@
 package com.ft.matechai.user.repository;
 
+import com.ft.matechai.admin.dto.BanResponseDTO;
+import com.ft.matechai.admin.dto.ReportResponseDTO;
 import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -155,6 +158,42 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     void block(@Param("username") String username,
                @Param("targetUsername") String targetUsername);
 
+    @Query ("""                
+                MATCH (reporter:User {username: $reporter})
+                MATCH (target:User {username: $target})
+                MERGE (reporter)-[r:REPORTED {reason: $reason, createdAt: datetime()}]->(target)
+            """)
+    void report(@Param("reporter") String reporterUsername,
+                @Param("target") String targetUsername,
+                @Param("reason") String reason);
+
+    @Query ("""
+                MATCH (r:User)-[rep:REPORTED]->(u:User)
+                RETURN u.username AS username, count(rep) AS reportCount, collect(rep.reason) AS reasons
+                ORDER BY reportCount DESC
+            """)
+    List<ReportResponseDTO> getReportedUsers();
+
+    @Query ("""
+                MATCH (u:User {username: $username})
+                SET u.isBanned = true
+                RETURN u.username AS username, u.isBanned AS isBanned
+            """)
+    BanResponseDTO ban(@Param("username") String username);
+
+    @Query ("""
+                MATCH (u:User {username: $username})
+                SET u.isBanned = false
+                RETURN u.username AS username, u.isBanned AS isBanned
+            """)
+    BanResponseDTO unban(@Param("username") String username);
+
+    @Query("""
+               MATCH (u:User)
+               WHERE u.isBanned = true
+               RETURN u.username AS username, u.isBanned AS isBanned
+           """)
+    List<BanResponseDTO> getBannedUsers();
 
     // View
     @Transactional
@@ -197,6 +236,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           AND NOT (u)-[:BLOCKED]->(me)
                           AND NOT (me)-[:LIKED]->(u)
                           AND NOT (me)-[:MATCHED]->(u)
+                          AND (u.isBanned IS NULL OR u.isBanned = false)
                           AND u.username <> me.username
                           AND (date().year - u.dateOfBirth.year) >= $minAge
                           AND (date().year - u.dateOfBirth.year) <= $maxAge
@@ -209,7 +249,6 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                         OPTIONAL MATCH (u)-[:INTERESTED_IN]->(uInterest:Interest)
                         WITH me, u, collect(DISTINCT uInterest.name) AS uInterests
                         WHERE $interests IS NULL OR ANY(i IN uInterests WHERE i IN $interests)
-                        
                         WITH me, u
                         OPTIONAL MATCH (me)-[:HAS_GENDER]->(meGender:Gender)
                         OPTIONAL MATCH (u)-[:HAS_GENDER]->(uGender:Gender)
@@ -246,6 +285,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           AND NOT (u)-[:BLOCKED]->(me)
                           AND NOT (me)-[:LIKED]->(u)
                           AND NOT (me)-[:MATCHED]->(u)
+                          AND (u.isBanned IS NULL OR u.isBanned = false)
                           AND u.username <> me.username
                           AND (date().year - u.dateOfBirth.year) >= $minAge
                           AND (date().year - u.dateOfBirth.year) <= $maxAge

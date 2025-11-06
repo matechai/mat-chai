@@ -1,0 +1,55 @@
+package com.ft.matechai.admin.controller;
+
+import com.ft.matechai.admin.dto.BanResponseDTO;
+import com.ft.matechai.admin.dto.ReportResponseDTO;
+import com.ft.matechai.admin.service.AdminService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@PreAuthorize("hasRole('ROLE_ADMIN')")
+@RequestMapping("/api/admin")
+public class AdminController {
+
+    private final AdminService admin;
+
+    public AdminController(AdminService admin) {
+        this.admin = admin;
+
+    }
+
+    @GetMapping("/reports")
+    public ResponseEntity<List<ReportResponseDTO>> getReportList() {
+
+        List<ReportResponseDTO> response = admin.getReports();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/users/{username}/ban")
+    public ResponseEntity<BanResponseDTO> banUser(@PathVariable String username) {
+
+        BanResponseDTO dto = admin.banUser(username);
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping("/users/{username}/ban")
+    public ResponseEntity<BanResponseDTO> unbanUser(@PathVariable String username) {
+
+        BanResponseDTO dto = admin.unbanUser(username);
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/users/banned")
+    public ResponseEntity<List<BanResponseDTO>> getBannedUsers() {
+
+        List<BanResponseDTO> dto = admin.getBannedUsers();
+
+        return ResponseEntity.ok(dto);
+    }
+}
