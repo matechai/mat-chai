@@ -263,7 +263,7 @@ export class ProfileEdit implements OnInit {
 		const profileData = {
 			gender: this.selectedGender(),
 			biography: this.biography(),
-			sexualPreferences: this.selectedSexualPref() ? [this.selectedSexualPref()] : [],
+			sexualPreference: this.selectedSexualPref(),
 			interests: this.selectedInterests()
 		};
 
