@@ -99,6 +99,17 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                     @Param("targetUsername") String targetUsername);
 
 
+    // Pass
+    @Transactional
+    @Query ("""
+                MATCH (a:User {username: $username})
+                MATCH (b:User {username: $targetUsername})
+                MERGE (a)-[:PASSED]->(b)
+            """)
+    void pass(@Param("username") String username,
+              @Param("targetUsername") String targetUsername);
+
+
     @Transactional
     @Query ("""
                 MATCH (a:User {username:$username})
@@ -236,6 +247,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           AND NOT (u)-[:BLOCKED]->(me)
                           AND NOT (me)-[:LIKED]->(u)
                           AND NOT (me)-[:MATCHED]->(u)
+                          AND NOT (me)-[:PASSED]->(u)
                           AND (u.isBanned IS NULL OR u.isBanned = false)
                           AND u.username <> me.username
                           AND (date().year - u.dateOfBirth.year) >= $minAge
@@ -285,6 +297,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           AND NOT (u)-[:BLOCKED]->(me)
                           AND NOT (me)-[:LIKED]->(u)
                           AND NOT (me)-[:MATCHED]->(u)
+                          AND NOT (me)-[:PASSED]->(u)
                           AND (u.isBanned IS NULL OR u.isBanned = false)
                           AND u.username <> me.username
                           AND (date().year - u.dateOfBirth.year) >= $minAge
