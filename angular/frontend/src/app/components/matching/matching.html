@@ -1,36 +1,83 @@
-<div style="max-width:400px; margin:2rem auto; padding:2rem; border:1px solid #ccc; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); font-family:Arial, sans-serif;">
+<!-- Loading State -->
+<div *ngIf="isLoading()" style="max-width:400px; margin:4rem auto; padding:2rem; border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Arial, sans-serif; background:white; text-align:center;">
+  <div style="color:#666; font-size:18px;">Loading profiles...</div>
+</div>
+
+<!-- No More Profiles -->
+<div *ngIf="noMoreProfiles() && !isLoading()" style="max-width:400px; margin:4rem auto; padding:2rem; border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Arial, sans-serif; background:white; text-align:center;">
+  <div style="color:#666; font-size:18px; margin-bottom:1rem;">😔</div>
+  <div style="color:#333; font-size:20px; font-weight:600; margin-bottom:0.5rem;">No more profiles to show</div>
+  <div style="color:#666; font-size:16px;">Check back later for new matches!</div>
+</div>
+
+<!-- Profile Card -->
+<div *ngIf="currentUser() && !isLoading() && !noMoreProfiles()" style="max-width:400px; margin:4rem auto; padding:0; border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Arial, sans-serif; background:white; overflow:hidden;">
   
-  <!-- Profile Picture -->
-  <div style="text-align:center; margin-bottom:1rem;">
-    <img src="https://randomuser.me/api/portraits/women/44.jpg" 
-         alt="Profile Picture" 
-         style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:2px solid #333;">
+  <!-- Image Carousel -->
+  <div style="position:relative; height:400px; overflow:hidden;">
+    <!-- Main Image -->
+    <img [src]="allImages()[currentImageIndex()]" 
+         [alt]="currentUser()?.username + ' photo'"
+         style="width:100%; height:100%; object-fit:cover;"
+         onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
+    
+    <!-- Navigation Arrows (only show if multiple images) -->
+    <div *ngIf="allImages().length > 1">
+      <!-- Left Arrow -->
+      <button (click)="previousImage()" 
+              style="position:absolute; left:10px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; transition:background 0.2s;"
+              onmouseover="this.style.background='rgba(0,0,0,0.7)'"
+              onmouseout="this.style.background='rgba(0,0,0,0.5)'">
+        &#8249;
+      </button>
+      
+      <!-- Right Arrow -->
+      <button (click)="nextImage()" 
+              style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; transition:background 0.2s;"
+              onmouseover="this.style.background='rgba(0,0,0,0.7)'"
+              onmouseout="this.style.background='rgba(0,0,0,0.5)'">
+        &#8250;
+      </button>
+      
+      <!-- Image Indicators -->
+      <div style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); display:flex; gap:6px;">
+        <div *ngFor="let image of allImages(); let i = index"
+             [style.background]="i === currentImageIndex() ? 'white' : 'rgba(255,255,255,0.5)'"
+             style="width:8px; height:8px; border-radius:50%; transition:background 0.2s;">
+        </div>
+      </div>
+    </div>
   </div>
-
-  <!-- Name and Age -->
-  <h2 style="text-align:center; margin:0;">Jane Doe, 28</h2>
-  <p style="text-align:center; color:#666; margin:0.25rem 0 1rem;">New York, USA</p>
-
-  <!-- Bio -->
-  <p style="font-size:0.95rem; color:#333; line-height:1.4;">
-    Love coffee, long walks in the park, and discovering new music. Looking for someone to share adventures and laughs with.
-  </p>
-
-  <!-- Interests / Tags -->
-  <div style="margin:1rem 0; display:flex; flex-wrap:wrap; gap:0.5rem;">
-    <span style="background:#e0e0e0; padding:0.3rem 0.6rem; border-radius:12px; font-size:0.85rem;">Coffee</span>
-    <span style="background:#e0e0e0; padding:0.3rem 0.6rem; border-radius:12px; font-size:0.85rem;">Music</span>
-    <span style="background:#e0e0e0; padding:0.3rem 0.6rem; border-radius:12px; font-size:0.85rem;">Travel</span>
-    <span style="background:#e0e0e0; padding:0.3rem 0.6rem; border-radius:12px; font-size:0.85rem;">Books</span>
-  </div>
-
-  <!-- Action Buttons -->
-  <div style="display:flex; justify-content:space-around; margin-top:1rem;">
-    <button style="background:#f44336; color:white; border:none; padding:0.6rem 1rem; border-radius:8px; cursor:pointer;">
-      Dislike
-    </button>
-    <button style="background:#4CAF50; color:white; border:none; padding:0.6rem 1rem; border-radius:8px; cursor:pointer;">
-      Like
-    </button>
+  
+  <!-- Profile Info -->
+  <div style="padding:1.5rem;">
+    <!-- Name and Age -->
+    <h2 style="margin:0 0 0.5rem 0; color:#333; font-size:24px; font-weight:600;">
+      {{ currentUser()?.username }}, {{ calculateAge(currentUser()?.dateOfBirth || '') }}
+    </h2>
+    
+    <!-- Page Info -->
+    <p style="color:#666; margin:0 0 1.5rem 0; font-size:14px;">
+      Profile {{ currentPage() + 1 }} of {{ totalPages() }}
+    </p>
+    
+    <!-- Action Buttons -->
+    <div style="display:flex; justify-content:space-around; gap:1rem;">
+      <!-- Pass Button -->
+      <button (click)="onPass()" 
+              style="flex:1; background:#f44336; color:white; border:none; padding:0.75rem 1.5rem; border-radius:12px; cursor:pointer; font-size:16px; font-weight:600; transition:background 0.2s; box-shadow:0 2px 4px rgba(244,67,54,0.2);"
+              onmouseover="this.style.background='#d32f2f'"
+              onmouseout="this.style.background='#f44336'">
+        ✕ Pass
+      </button>
+      
+      <!-- Like Button -->
+      <button (click)="onLike()" 
+              style="flex:1; background:#4CAF50; color:white; border:none; padding:0.75rem 1.5rem; border-radius:12px; cursor:pointer; font-size:16px; font-weight:600; transition:background 0.2s; box-shadow:0 2px 4px rgba(76,175,80,0.2);"
+              onmouseover="this.style.background='#388e3c'"
+              onmouseout="this.style.background='#4CAF50'">
+        ♥ Like
+      </button>
+    </div>
   </div>
 </div>

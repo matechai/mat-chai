@@ -15,7 +15,7 @@ export const routes: Routes = [
 	{ path: 'signup', component: Signup },
 	{ path: 'profile/edit', component: ProfileEdit },
 	{ path: 'matches', component: Matches },
-	{ path: 'matching/:id', component: Matching },
+	{ path: 'matching', component: Matching },
 	{ path: 'chat', component: Chat },
 	{ path: 'setting', component: Matching },
 	{ path: 'updateprofile', component: ProfileEdit },
