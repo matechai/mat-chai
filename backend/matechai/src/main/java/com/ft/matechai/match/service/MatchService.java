@@ -96,6 +96,18 @@ public class MatchService {
         
     }
 
+
+    @Transactional
+    public void pass(User user, String targetUsername) {
+
+        validateSelfRelation(user.getUsername(), targetUsername, "can't pass yourself");
+
+        User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
+
+        userRepository.pass(user.getUsername(), targetUser.getUsername());
+    }
+
+
     private void validateSelfRelation(String username, String targetUsername, String message) {
 
         if (username.equals(targetUsername))
