@@ -8,7 +8,7 @@ type User {
     dateOfBirth: String
 
     gender: String
-    sexualPreferences: [String]
+    sexualPreference: String
     biography: String
     interests: [String]
     profileImageUrl: String

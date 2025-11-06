@@ -62,7 +62,7 @@ public class User {
     @Relationship(type = "HAS_GENDER", direction = Relationship.Direction.OUTGOING)
     private Gender gender;
     @Relationship(type = "HAS_PREFERENCE", direction = Relationship.Direction.OUTGOING)
-    private List<SexualPreference> sexualPreferences = new ArrayList<>();;
+    private SexualPreference sexualPreference;
 
 
     @JsonIgnore @Relationship(type = "VIEWED", direction = Relationship.Direction.OUTGOING)

@@ -51,17 +51,15 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     @Transactional
     @Query("MATCH (u:User {username: $username}), (s:SexualPreference {name: $prefName}) " +
             "MERGE (u)-[:HAS_PREFERENCE]->(s)")
-    void addSexualPreference(@Param("username") String username,
+    void setSexualPreference(@Param("username") String username,
                              @Param("prefName") String prefName);
 
     @Transactional
     @Query("""        
                MATCH (u:User {username: $username})-[r:HAS_PREFERENCE]->(s:SexualPreference)
-               WHERE NOT s.name IN $newPrefs
                DELETE r
            """)
-    void removeStaleSexualPreferences(@Param("username") String username,
-                                      @Param("newPrefs") List<String> newPrefs);
+    void removeStaleSexualPreference(@Param("username") String username);
 
 
     // Interest
