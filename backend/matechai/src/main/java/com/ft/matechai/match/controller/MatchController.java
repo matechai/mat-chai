@@ -50,6 +50,15 @@ public class MatchController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/users/{targetUsername}/pass")
+    public ResponseEntity<LikeResponseDTO> pass(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                @PathVariable String targetUsername) {
+
+        matchService.pass(principalDetails.getUser(), targetUsername);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/users/{targetUsername}/like")
     public ResponseEntity<?> removeLike(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                          @PathVariable String targetUsername) {
