@@ -107,11 +107,9 @@
 					<strong>Gender:</strong> {{ selectedGender() || 'Not selected' }}
 				</div>
 				<div class="summary-item">
-					<strong>Sexual Preferences:</strong>
-					<span *ngIf="selectedSexualPrefs().length === 0">Not selected</span>
-					<span *ngFor="let pref of selectedSexualPrefs(); let last = last">
-						{{ pref }}<span *ngIf="!last">, </span>
-					</span>
+					<strong>Sexual Preference:</strong>
+					<span *ngIf="!selectedSexualPref() || selectedSexualPref() === ''">Not selected</span>
+					<span *ngIf="selectedSexualPref() && selectedSexualPref() !== ''">{{ selectedSexualPref() }}</span>
 				</div>
 				<div class="summary-item">
 					<strong>Interests:</strong>
