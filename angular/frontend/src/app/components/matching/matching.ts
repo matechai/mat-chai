@@ -9,6 +9,20 @@ interface User {
   imageUrls: string[];
 }
 
+interface UserDetail {
+  email: string;
+  username: string;
+  dateOfBirth: string;
+  firstName: string;
+  lastName: string;
+  biography: string;
+  interests: string[];
+  profileImageUrl: string;
+  imageUrls: string[];
+  fame: number;
+  lastOnline: string;
+}
+
 interface MatchingResponse {
   user: User;
   currentPage: number;
@@ -41,6 +55,11 @@ export class Matching implements OnInit {
   // Image carousel state
   currentImageIndex = signal<number>(0);
   allImages = signal<string[]>([]);
+
+  // User detail modal state
+  showUserDetail = signal<boolean>(false);
+  userDetail = signal<UserDetail | null>(null);
+  loadingUserDetail = signal<boolean>(false);
 
   ngOnInit() {
     console.log('Matching component initialized, loading first profile...');
@@ -203,5 +222,73 @@ export class Matching implements OnInit {
       // No more profiles available
       this.noMoreProfiles.set(true);
     }
+  }
+
+  // Show user detail modal
+  async showUserDetailModal() {
+    const user = this.currentUser();
+    if (!user) return;
+
+    console.log('Opening user detail for:', user.username);
+    this.showUserDetail.set(true);
+    this.loadingUserDetail.set(true);
+
+    try {
+      // GraphQL query to get detailed user information
+      const query = {
+        query: `query {getUserByUsername(username: "${user.username}") { email username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline } }`
+      };
+
+      const response = await this.http.post<{ data: { getUserByUsername: UserDetail } }>('/api/graphql', query, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).toPromise();
+
+      if (response?.data?.getUserByUsername) {
+        this.userDetail.set(response.data.getUserByUsername);
+        console.log('User detail loaded:', response.data.getUserByUsername);
+      }
+    } catch (error) {
+      console.error('Failed to load user detail:', error);
+    } finally {
+      this.loadingUserDetail.set(false);
+    }
+  }
+
+  // Close user detail modal
+  closeUserDetailModal() {
+    this.showUserDetail.set(false);
+    this.userDetail.set(null);
+  }
+
+  // Format last online time
+  formatLastOnline(lastOnline: string): string {
+    if (!lastOnline) return 'Unknown';
+
+    const date = new Date(lastOnline);
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays} days ago`;
+
+    return date.toLocaleDateString();
+  }
+
+  // Get fame level description
+  getFameLevel(fame: number): string {
+    if (fame >= 80) return '⭐⭐⭐⭐⭐ Celebrity';
+    if (fame >= 60) return '⭐⭐⭐⭐ Popular';
+    if (fame >= 40) return '⭐⭐⭐ Well-known';
+    if (fame >= 20) return '⭐⭐ Rising';
+    return '⭐ Newcomer';
   }
 }

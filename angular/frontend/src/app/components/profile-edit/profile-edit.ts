@@ -131,8 +131,8 @@ export class ProfileEdit implements OnInit {
 						this.biography.set(user.biography);
 					}
 
-					if (user.sexualPreferences && Array.isArray(user.sexualPreferences) && user.sexualPreferences.length > 0) {
-						this.selectedSexualPref.set(user.sexualPreferences[0]);
+					if (user.sexualPreference) {
+						this.selectedSexualPref.set(user.sexualPreference);
 					}
 
 					if (user.interests && Array.isArray(user.interests)) {
