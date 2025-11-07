@@ -151,39 +151,45 @@ export class ProfileEdit implements OnInit {
 	}
 
 	loadExistingImages(profileImageUrl: string | null, imageUrls: string[]): void {
-		const existingPhotos: Array<{ file: File, preview: string }> = [];
+		const imagePromises: Promise<{ file: File, preview: string }>[] = [];
 
 		// First, add profileImageUrl as the main photo (index 0)
 		if (profileImageUrl) {
-			// Convert backend path to nginx static file path
-			// Backend: /app/uploads/profiles/xxx.jpg → nginx: /uploads/profiles/xxx.jpg
 			const mainImagePreview = profileImageUrl.replace('/app/uploads', '/uploads');
-
-			// Create a fake File object for display purposes
-			const fakeFile = new File([''], 'main-profile.jpg', { type: 'image/jpeg' });
-			existingPhotos.push({
-				file: fakeFile,
-				preview: mainImagePreview
-			});
+			imagePromises.push(this.urlToFile(mainImagePreview, 'main-profile.jpg'));
 		}
 
 		// Then, add additional images from imageUrls array
 		if (imageUrls && Array.isArray(imageUrls)) {
 			imageUrls.forEach((imageUrl: string, index: number) => {
-				// Convert backend path to nginx static file path
 				const imagePreview = imageUrl.replace('/app/uploads', '/uploads');
-				const fakeFile = new File([''], `additional-${index}.jpg`, { type: 'image/jpeg' });
-				existingPhotos.push({
-					file: fakeFile,
-					preview: imagePreview
-				});
+				imagePromises.push(this.urlToFile(imagePreview, `additional-${index}.jpg`));
 			});
 		}
 
-		// Set the loaded images to selectedPhotos signal
-		if (existingPhotos.length > 0) {
-			console.log('Loading existing images:', existingPhotos);
-			this.selectedPhotos.set(existingPhotos);
+		// Wait for all images to be loaded
+		if (imagePromises.length > 0) {
+			Promise.all(imagePromises).then((loadedPhotos) => {
+				console.log('Loading existing images as real files:', loadedPhotos);
+				this.selectedPhotos.set(loadedPhotos);
+			}).catch((error) => {
+				console.error('Failed to load existing images:', error);
+			});
+		}
+	}
+
+	// Convert image URL to actual File object
+	private async urlToFile(url: string, filename: string): Promise<{ file: File, preview: string }> {
+		try {
+			const response = await fetch(url);
+			const blob = await response.blob();
+			const file = new File([blob], filename, { type: blob.type });
+			return { file, preview: url };
+		} catch (error) {
+			console.error('Failed to convert URL to file:', url, error);
+			// Fallback to empty file
+			const emptyFile = new File([''], filename, { type: 'image/jpeg' });
+			return { file: emptyFile, preview: url };
 		}
 	}
 
@@ -267,8 +273,10 @@ export class ProfileEdit implements OnInit {
 			interests: this.selectedInterests()
 		};
 
-		// Prepare file array
+		// Prepare file array - now all images are real File objects
 		const files = this.selectedPhotos().map((photo: any) => photo.file);
+		
+		console.log('All files to upload (including existing as real files):', files.length);
 
 		this.userService.updateProfile(this.currentUsername(), profileData, files).subscribe({
 			next: (response: any) => {
