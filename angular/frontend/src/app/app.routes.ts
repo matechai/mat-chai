@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
+import { PublicGuard } from './guards/public.guard';
 
 
 export const routes: Routes = [
@@ -10,11 +11,13 @@ export const routes: Routes = [
   },
   {
 	path: 'login',
-	loadComponent: () => import('./components/login/login').then(m => m.Login)
+	loadComponent: () => import('./components/login/login').then(m => m.Login),
+	canActivate: [PublicGuard]
   },
   {
 	path: 'signup',
-	loadComponent: () => import('./components/signup/signup').then(m => m.Signup)
+	loadComponent: () => import('./components/signup/signup').then(m => m.Signup),
+	canActivate: [PublicGuard]
   },
   {
 	path: 'chat',
