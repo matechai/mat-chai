@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { SignupInterface } from '../interfaces/signup-interface';
 
 @Injectable({
@@ -11,14 +11,37 @@ export class Auth {
   private http = inject(HttpClient);
   private apiUrl = '/api';
 
+  private currentUserSubject = new BehaviorSubject<any | null>(null);
+
+  // Public observable for other components
+  user$ = this.currentUserSubject.asObservable();
+
   signup_request(request: SignupInterface): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/signup`, request);
   }
 
   signin_request(credentials: { username: String, password: String }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/login`, credentials, {
-      withCredentials: true
-    });
+     return new Observable((observer: any) => {
+    this.http.post(`${this.apiUrl}/auth/login`, credentials, { withCredentials: true })
+      .subscribe({
+        next: (res: any) => {
+          // Fetch current user info from GraphQL
+          this.getUserAuthInfo().subscribe({
+            next: (response: any) => {
+              const user = response.data?.me || null;
+              this.setCurrentUser(user);
+              observer.next(res);
+              observer.complete();
+            },
+            error: (err : any) => {
+              this.setCurrentUser(null);
+              observer.error(err);
+            }
+          });
+        },
+        error: (err : any) => observer.error(err)
+      });
+  });
   }
 
   logout_request() // Using DELETE method as requested
@@ -152,18 +175,32 @@ export class Auth {
     });
   }
 
+  // Call this after successful login or on app init
+  setCurrentUser(user: any | null) {
+    this.currentUserSubject.next(user);
+    if (user?.username) {
+      sessionStorage.setItem('username', user.username);
+    } else {
+      sessionStorage.removeItem('username');
+    }
+  }
+
   // Check authentication status and get user state
+// Modify checkAuthState to update currentUserSubject automatically
   checkAuthState(): Observable<{ isAuthenticated: boolean, user?: any }> {
-    // Use GraphQL to check authentication (HttpOnly cookies are sent automatically)
     return new Observable((observer: any) => {
       this.getUserAuthInfo().subscribe({
         next: (response: any) => {
-          const user = response.data.me;
-          observer.next({ isAuthenticated: true, user });
+          const user = response.data?.me || null;
+          if (user) this.setCurrentUser(user);
+          else this.setCurrentUser(null);
+
+          observer.next({ isAuthenticated: !!user, user });
           observer.complete();
         },
         error: (error: any) => {
           console.error('Error checking auth state:', error);
+          this.setCurrentUser(null);
           observer.next({ isAuthenticated: false });
           observer.complete();
         }
@@ -188,9 +225,19 @@ export class Auth {
     return null;
   }
 
+  hasAuthCookies() : boolean
+  {
+    const cookies = document.cookie.split(';');
+    const hasAccess = cookies.some(c => c.trim().startsWith('accessToken='));
+    const hasRefresh = cookies.some(c => c.trim().startsWith('refreshToken='));
+    return hasAccess || hasRefresh;
+  }
+  
+
   // Clear user cache
   clearUserCache(): void {
     sessionStorage.removeItem('username');
+    this.setCurrentUser(null);
   }
 
   // Get cached username (synchronous)
