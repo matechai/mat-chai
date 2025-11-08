@@ -26,6 +26,7 @@ public class ChatService
         this.notificationService = notificationService;
     }
 
+    
     public void sendMessage(User sender, String receiverUsername, String content) 
     {
         User receiver = userRepository.findByUsernameOrThrow(receiverUsername);

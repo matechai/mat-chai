@@ -20,7 +20,6 @@ public class ChatController
     }
 
     @MessageMapping("/chat.send/{receiver}")
-    
     public void sendMessage(@AuthenticationPrincipal PrincipalDetails principalDetails,
                             @DestinationVariable String receiver,
                             @Payload String content) 
