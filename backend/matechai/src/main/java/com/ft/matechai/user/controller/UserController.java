@@ -84,8 +84,8 @@ public class UserController {
         return userService.getGender(user.getUsername());
     }
 
-    @SchemaMapping(typeName = "User", field = "sexualPreferences")
-    public List<String> getSexualPreferences(User user) {
+    @SchemaMapping(typeName = "User", field = "sexualPreference")
+    public String getSexualPreference(User user) {
 
         return userService.getSexualPreference(user.getUsername());
     }
@@ -94,5 +94,17 @@ public class UserController {
     public List<String> getInterests(User user) {
 
         return userService.getInterests(user.getUsername());
+    }
+
+    @SchemaMapping(typeName = "User", field = "liked")
+    public Boolean getLiked(User targetUser) {
+
+        return userService.getLiked(targetUser.getUsername());
+    }
+
+    @SchemaMapping(typeName = "User", field = "matched")
+    public Boolean getMatched(User targetUser) {
+
+        return userService.getMatched(targetUser.getUsername());
     }
 }

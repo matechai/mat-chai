@@ -113,7 +113,7 @@ export class Auth {
       query: `query {
         me {
           gender
-          sexualPreferences
+          sexualPreference
           biography
           interests
           profileImageUrl

@@ -69,37 +69,34 @@
 
 			<!-- Sexual Preferences Section -->
 			<div class="form-section">
-				<label>Sexual Preferences (Max 5 selections)</label>
+				<label>Sexual Preference (Select One)</label>
 				<div class="button-group">
 					<button *ngFor="let preference of sexualPrefs()" type="button" class="option-button"
 						[class.selected]="isSexualPreferenceSelected(preference)"
-						[class.disabled]="!isSexualPreferenceSelected(preference) && selectedSexualPrefsCount() >= 5"
-						(click)="toggleSexualPreference(preference)"
-						[disabled]="!isSexualPreferenceSelected(preference) && selectedSexualPrefsCount() >= 5">
+						(click)="selectSexualPreference(preference)">
 						{{ preference }}
 					</button>
 				</div>
-				<small class="selection-info" [class.limit-reached]="selectedSexualPrefsCount() >= 5">
-					Selected: {{ selectedSexualPrefsCount() }}/5
-					<span *ngIf="selectedSexualPrefsCount() >= 5" class="limit-text">(Maximum reached)</span>
+				<small class="selection-info">
+					Selected: {{ selectedSexualPrefCount() }}/1
 				</small>
 			</div>
 
 			<!-- Interests Section -->
 			<div class="form-section">
-				<label>Interests (Max 5 selections)</label>
+				<label>Interests (Max 10 selections)</label>
 				<div class="button-group">
 					<button *ngFor="let interest of interests()" type="button" class="option-button"
 						[class.selected]="isInterestSelected(interest)"
-						[class.disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 5"
+						[class.disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 10"
 						(click)="toggleInterest(interest)"
-						[disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 5">
+						[disabled]="!isInterestSelected(interest) && selectedInterestsCount() >= 10">
 						{{ interest }}
 					</button>
 				</div>
-				<small class="selection-info" [class.limit-reached]="selectedInterestsCount() >= 5">
-					Selected interests: {{ selectedInterestsCount() }}/5
-					<span *ngIf="selectedInterestsCount() >= 5" class="limit-text">(Maximum reached)</span>
+				<small class="selection-info" [class.limit-reached]="selectedInterestsCount() >= 10">
+					Selected interests: {{ selectedInterestsCount() }}/10
+					<span *ngIf="selectedInterestsCount() >= 10" class="limit-text">(Maximum reached)</span>
 				</small>
 			</div>
 
@@ -110,11 +107,9 @@
 					<strong>Gender:</strong> {{ selectedGender() || 'Not selected' }}
 				</div>
 				<div class="summary-item">
-					<strong>Sexual Preferences:</strong>
-					<span *ngIf="selectedSexualPrefs().length === 0">Not selected</span>
-					<span *ngFor="let pref of selectedSexualPrefs(); let last = last">
-						{{ pref }}<span *ngIf="!last">, </span>
-					</span>
+					<strong>Sexual Preference:</strong>
+					<span *ngIf="!selectedSexualPref() || selectedSexualPref() === ''">Not selected</span>
+					<span *ngIf="selectedSexualPref() && selectedSexualPref() !== ''">{{ selectedSexualPref() }}</span>
 				</div>
 				<div class="summary-item">
 					<strong>Interests:</strong>

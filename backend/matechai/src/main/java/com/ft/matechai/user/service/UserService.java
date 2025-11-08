@@ -85,7 +85,7 @@ public class UserService {
         return genderRepository.findByUserUsername(username);
     }
 
-    public List<String> getSexualPreference(String username) {
+    public String getSexualPreference(String username) {
 
         return sexualPreferenceRepository.findByUserUsername(username);
     }
@@ -148,13 +148,11 @@ public class UserService {
         userRepository.removeGender(username);
         userRepository.setGender(username, gender.getGender());
 
-        // Sexual Preference (1:N)
-        List<SexualPreference> sexualPreferences = dto.getSexualPreferences().stream()
-                .map(sexualPreferenceRepository::findByNameOrThrow)
-                .collect(Collectors.toList());
-        user.setSexualPreferences(sexualPreferences);
-        userRepository.removeStaleSexualPreferences(username, dto.getSexualPreferences());
-        sexualPreferences.forEach(sp -> userRepository.addSexualPreference(username, sp.getName()));
+        // Sexual Preference (1:1)
+        SexualPreference sexualPreference = sexualPreferenceRepository.findByNameOrThrow(dto.getSexualPreference());
+        user.setSexualPreference(sexualPreference);
+        userRepository.removeStaleSexualPreference(username);
+        userRepository.setSexualPreference(username, sexualPreference.getName());
 
         // Interest (1:N)
         List<Interest> interests = dto.getInterests().stream()
