@@ -62,13 +62,15 @@ public class User {
     @Relationship(type = "HAS_GENDER", direction = Relationship.Direction.OUTGOING)
     private Gender gender;
     @Relationship(type = "HAS_PREFERENCE", direction = Relationship.Direction.OUTGOING)
-    private List<SexualPreference> sexualPreferences = new ArrayList<>();;
+    private SexualPreference sexualPreference;
 
 
     @JsonIgnore @Relationship(type = "VIEWED", direction = Relationship.Direction.OUTGOING)
 	private Set<User> Viewed;
-	@JsonIgnore	@Relationship(type = "Liked", direction = Relationship.Direction.OUTGOING)
-	private Set<User> Liked;
+    @JsonIgnore	@Relationship(type = "LIKED", direction = Relationship.Direction.OUTGOING)
+    private Set<User> Liked;
+    @JsonIgnore	@Relationship(type = "PASSED", direction = Relationship.Direction.OUTGOING)
+    private Set<User> Passed;
     @JsonIgnore	@Relationship(type = "MATCHED", direction = Relationship.Direction.OUTGOING)
     private Set<User> matched;
     @JsonIgnore	@Relationship(type = "BLOCKED", direction = Relationship.Direction.OUTGOING)

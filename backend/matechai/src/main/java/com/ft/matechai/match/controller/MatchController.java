@@ -4,14 +4,13 @@ import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.match.dto.LikeResponseDTO;
 import com.ft.matechai.match.dto.PaginatedUserDTO;
 import com.ft.matechai.match.service.MatchService;
-import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.profile.service.RecommendationService;
-import com.ft.matechai.user.node.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api")
