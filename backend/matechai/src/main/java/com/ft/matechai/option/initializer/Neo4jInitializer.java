@@ -29,7 +29,9 @@ public class Neo4jInitializer implements CommandLineRunner {
         String[] genders = {
                 "Male",
                 "Female",
-                "Others"
+                "Non-binary",
+                "Prefer not to say",
+                "Other"
         };
 
         for (String gender : genders) {
@@ -45,6 +47,10 @@ public class Neo4jInitializer implements CommandLineRunner {
                 "Heterosexual",
                 "Homosexual",
                 "Bisexual",
+                "Pansexual",
+                "Asexual",
+                "Demisexual",
+                "Queer",
                 "Prefer not to say",
                 "Other"
         };

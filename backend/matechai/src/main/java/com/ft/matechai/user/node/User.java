@@ -40,17 +40,16 @@ public class User {
     private Role role;
     private String refreshToken;
 
-    private OffsetDateTime lastOnline;
+    private String lastOnline;
     @Builder.Default
     private boolean enabled = false;
     @Builder.Default
-    private boolean isBanned = false;
+    private boolean firstLogin = true;
 
 
     // Profile
     private String biography;
-    @Builder.Default
-    private Double fame = 10d;
+    private Float fame;
     private Double latitude;
     private Double longitude;
     private String profileImageUrl;

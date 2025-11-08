@@ -2,7 +2,6 @@ package com.ft.matechai.profile.controller;
 
 import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.profile.dto.LocationDTO;
-import com.ft.matechai.profile.dto.ReportRequestDTO;
 import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.profile.service.ProfileService;
 import org.springframework.data.domain.Page;
@@ -37,15 +36,6 @@ public class ProfileController {
                                             @RequestBody LocationDTO location) {
 
         profileService.updateLocation(username, location);
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/report")
-    public ResponseEntity<?> report(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                    @RequestBody ReportRequestDTO dto) {
-
-        profileService.report(principalDetails.getUser(), dto);
 
         return ResponseEntity.noContent().build();
     }
