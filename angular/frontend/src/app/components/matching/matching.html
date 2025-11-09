@@ -1,12 +1,21 @@
-<!-- Header with Filter Button -->
+<!-- Header with Filter Buttons -->
 <div style="background:white; border-bottom:1px solid #ddd; padding:1rem; position:sticky; top:0; z-index:100;">
   <div style="max-width:400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center;">
     <h1 style="margin:0; color:#333; font-size:24px; font-weight:600;">Matching</h1>
-    <button (click)="toggleFilterModal()"
-      style="background:#6c5ce7; color:white; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; font-size:14px; font-weight:500; transition:background 0.2s; display:flex; align-items:center; gap:0.5rem;"
-      onmouseover="this.style.background='#5b4cdb'" onmouseout="this.style.background='#6c5ce7'">
-      🔍 {{ getSortLabel() }}
-    </button>
+    <div style="display:flex; gap:0.5rem;">
+      <!-- Sort Filter Button -->
+      <button (click)="toggleFilterModal()"
+        style="background:#6c5ce7; color:white; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; font-size:12px; font-weight:500; transition:background 0.2s; display:flex; align-items:center; gap:0.3rem;"
+        onmouseover="this.style.background='#5b4cdb'" onmouseout="this.style.background='#6c5ce7'">
+        � Sort
+        </button>
+      <!-- Search Filter Button -->
+      <button (click)="toggleSearchModal()"
+        style="background:#e74c3c; color:white; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; font-size:12px; font-weight:500; transition:background 0.2s; display:flex; align-items:center; gap:0.3rem;"
+        onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#e74c3c'">
+        🔍 Filter
+      </button>
+      </div>
   </div>
 </div>
 
@@ -307,3 +316,87 @@
     </div>
   </div>
 </div>
+<!-- Search Filter Modal -->
+<div *ngIf="showSearchModal()"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px;"
+  (click)="closeSearchModal()">
+
+  <div
+    style="background:white; border-radius:16px; max-width:500px; width:100%; max-height:90vh; overflow-y:auto; padding:20px;"
+    (click)="$event.stopPropagation()">
+
+    <h3 style="margin:0 0 20px 0; color:#333; text-align:center;">Search Filters</h3>
+
+    <!-- Age Range -->
+    <div style="margin-bottom:20px;">
+      <h4 style="margin:0 0 10px 0; color:#333;">🎂 Age Range</h4>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+        <span style="font-size:14px; color:#666;">Min:</span>
+        <input type="range" [value]="minAge()" (input)="minAge.set(+$any($event.target).value)" min="18" max="99"
+          style="flex:1;">
+        <span style="min-width:40px; text-align:center; font-size:14px; color:#666;">{{ minAge() }}</span>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <span style="font-size:14px; color:#666;">Max:</span>
+        <input type="range" [value]="maxAge()" (input)="maxAge.set(+$any($event.target).value)" min="18" max="99"
+          style="flex:1;">
+        <span style="min-width:40px; text-align:center; font-size:14px; color:#666;">{{ maxAge() }}</span>
+      </div>
+    </div>
+
+    <!-- Fame Range -->
+    <div style="margin-bottom:20px;">
+      <h4 style="margin:0 0 10px 0; color:#333;">📊 Fame Range</h4>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+        <span style="font-size:14px; color:#666;">Min:</span>
+        <input type="range" [value]="minFame()" (input)="minFame.set(+$any($event.target).value)" min="0" max="15"
+          style="flex:1;">
+        <span style="min-width:40px; text-align:center; font-size:14px; color:#666;">{{ minFame() }}</span>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <span style="font-size:14px; color:#666;">Max:</span>
+        <input type="range" [value]="maxFame()" (input)="maxFame.set(+$any($event.target).value)" min="0" max="15"
+          style="flex:1;">
+        <span style="min-width:40px; text-align:center; font-size:14px; color:#666;">{{ maxFame() }}</span>
+      </div>
+    </div>
+    <!-- Distance -->
+    <div style="margin-bottom:20px;">
+      <h4 style="margin:0 0 10px 0; color:#333;">📍 Max Distance</h4>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <input type="range" [value]="maxDistance()" (input)="maxDistance.set(+$any($event.target).value)" min="1"
+          max="10000" step="100" style="flex:1;">
+        <span style="min-width:80px; text-align:center;">{{ maxDistance() }} km</span>
+      </div>
+    </div>
+
+    <!-- Interests -->
+    <div style="margin-bottom:20px;">
+      <h4 style="margin:0 0 10px 0; color:#333;">🏷️ Interests</h4>
+      <div
+        style="display:flex; flex-wrap:wrap; gap:8px; max-height:150px; overflow-y:auto; padding:10px; border:1px solid #ddd; border-radius:8px;">
+        <span *ngFor="let interest of availableInterests()" (click)="toggleInterest(interest)"
+          [style.background]="selectedInterests().includes(interest) ? '#e74c3c' : '#f8f9fa'"
+          [style.color]="selectedInterests().includes(interest) ? 'white' : '#333'"
+          style="padding:6px 12px; border-radius:16px; font-size:12px; cursor:pointer; border:1px solid #ddd; transition:all 0.2s; user-select:none;">
+          {{ interest }}
+        </span>
+      </div>
+      <div style="margin-top:5px; font-size:12px; color:#666;">
+        Selected: {{ selectedInterests().length }} interests
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button (click)="resetSearchFilter()"
+        style="flex:1; padding:10px; background:#95a5a6; color:white; border:none; border-radius:8px; cursor:pointer; font-size:14px;">
+        Reset
+      </button>
+      <button (click)="applySearchFilter()"
+        style="flex:2; padding:10px; background:#e74c3c; color:white; border:none; border-radius:8px; cursor:pointer; font-size:14px;">
+        Apply Filters
+      </button>
+    </div>
+
+  </div>

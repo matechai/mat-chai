@@ -11,6 +11,101 @@
   overflow: hidden;
 }
 
+// Custom Range Slider Styles (Ignite UI inspired)
+.custom-range-slider {
+  .range-input {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+
+    &::-webkit-slider-track {
+      background: transparent;
+      height: 8px;
+      border-radius: 4px;
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #e74c3c;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
+      }
+
+      &:active {
+        transform: scale(1.15);
+        box-shadow: 0 5px 20px rgba(231, 76, 60, 0.5);
+      }
+    }
+
+    // Fame range specific styling
+    &.range-min::-webkit-slider-thumb {
+      z-index: 3;
+    }
+
+    &.range-max::-webkit-slider-thumb {
+      z-index: 4;
+    }
+
+    // Firefox styling
+    &::-moz-range-track {
+      background: transparent;
+      height: 8px;
+      border-radius: 4px;
+      border: none;
+    }
+
+    &::-moz-range-thumb {
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #e74c3c;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
+      }
+    }
+  }
+}
+
+// Fame range specific colors
+.custom-range-slider:has(.range-input[min="0"]) {
+  .range-input::-webkit-slider-thumb {
+    border-color: #6c5ce7;
+  }
+
+  .range-input::-webkit-slider-thumb:hover {
+    box-shadow: 0 4px 16px rgba(108, 92, 231, 0.4);
+  }
+
+  .range-input::-webkit-slider-thumb:active {
+    box-shadow: 0 5px 20px rgba(108, 92, 231, 0.5);
+  }
+
+  .range-input::-moz-range-thumb {
+    border-color: #6c5ce7;
+  }
+
+  .range-input::-moz-range-thumb:hover {
+    box-shadow: 0 4px 16px rgba(108, 92, 231, 0.4);
+  }
+}
 .image-carousel {
   position: relative;
   height: 400px;
