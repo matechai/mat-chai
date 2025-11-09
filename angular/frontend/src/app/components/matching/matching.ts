@@ -21,6 +21,7 @@ interface UserDetail {
   imageUrls: string[];
   fame: number;
   lastOnline: string;
+  distance: number;
 }
 
 interface MatchingResponse {
@@ -236,7 +237,7 @@ export class Matching implements OnInit {
     try {
       // GraphQL query to get detailed user information
       const query = {
-        query: `query {getUserByUsername(username: "${user.username}") { email username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline } }`
+        query: `query {getUserByUsername(username: "${user.username}") { email username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline distance } }`
       };
 
       const response = await this.http.post<{ data: { getUserByUsername: UserDetail } }>('/api/graphql', query, {
@@ -290,5 +291,25 @@ export class Matching implements OnInit {
     if (fame >= 40) return '⭐⭐⭐ Well-known';
     if (fame >= 20) return '⭐⭐ Rising';
     return '⭐ Newcomer';
+  }
+
+  // Format distance for display
+  formatDistance(distance: number): string {
+    if (!distance && distance !== 0) return 'Distance unknown';
+
+    if (distance < 0.1) {
+      // Show "Nearby" for distances less than 100m
+      return 'Nearby';
+    } else if (distance < 1) {
+      // Show meters for distances less than 1km but more than 100m
+      const meters = Math.round(distance * 1000);
+      return `${meters}m away`;
+    } else if (distance < 10) {
+      // Show one decimal place for distances less than 10km
+      return `${distance.toFixed(1)} km away`;
+    } else {
+      // Show whole numbers for distances 10km and above
+      return `${Math.round(distance)} km away`;
+    }
   }
 }

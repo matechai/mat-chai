@@ -137,6 +137,12 @@
         <div style="color:#666; font-size:14px; margin-top:0.5rem;">Fame Score: {{ userDetail()?.fame || 0 }}</div>
       </div>
 
+      <!-- Distance -->
+      <div style="background:#e8f5e8; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center;">
+        <div style="color:#333; font-weight:600; margin-bottom:0.5rem;">📍 Distance</div>
+        <div style="font-size:18px; color:#4caf50;">{{ formatDistance(userDetail()?.distance || 0) }}</div>
+      </div>
+
       <!-- Last Online -->
       <div style="margin-bottom:1.5rem;">
         <strong style="color:#333;">Last Online:</strong>
