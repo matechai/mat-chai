@@ -27,10 +27,11 @@
 	<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1.5rem;">
 
 		<!-- Viewer Card -->
-		<div *ngFor="let viewer of viewers()"
-			style="background:white; border:1px solid #ddd; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:transform 0.2s, box-shadow 0.2s;"
+		<div *ngFor="let viewer of viewers()" (click)="showUserDetailModal(viewer.username)"
+			style="background:white; border:1px solid #ddd; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:transform 0.2s, box-shadow 0.2s; cursor:pointer;"
 			onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)'"
-			onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'">
+			onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+			title="Click to view profile details">
 
 			<!-- Image Carousel -->
 			<div style="position:relative; height:300px; overflow:hidden;">
@@ -42,7 +43,7 @@
 				<!-- Navigation Arrows (only show if multiple images) -->
 				<div *ngIf="getUserImages(viewer).length > 1">
 					<!-- Left Arrow -->
-					<button (click)="previousImage(viewer)"
+					<button (click)="previousImage(viewer); $event.stopPropagation()"
 						style="position:absolute; left:10px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; transition:background 0.2s;"
 						onmouseover="this.style.background='rgba(0,0,0,0.7)'"
 						onmouseout="this.style.background='rgba(0,0,0,0.5)'">
@@ -50,7 +51,7 @@
 					</button>
 
 					<!-- Right Arrow -->
-					<button (click)="nextImage(viewer)"
+					<button (click)="nextImage(viewer); $event.stopPropagation()"
 						style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; transition:background 0.2s;"
 						onmouseover="this.style.background='rgba(0,0,0,0.7)'"
 						onmouseout="this.style.background='rgba(0,0,0,0.5)'">
@@ -70,10 +71,8 @@
 
 			<!-- Profile Info -->
 			<div style="padding:1rem;">
-				<!-- Name and Age (Clickable) -->
-				<h3 (click)="showUserDetailModal(viewer.username)"
-					style="margin:0; color:#333; font-size:18px; font-weight:600; text-align:center; cursor:pointer; padding:0.5rem; border-radius:8px; transition:background-color 0.2s; display:inline-block; width:100%;"
-					onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor='transparent'">
+				<!-- Name and Age -->
+				<h3 style="margin:0; color:#333; font-size:18px; font-weight:600; text-align:center;">
 					{{ viewer.username }}, {{ calculateAge(viewer.dateOfBirth) }}
 					<span style="font-size:14px; color:#666; margin-left:8px;">👤</span>
 				</h3>
@@ -153,8 +152,8 @@
 			<div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center;">
 				<div style="color:#333; font-weight:600; margin-bottom:0.5rem;">Fame Level</div>
 				<div style="font-size:18px;">{{ getFameLevel(userDetail()?.fame || 0) }}</div>
-				<div style="color:#666; font-size:14px; margin-top:0.5rem;">Fame Score: {{ userDetail()?.fame || 0 }}
-				</div>
+				<div style="color:#666; font-size:14px; margin-top:0.5rem;">Fame Score: {{ getFamePercentage(userDetail()?.fame || 0)
+					}}/100</div>
 			</div>
 
 			<!-- Distance -->

@@ -134,7 +134,8 @@
       <div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center;">
         <div style="color:#333; font-weight:600; margin-bottom:0.5rem;">Fame Level</div>
         <div style="font-size:18px;">{{ getFameLevel(userDetail()?.fame || 0) }}</div>
-        <div style="color:#666; font-size:14px; margin-top:0.5rem;">Fame Score: {{ userDetail()?.fame || 0 }}</div>
+        <div style="color:#666; font-size:14px; margin-top:0.5rem;">Fame Score: {{ getFamePercentage(userDetail()?.fame || 0)
+          }}/100</div>
       </div>
 
       <!-- Distance -->
