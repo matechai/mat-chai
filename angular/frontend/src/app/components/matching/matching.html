@@ -1,3 +1,15 @@
+<!-- Header with Filter Button -->
+<div style="background:white; border-bottom:1px solid #ddd; padding:1rem; position:sticky; top:0; z-index:100;">
+  <div style="max-width:400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center;">
+    <h1 style="margin:0; color:#333; font-size:24px; font-weight:600;">Matching</h1>
+    <button (click)="toggleFilterModal()"
+      style="background:#6c5ce7; color:white; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; font-size:14px; font-weight:500; transition:background 0.2s; display:flex; align-items:center; gap:0.5rem;"
+      onmouseover="this.style.background='#5b4cdb'" onmouseout="this.style.background='#6c5ce7'">
+      🔍 {{ getSortLabel() }}
+    </button>
+  </div>
+</div>
+
 <!-- Loading State -->
 <div *ngIf="isLoading()" style="max-width:400px; margin:4rem auto; padding:2rem; border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Arial, sans-serif; background:white; text-align:center;">
   <div style="color:#666; font-size:18px;">Loading profiles...</div>
@@ -178,10 +190,118 @@
             style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #ddd;"
             onerror="this.style.display='none'">
         </div>
-      </div> <!-- Contact Info -->
+      <!-- Contact Info -->
       <div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1rem;">
         <strong style="color:#333; display:block; margin-bottom:0.5rem;">Contact:</strong>
         <p style="color:#666; margin:0; font-size:14px;">{{ userDetail()?.email }}</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+<!-- Filter Modal -->
+<div *ngIf="showFilterModal()"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px;"
+  (click)="closeFilterModal()">
+
+  <div
+    style="background:white; border-radius:16px; max-width:400px; width:100%; max-height:80vh; overflow-y:auto; box-shadow:0 8px 32px rgba(0,0,0,0.2);"
+    (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div
+      style="padding:1.5rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; color:#333; font-size:20px; font-weight:600;">Sort Settings</h3>
+      <button (click)="closeFilterModal()"
+        style="background:none; border:none; color:#666; font-size:24px; cursor:pointer; padding:0; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.2s;"
+        onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='none'">×</button>
+    </div>
+
+    <!-- Filter Options -->
+    <div style="padding:1.5rem;">
+
+      <!-- Sort by Fame -->
+      <div style="margin-bottom:1.5rem;">
+        <h4 style="margin:0 0 1rem 0; color:#333; font-size:16px; font-weight:600;">📊 Fame</h4>
+        <div style="display:flex; gap:0.5rem;">
+          <button (click)="applySortFilter('fame', 'desc')"
+            [style.background]="sortBy() === 'fame' && order() === 'desc' ? '#6c5ce7' : '#f8f9fa'"
+            [style.color]="sortBy() === 'fame' && order() === 'desc' ? 'white' : '#333'"
+            style="flex:1; border:1px solid #ddd; padding:0.75rem; border-radius:8px; cursor:pointer; font-size:14px; transition:all 0.2s;">
+            Highest
+          </button>
+          <button (click)="applySortFilter('fame', 'asc')"
+            [style.background]="sortBy() === 'fame' && order() === 'asc' ? '#6c5ce7' : '#f8f9fa'"
+            [style.color]="sortBy() === 'fame' && order() === 'asc' ? 'white' : '#333'"
+            style="flex:1; border:1px solid #ddd; padding:0.75rem; border-radius:8px; cursor:pointer; font-size:14px; transition:all 0.2s;">
+            Lowest
+          </button>
+        </div>
+      </div>
+
+      <!-- Sort by Age -->
+      <div style="margin-bottom:1.5rem;">
+        <h4 style="margin:0 0 1rem 0; color:#333; font-size:16px; font-weight:600;">🎂 Age</h4>
+        <div style="display:flex; gap:0.5rem;">
+          <button (click)="applySortFilter('age', 'asc')"
+            [style.background]="sortBy() === 'age' && order() === 'asc' ? '#6c5ce7' : '#f8f9fa'"
+            [style.color]="sortBy() === 'age' && order() === 'asc' ? 'white' : '#333'"
+            style="flex:1; border:1px solid #ddd; padding:0.75rem; border-radius:8px; cursor:pointer; font-size:14px; transition:all 0.2s;">
+            Youngest
+          </button>
+          <button (click)="applySortFilter('age', 'desc')"
+            [style.background]="sortBy() === 'age' && order() === 'desc' ? '#6c5ce7' : '#f8f9fa'"
+            [style.color]="sortBy() === 'age' && order() === 'desc' ? 'white' : '#333'"
+            style="flex:1; border:1px solid #ddd; padding:0.75rem; border-radius:8px; cursor:pointer; font-size:14px; transition:all 0.2s;">
+            Oldest
+          </button>
+        </div>
+      </div>
+
+      <!-- Sort by Distance -->
+      <div style="margin-bottom:1.5rem;">
+        <h4 style="margin:0 0 1rem 0; color:#333; font-size:16px; font-weight:600;">📍 Distance</h4>
+        <div style="display:flex; gap:0.5rem;">
+          <button (click)="applySortFilter('distance', 'asc')"
+            [style.background]="sortBy() === 'distance' && order() === 'asc' ? '#6c5ce7' : '#f8f9fa'"
+            [style.color]="sortBy() === 'distance' && order() === 'asc' ? 'white' : '#333'"
+            style="flex:1; border:1px solid #ddd; padding:0.75rem; border-radius:8px; cursor:pointer; font-size:14px; transition:all 0.2s;">
+            Nearest
+          </button>
+          <button (click)="applySortFilter('distance', 'desc')"
+            [style.background]="sortBy() === 'distance' && order() === 'desc' ? '#6c5ce7' : '#f8f9fa'"
+            [style.color]="sortBy() === 'distance' && order() === 'desc' ? 'white' : '#333'"
+            style="flex:1; border:1px solid #ddd; padding:0.75rem; border-radius:8px; cursor:pointer; font-size:14px; transition:all 0.2s;">
+            Farthest
+          </button>
+        </div>
+      </div>
+
+      <!-- Sort by Interest -->
+      <div style="margin-bottom:1.5rem;">
+        <h4 style="margin:0 0 1rem 0; color:#333; font-size:16px; font-weight:600;">🏷️ Interest Tags</h4>
+        <div style="display:flex; gap:0.5rem;">
+          <button (click)="applySortFilter('interest', 'desc')"
+            [style.background]="sortBy() === 'interest' && order() === 'desc' ? '#6c5ce7' : '#f8f9fa'"
+            [style.color]="sortBy() === 'interest' && order() === 'desc' ? 'white' : '#333'"
+            style="flex:1; border:1px solid #ddd; padding:0.75rem; border-radius:8px; cursor:pointer; font-size:14px; transition:all 0.2s;">
+            Most
+          </button>
+          <button (click)="applySortFilter('interest', 'asc')"
+            [style.background]="sortBy() === 'interest' && order() === 'asc' ? '#6c5ce7' : '#f8f9fa'"
+            [style.color]="sortBy() === 'interest' && order() === 'asc' ? 'white' : '#333'"
+            style="flex:1; border:1px solid #ddd; padding:0.75rem; border-radius:8px; cursor:pointer; font-size:14px; transition:all 0.2s;">
+            Least
+          </button>
+        </div>
+      </div>
+
+      <!-- Current Setting Info -->
+      <div style="background:#f0f7ff; padding:1rem; border-radius:8px; border-left:4px solid #6c5ce7;">
+        <div style="color:#333; font-size:14px; font-weight:500;">
+          Current Setting: {{ getSortLabel() }}
+        </div>
       </div>
 
     </div>

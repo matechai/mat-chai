@@ -62,6 +62,11 @@ export class Matching implements OnInit {
   userDetail = signal<UserDetail | null>(null);
   loadingUserDetail = signal<boolean>(false);
 
+  // Filter state
+  showFilterModal = signal<boolean>(false);
+  sortBy = signal<string>('fame'); // fame, age, distance, interest
+  order = signal<string>('desc'); // asc, desc
+
   ngOnInit() {
     console.log('Matching component initialized, loading first profile...');
     console.log('HTTP client available:', !!this.http);
@@ -104,11 +109,15 @@ export class Matching implements OnInit {
     this.isLoading.set(true);
 
     try {
-      // Call actual backend API with page parameter
+      // Call actual backend API with page and filter parameters
       const page = this.currentPage();
-      console.log('Sending GET request to:', `/api/matching?page=${page}`);
+      const sortBy = this.sortBy();
+      const order = this.order();
 
-      const response = await this.http.get<MatchingResponse>(`/api/matching?page=${page}`, {
+      const url = `/api/matching?page=${page}&sortBy=${sortBy}&order=${order}`;
+      console.log('Sending GET request to:', url);
+
+      const response = await this.http.get<MatchingResponse>(url, {
         withCredentials: true
       }).toPromise();
 
@@ -319,5 +328,56 @@ export class Matching implements OnInit {
       // Show whole numbers for distances 10km and above
       return `${Math.round(distance)} km away`;
     }
+  }
+
+  // Filter functions
+  toggleFilterModal() {
+    console.log('toggleFilterModal called');
+    console.log('Current showFilterModal state:', this.showFilterModal());
+    const newState = !this.showFilterModal();
+    this.showFilterModal.set(newState);
+    console.log('New showFilterModal state:', this.showFilterModal());
+  }
+
+  closeFilterModal() {
+    console.log('Close filter modal called');
+    this.showFilterModal.set(false);
+  }
+
+  applySortFilter(sortBy: string, order: string) {
+    console.log('Applying sort filter:', sortBy, order);
+    this.sortBy.set(sortBy);
+    this.order.set(order);
+
+    // Reset pagination and reload
+    this.currentPage.set(0);
+    this.hasNext.set(true);
+    this.noMoreProfiles.set(false);
+    this.currentUser.set(null);
+
+    console.log('Filter applied - sortBy:', this.sortBy(), 'order:', this.order());
+
+    this.closeFilterModal();
+
+    // Force reload with new filter
+    setTimeout(() => {
+      this.loadNextProfile();
+    }, 100);
+  }
+
+  getSortLabel(): string {
+    const sortMap: { [key: string]: string } = {
+      'fame': 'Fame',
+      'age': 'Age',
+      'distance': 'Distance',
+      'interest': 'Interests'
+    };
+
+    const orderMap: { [key: string]: string } = {
+      'desc': 'Descending',
+      'asc': 'Ascending'
+    };
+
+    return `${sortMap[this.sortBy()]} ${orderMap[this.order()]}`;
   }
 }
