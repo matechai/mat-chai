@@ -1,0 +1,211 @@
+<!-- Header -->
+<div style="background:white; border-bottom:1px solid #ddd; padding:1rem; position:sticky; top:0; z-index:100;">
+	<div style="max-width:800px; margin:0 auto; display:flex; justify-content:space-between; align-items:center;">
+		<h1 style="margin:0; color:#333; font-size:24px; font-weight:600;">Profile Viewers</h1>
+		<div style="color:#666; font-size:14px;">
+			{{ totalElements() }} viewers
+		</div>
+	</div>
+</div>
+
+<!-- Loading State (first load) -->
+<div *ngIf="isLoading() && viewers().length === 0"
+	style="max-width:800px; margin:2rem auto; padding:2rem; text-align:center;">
+	<div style="color:#666; font-size:18px;">Loading viewers...</div>
+</div>
+
+<!-- No Viewers -->
+<div *ngIf="!isLoading() && viewers().length === 0"
+	style="max-width:800px; margin:4rem auto; padding:2rem; text-align:center;">
+	<div style="color:#666; font-size:18px; margin-bottom:1rem;">😔</div>
+	<div style="color:#333; font-size:20px; font-weight:600; margin-bottom:0.5rem;">No profile viewers yet</div>
+	<div style="color:#666; font-size:16px;">When someone views your profile, they'll appear here!</div>
+</div>
+
+<!-- Viewers Grid -->
+<div *ngIf="viewers().length > 0" style="max-width:800px; margin:2rem auto; padding:0 1rem;">
+	<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1.5rem;">
+
+		<!-- Viewer Card -->
+		<div *ngFor="let viewer of viewers()" (click)="showUserDetailModal(viewer.username)"
+			style="background:white; border:1px solid #ddd; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:transform 0.2s, box-shadow 0.2s; cursor:pointer;"
+			onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)'"
+			onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+			title="Click to view profile details">
+
+			<!-- Image Carousel -->
+			<div style="position:relative; height:300px; overflow:hidden;">
+				<!-- Main Image -->
+				<img [src]="getUserImages(viewer)[getCurrentImageIndex(viewer.username)]"
+					[alt]="viewer.username + ' photo'" style="width:100%; height:100%; object-fit:cover;"
+					onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+
+				<!-- Navigation Arrows (only show if multiple images) -->
+				<div *ngIf="getUserImages(viewer).length > 1">
+					<!-- Left Arrow -->
+					<button (click)="previousImage(viewer); $event.stopPropagation()"
+						style="position:absolute; left:10px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; transition:background 0.2s;"
+						onmouseover="this.style.background='rgba(0,0,0,0.7)'"
+						onmouseout="this.style.background='rgba(0,0,0,0.5)'">
+						&#8249;
+					</button>
+
+					<!-- Right Arrow -->
+					<button (click)="nextImage(viewer); $event.stopPropagation()"
+						style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; transition:background 0.2s;"
+						onmouseover="this.style.background='rgba(0,0,0,0.7)'"
+						onmouseout="this.style.background='rgba(0,0,0,0.5)'">
+						&#8250;
+					</button>
+
+					<!-- Image Indicators -->
+					<div
+						style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); display:flex; gap:6px;">
+						<div *ngFor="let image of getUserImages(viewer); let i = index"
+							[style.background]="i === getCurrentImageIndex(viewer.username) ? 'white' : 'rgba(255,255,255,0.5)'"
+							style="width:8px; height:8px; border-radius:50%; transition:background 0.2s;">
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Profile Info -->
+			<div style="padding:1rem;">
+				<!-- Name and Age -->
+				<h3 style="margin:0; color:#333; font-size:18px; font-weight:600; text-align:center;">
+					{{ viewer.username }}, {{ calculateAge(viewer.dateOfBirth) }}
+					<span style="font-size:14px; color:#666; margin-left:8px;">👤</span>
+				</h3>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Loading More Indicator -->
+<div *ngIf="isLoading() && viewers().length > 0"
+	style="max-width:800px; margin:2rem auto; padding:1rem; text-align:center;">
+	<div style="color:#666; font-size:16px;">Loading more viewers...</div>
+</div>
+
+<!-- End of List -->
+<div *ngIf="!hasNext() && viewers().length > 0"
+	style="max-width:800px; margin:2rem auto; padding:1rem; text-align:center;">
+	<div style="color:#666; font-size:16px;">You've seen all your profile viewers!</div>
+</div>
+
+<!-- Refresh Button -->
+<div style="position:fixed; bottom:20px; right:20px;">
+	<button (click)="refreshViewers()" [disabled]="isLoading()"
+		style="background:#4CAF50; color:white; border:none; border-radius:50%; width:56px; height:56px; cursor:pointer; font-size:20px; box-shadow:0 4px 12px rgba(76,175,80,0.3); transition:background 0.2s, transform 0.2s;"
+		onmouseover="this.style.background='#388e3c'; this.style.transform='scale(1.1)'"
+		onmouseout="this.style.background='#4CAF50'; this.style.transform='scale(1)'" title="Refresh viewers">
+		🔄
+	</button>
+</div>
+<!-- User Detail Modal -->
+<div *ngIf="showUserDetail()"
+	style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px;"
+	(click)="closeUserDetailModal()">
+
+	<div style="background:white; border-radius:16px; max-width:500px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 8px 32px rgba(0,0,0,0.2);"
+		(click)="$event.stopPropagation()">
+
+		<!-- Modal Header -->
+		<div
+			style="padding:1.5rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+			<h3 style="margin:0; color:#333; font-size:20px; font-weight:600;">Profile Details</h3>
+			<button (click)="closeUserDetailModal()"
+				style="background:none; border:none; font-size:24px; color:#666; cursor:pointer; padding:0; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background-color 0.2s;"
+				onmouseover="this.style.backgroundColor='#f5f5f5'"
+				onmouseout="this.style.backgroundColor='transparent'">
+				×
+			</button>
+		</div>
+
+		<!-- Loading State -->
+		<div *ngIf="loadingUserDetail()" style="padding:2rem; text-align:center; color:#666;">
+			Loading user details...
+		</div>
+
+		<!-- User Detail Content -->
+		<div *ngIf="!loadingUserDetail() && userDetail()" style="padding:1.5rem;">
+
+			<!-- Profile Image -->
+			<div style="text-align:center; margin-bottom:1.5rem;">
+				<img [src]="convertImagePath(userDetail()?.profileImageUrl || '')"
+					[alt]="userDetail()?.username + ' profile'"
+					style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid #ddd;"
+					onerror="this.src='https://via.placeholder.com/120x120?text=No+Image'">
+			</div>
+
+			<!-- Basic Info -->
+			<div style="text-align:center; margin-bottom:1.5rem;">
+				<h4 style="margin:0 0 0.5rem 0; color:#333; font-size:24px; font-weight:600;">
+					{{ userDetail()?.firstName }} {{ userDetail()?.lastName }}
+				</h4>
+				<p style="margin:0; color:#666; font-size:16px;">
+					@{{ userDetail()?.username }} • {{ calculateAge(userDetail()?.dateOfBirth || '') }} years old
+				</p>
+			</div>
+
+			<!-- Fame Score -->
+			<div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center;">
+				<div style="color:#333; font-weight:600; margin-bottom:0.5rem;">Fame Level</div>
+				<div style="font-size:18px;">{{ getFameLevel(userDetail()?.fame || 0) }}</div>
+				<div style="color:#666; font-size:14px; margin-top:0.5rem;">Fame Score: {{ getFamePercentage(userDetail()?.fame || 0)
+					}}/100</div>
+			</div>
+
+			<!-- Distance -->
+			<div style="background:#e8f5e8; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center;">
+				<div style="color:#333; font-weight:600; margin-bottom:0.5rem;">📍 Distance</div>
+				<div style="font-size:18px; color:#4caf50;">{{ formatDistance(userDetail()?.distance || 0) }}</div>
+			</div>
+
+			<!-- Last Online -->
+			<div style="margin-bottom:1.5rem;">
+				<strong style="color:#333;">Last Online:</strong>
+				<span style="color:#666; margin-left:0.5rem;">{{ formatLastOnline(userDetail()?.lastOnline || '')
+					}}</span>
+			</div>
+
+			<!-- Biography -->
+			<div *ngIf="userDetail()?.biography" style="margin-bottom:1.5rem;">
+				<strong style="color:#333; display:block; margin-bottom:0.5rem;">About Me:</strong>
+				<p style="color:#666; line-height:1.5; margin:0; padding:1rem; background:#f8f9fa; border-radius:8px;">
+					{{ userDetail()?.biography }}
+				</p>
+			</div>
+
+			<!-- Interests -->
+			<div *ngIf="userDetail()?.interests && (userDetail()?.interests?.length || 0) > 0"
+				style="margin-bottom:1.5rem;">
+				<strong style="color:#333; display:block; margin-bottom:0.5rem;">Interests:</strong>
+				<div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+					<span *ngFor="let interest of (userDetail()?.interests || [])"
+						style="background:#e3f2fd; color:#1976d2; padding:0.25rem 0.75rem; border-radius:16px; font-size:14px; border:1px solid #bbdefb;">
+						{{ interest }}
+					</span>
+				</div>
+			</div>
+
+			<!-- Image Gallery -->
+			<div *ngIf="userDetail()?.imageUrls && (userDetail()?.imageUrls?.length || 0) > 0"
+				style="margin-bottom:1.5rem;">
+				<strong style="color:#333; display:block; margin-bottom:0.5rem;">Photos:</strong>
+				<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:0.5rem;">
+					<img *ngFor="let imageUrl of (userDetail()?.imageUrls || [])" [src]="convertImagePath(imageUrl)"
+						style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #ddd;"
+						onerror="this.style.display='none'">
+				</div>
+			</div>
+
+			<!-- Contact Info -->
+			<div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1rem;">
+				<strong style="color:#333; display:block; margin-bottom:0.5rem;">Contact:</strong>
+				<p style="color:#666; margin:0; font-size:14px;">{{ userDetail()?.email }}</p>
+			</div>
+
+		</div>
+	</div>
+</div>

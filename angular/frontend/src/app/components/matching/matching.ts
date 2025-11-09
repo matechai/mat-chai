@@ -286,11 +286,19 @@ export class Matching implements OnInit {
 
   // Get fame level description
   getFameLevel(fame: number): string {
-    if (fame >= 80) return '⭐⭐⭐⭐⭐ Celebrity';
-    if (fame >= 60) return '⭐⭐⭐⭐ Popular';
-    if (fame >= 40) return '⭐⭐⭐ Well-known';
-    if (fame >= 20) return '⭐⭐ Rising';
+    // Convert 0-15 scale to 0-100 scale for display
+    const famePercent = Math.round((fame / 15) * 100);
+
+    if (famePercent >= 80) return '⭐⭐⭐⭐⭐ Celebrity';
+    if (famePercent >= 60) return '⭐⭐⭐⭐ Popular';
+    if (famePercent >= 40) return '⭐⭐⭐ Well-known';
+    if (famePercent >= 20) return '⭐⭐ Rising';
     return '⭐ Newcomer';
+  }
+
+  // Get fame percentage (0-100) from 0-15 scale
+  getFamePercentage(fame: number): number {
+    return Math.round((fame / 15) * 100);
   }
 
   // Format distance for display
