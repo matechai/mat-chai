@@ -199,7 +199,7 @@ export class Matching implements OnInit {
       // Add interests if any are selected
       const interests = this.selectedInterests();
       if (interests.length > 0) {
-        interests.forEach((interest: string) => params.append('interests', interest));
+        params.set('interests', interests.join(','));
       }
 
       const url = `/api/matching?${params.toString()}`;
