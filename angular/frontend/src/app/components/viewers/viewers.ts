@@ -9,15 +9,28 @@ interface UserBasicProfile {
 	imageUrls: string[];
 }
 
+interface UserDetail {
+	email: string;
+	username: string;
+	dateOfBirth: string;
+	firstName: string;
+	lastName: string;
+	biography: string;
+	interests: string[];
+	profileImageUrl: string;
+	imageUrls: string[];
+	fame: number;
+	lastOnline: string;
+	distance: number;
+}
+
 interface ViewersResponse {
 	content: UserBasicProfile[];
 	currentPage: number;
 	totalPages: number;
 	hasNext: boolean;
 	totalElements: number;
-}
-
-@Component({
+}@Component({
 	selector: 'app-viewers',
 	standalone: true,
 	imports: [CommonModule],
@@ -38,7 +51,10 @@ export class Viewers implements OnInit {
 	// Image carousel state for each user
 	currentImageIndexes = signal<{ [username: string]: number }>({});
 
-	ngOnInit() {
+	// User detail modal state
+	showUserDetail = signal<boolean>(false);
+	userDetail = signal<UserDetail | null>(null);
+	loadingUserDetail = signal<boolean>(false); ngOnInit() {
 		console.log('Viewers component initialized');
 		this.loadViewers();
 	}
@@ -148,7 +164,7 @@ export class Viewers implements OnInit {
 
 				// Initialize image indexes for new users
 				const indexes = { ...this.currentImageIndexes() };
-				response.content.forEach(user => {
+				response.content.forEach((user: UserBasicProfile) => {
 					if (!(user.username in indexes)) {
 						indexes[user.username] = 0;
 					}
@@ -189,5 +205,90 @@ export class Viewers implements OnInit {
 		this.viewers.set([]);
 		this.currentImageIndexes.set({});
 		await this.loadViewers();
+	}
+
+	// Show user detail modal
+	async showUserDetailModal(username: string) {
+		console.log('Opening user detail for:', username);
+		this.showUserDetail.set(true);
+		this.loadingUserDetail.set(true);
+
+		try {
+			// GraphQL query to get detailed user information
+			const query = {
+				query: `query {getUserByUsername(username: "${username}") { email username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline distance } }`
+			};
+
+			const response = await this.http.post<{ data: { getUserByUsername: UserDetail } }>('/api/graphql', query, {
+				withCredentials: true,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).toPromise();
+
+			if (response?.data?.getUserByUsername) {
+				this.userDetail.set(response.data.getUserByUsername);
+				console.log('User detail loaded:', response.data.getUserByUsername);
+			}
+		} catch (error) {
+			console.error('Failed to load user detail:', error);
+		} finally {
+			this.loadingUserDetail.set(false);
+		}
+	}
+
+	// Close user detail modal
+	closeUserDetailModal() {
+		this.showUserDetail.set(false);
+		this.userDetail.set(null);
+	}
+
+	// Format last online time
+	formatLastOnline(lastOnline: string): string {
+		if (!lastOnline) return 'Unknown';
+
+		const date = new Date(lastOnline);
+		const now = new Date();
+		const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+
+		if (diffInMinutes < 1) return 'Just now';
+		if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+
+		const diffInHours = Math.floor(diffInMinutes / 60);
+		if (diffInHours < 24) return `${diffInHours} hours ago`;
+
+		const diffInDays = Math.floor(diffInHours / 24);
+		if (diffInDays < 7) return `${diffInDays} days ago`;
+
+		return date.toLocaleDateString();
+	}
+
+	// Get fame level description
+	getFameLevel(fame: number): string {
+		if (fame >= 80) return '⭐⭐⭐⭐⭐ Celebrity';
+		if (fame >= 60) return '⭐⭐⭐⭐ Popular';
+		if (fame >= 40) return '⭐⭐⭐ Well-known';
+		if (fame >= 20) return '⭐⭐ Rising';
+		return '⭐ Newcomer';
+	}
+
+	// Format distance for display
+	formatDistance(distance: number): string {
+		if (!distance && distance !== 0) return 'Distance unknown';
+
+		if (distance < 0.1) {
+			// Show "Nearby" for distances less than 100m
+			return 'Nearby';
+		} else if (distance < 1) {
+			// Show meters for distances less than 1km but more than 100m
+			const meters = Math.round(distance * 1000);
+			return `${meters}m away`;
+		} else if (distance < 10) {
+			// Show one decimal place for distances less than 10km
+			return `${distance.toFixed(1)} km away`;
+		} else {
+			// Show whole numbers for distances 10km and above
+			return `${Math.round(distance)} km away`;
+		}
 	}
 }
