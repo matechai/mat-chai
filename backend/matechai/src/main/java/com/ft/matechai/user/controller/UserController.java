@@ -107,4 +107,10 @@ public class UserController {
 
         return userService.getMatched(targetUser.getUsername());
     }
+
+    @SchemaMapping(typeName = "User", field = "distance")
+    public Float getDistance(User targetUser) {
+
+        return userService.getDistance(targetUser.getUsername());
+    }
 }
