@@ -7,6 +7,7 @@ import { Chat } from './components/chat/chat';
 import { Notfound } from './components/notfound/notfound';
 import { ProfileEdit } from './components/profile-edit/profile-edit';
 import { Matches } from './components/matches/matches';
+import { Viewers } from './components/viewers/viewers';
 import { AuthGuard } from './guards/auth.guard';
 
 
@@ -16,6 +17,7 @@ export const routes: Routes = [
 	{ path: 'profile/edit', component: ProfileEdit },
 	{ path: 'matches', component: Matches },
 	{ path: 'matching', component: Matching },
+	{ path: 'viewers', component: Viewers },
 	{ path: 'chat', component: Chat },
 	{ path: 'setting', component: Matching },
 	{ path: 'updateprofile', component: ProfileEdit },
