@@ -35,50 +35,50 @@ export class AppComponent implements OnInit, OnDestroy {
   isAuthenticated: boolean = false;
   currentUsername: string = '';
 
-  ngOnInit(): void {
-    console.log('🚀 App initialized');
-    // Subscribe to auth changes
-    this.authService.user$.subscribe((user: any) => {
+ngOnInit(): void {
+  console.log('🚀 App initialized');
+
+  // Subscribe to auth changes
+  this.authService.user$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((user: any) => {
       this.isAuthenticated = !!user;
       this.currentUsername = user?.username || '';
+
+      if (this.isAuthenticated) {
+        console.log('✅ Authenticated, initializing WebSocket...');
+        this.websocketService.connectIfNeeded();
+      } else {
+        console.log('❌ Not authenticated, disconnecting WebSocket');
+        this.websocketService.disconnect();
+      }
     });
-    const hasSession = this.authService.hasAuthCookies();
-    if (this.authService.hasAuthCookies()) {
-      console.log('🔐 Found auth cookies, verifying session...');
-      this.checkAuth();
-    } 
-    else {
-      console.log('⚠️ No auth cookies found — user not logged in');
-      this.isAuthenticated = false;
-    }
-    
-    // Check authentication status
-    this.authService.checkAuthState()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (result : any) => {
-          this.isAuthenticated = result.isAuthenticated;
 
-          if (result.isAuthenticated && result.user) {
-            this.currentUsername = result.user.username;
-            console.log('✅ User authenticated:', this.currentUsername);
+  // Check current session
+  this.authService.checkAuthState()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (result: any) => {
+        if (result.isAuthenticated && result.user) {
+          this.isAuthenticated = true;
+          this.currentUsername = result.user.username;
+          console.log('✅ User authenticated:', this.currentUsername);
 
-            // Initialize WebSocket connection after small delay to ensure auth is set
-            setTimeout(() => {
-              this.initializeWebSocket();
-            }, 500);
-          } else {
-            console.log('❌ User not authenticated');
-            this.websocketService.disconnect();
-          }
-        },
-        error: (err: any) => {
-          console.error('❌ Error checking auth state:', err);
+          // Initialize WebSocket immediately
+          this.websocketService.connectIfNeeded();
+        } else {
           this.isAuthenticated = false;
           this.websocketService.disconnect();
         }
-      });
-  }
+      },
+      error: (err: any) => {
+        console.error('❌ Error checking auth state:', err);
+        this.isAuthenticated = false;
+        this.websocketService.disconnect();
+      }
+    });
+}
+
 
   private initializeWebSocket(): void {
     console.log('🔌 Initializing WebSocket connection...');
@@ -87,12 +87,14 @@ export class AppComponent implements OnInit, OnDestroy {
     this.websocketService.connect();
 
     // Load initial notification count
-    this.notificationService.getUnreadCount()
+    // ✅ correct
+    this.notificationService.unreadCount$
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (count : any) => console.log('🔢 Initial unread count:', count),
-        error: (err : any) => console.error('❌ Error loading unread count:', err)
+        next: (count: number) => console.log('🔢 Current unread count:', count),
+        error: (err: any) => console.error('❌ Error reading unread count:', err)
       });
+
 
     // Monitor connection status
     this.websocketService.connected$

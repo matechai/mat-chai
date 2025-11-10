@@ -18,53 +18,39 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private websocketService = inject(WebSocketService);
   private destroy$ = new Subject<void>();
 
-  notifications: Notification[] = [];
+  notifications: Notification[] = []; 
   unreadCount: number = 0;
   isDropdownOpen: boolean = false;
 
-  ngOnInit(): void {
-    this.loadNotifications();
-    this.loadUnreadCount();
-    this.subscribeToNewNotifications();
-  }
+  ngOnInit() {
+    // Load existing notifications from backend
+    this.notificationService.loadNotifications();
 
-  loadNotifications(): void {
-    this.notificationService.getNotifications()
+    // Subscribe to reactive notifications list
+    this.notificationService.notifications$
       .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (notifications : any) => {
-          this.notifications = notifications;
-        },
-        error: (err : any) => console.error('Error loading notifications:', err)
+      .subscribe((notifs: Notification[]) => {
+        this.notifications = notifs;
       });
-  }
 
-  loadUnreadCount(): void {
-    this.notificationService.getUnreadCount()
+    // Subscribe to unread count
+    this.notificationService.unreadCount$
       .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (count : any) => {
-          this.unreadCount = count;
-        },
-        error: (err : any) => console.error('Error loading unread count:', err)
+      .subscribe((count: number) => {
+        this.unreadCount = count;
       });
-  }
 
-  subscribeToNewNotifications(): void {
+    // Subscribe once to WebSocket notifications
     this.websocketService.notifications$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((notification : any) => {
+      .subscribe((notification: Notification | null) => {
         if (notification) {
           this.notificationService.addNotification(notification);
-          this.loadNotifications();
         }
       });
 
-    this.notificationService.unreadCount$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((count : any) => {
-        this.unreadCount = count;
-      });
+    // Connect WebSocket if not already
+    this.websocketService.connectIfNeeded();
   }
 
   toggleDropdown(): void {
@@ -80,7 +66,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.notificationService.markAsRead(notification.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          error: (err : any) => console.error('Error marking notification as read:', err)
+          next: () => console.log(`Notification ${notification.id} marked as read`),
+          error: (err: any) => console.error('Error marking notification as read:', err)
         });
     }
   }
@@ -89,7 +76,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.notificationService.markAllAsRead()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        error: (err : any) => console.error('Error marking all as read:', err)
+        next: () => console.log('All notifications marked as read'),
+        error: (err: any) => console.error('Error marking all as read:', err)
       });
   }
 

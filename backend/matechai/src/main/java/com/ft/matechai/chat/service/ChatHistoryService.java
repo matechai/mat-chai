@@ -1,10 +1,12 @@
 package com.ft.matechai.chat.service;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.ft.matechai.chat.dto.ChatPartnerDto;
@@ -15,40 +17,38 @@ import com.ft.matechai.user.node.User;
 
 @Service
 public class ChatHistoryService {
-	
-	private final ChatInterface chatRepository;
-	private final UserRepository userRepository;
 
-	public ChatHistoryService(ChatInterface chatRepository, UserRepository userRepository)
-	{
-		this.chatRepository = chatRepository;
-		this.userRepository = userRepository;
-	}
+    private final ChatInterface chatRepository;
+    private final UserRepository userRepository;
 
-	// Get chat messages between two users, excluding messages from blocked users
-    public List<ChatMessage> getChatBetween(User user, String receiverUsername) 
-	{
+    public ChatHistoryService(ChatInterface chatRepository, UserRepository userRepository) {
+        this.chatRepository = chatRepository;
+        this.userRepository = userRepository;
+    }
+
+    // Get chat messages between two users, excluding messages from blocked users
+    public List<ChatMessage> getChatBetween(User user, String receiverUsername) {
         User receiver = userRepository.findByUsernameOrThrow(receiverUsername);
 
-        // Fetch all messages between the two users
-        List<ChatMessage> messages = chatRepository.findBySenderAndReceiverOrReceiverAndSender(
-                user.getUsername(), receiver.getUsername(),
-                receiver.getUsername(), user.getUsername()
+        // Fetch all messages between the two users, sorted by timestamp ascending
+        List<ChatMessage> messages = chatRepository.findChatBetweenUsers(
+                user.getUsername(),
+                receiver.getUsername()
+                
         );
-
+        messages.sort(Comparator.comparing(ChatMessage::getTimestamp));
         // Remove messages where sender is blocked by the current user
         messages.removeIf(msg -> userRepository.isBlocked(user.getUsername(), msg.getSender()));
 
         return messages;
     }
 
-	// Get chat partners with the last message, excluding blocked users
-    public List<ChatPartnerDto> getChatPartners(User currentUser) 
-	{
+    // Get chat partners with the last message, excluding blocked users
+    public List<ChatPartnerDto> getChatPartners(User currentUser) {
         String username = currentUser.getUsername();
 
         // Fetch all messages where the user is sender or receiver
-        List<ChatMessage> allMessages = chatRepository.findBySenderOrReceiver(username, username);
+        List<ChatMessage> allMessages = chatRepository.findAllMessagesOfUser(username);
 
         Map<String, ChatMessage> lastMessages = new HashMap<>();
         for (ChatMessage msg : allMessages) {

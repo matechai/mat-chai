@@ -30,32 +30,71 @@ export class ChatComponent implements OnInit, OnDestroy {
   currentUsername: string = '';
 
   ngOnInit(): void {
-    // Get current username from your auth service
-    const cachedUsername = this.authService.getCachedUsername();
-    if (cachedUsername) {
-      this.currentUsername = cachedUsername;
-    } else {
-      this.authService.getCurrentUser().subscribe({
-        next: (user) => {
-          this.currentUsername = user.username;
-        },
-        error: (err) => console.error('Error getting current user:', err)
-      });
-    }
-
-    this.loadChatPartners();
-    this.subscribeToNewMessages();
+  const cachedUsername = this.authService.getCachedUsername();
+  if (cachedUsername) {
+    this.currentUsername = cachedUsername;
+    this.setupMessageSubscription();
+  } else {
+    this.authService.getCurrentUser().subscribe({
+      next: (user: any) => {
+        this.currentUsername = user.username;
+        this.setupMessageSubscription();
+      },
+      error: (err: any) => console.error('Error getting current user:', err)
+    });
   }
+
+  this.loadChatPartners();
+}
+
+private setupMessageSubscription() {
+  // Ensure WS is connected first
+  this.websocketService.connectIfNeeded();
+
+  // Subscribe to messages only when WebSocket is connected
+  this.websocketService.onConnected$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(() => {
+      this.websocketService.messages$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((message: ChatMessage | null) => {
+          if (!message) return;
+
+          const isCurrentChat =
+            (message.sender === this.selectedPartner && message.receiver === this.currentUsername) ||
+            (message.receiver === this.selectedPartner && message.sender === this.currentUsername);
+
+          if (isCurrentChat) {
+            this.currentChat.push(message);
+            this.scrollToBottom();
+          }
+
+          const partnerUsername = message.sender === this.currentUsername ? message.receiver : message.sender;
+          const partnerIndex = this.chatPartners.findIndex(p => p.username === partnerUsername);
+          if (partnerIndex > -1) {
+            this.chatPartners[partnerIndex].lastMessage = message.content;
+            this.chatPartners[partnerIndex].lastMessageTime = message.timestamp;
+          } else {
+            this.chatPartners.unshift({
+              username: partnerUsername,
+              lastMessage: message.content,
+              lastMessageTime: message.timestamp
+            });
+          }
+        });
+    });
+}
+
 
   loadChatPartners(): void {
     this.chatService.getChatPartners()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (partners) => {
+        next: (partners: ChatPartner[]) => {
           this.chatPartners = partners;
           console.log('📋 Chat partners loaded:', partners.length);
         },
-        error: (err) => console.error('❌ Error loading chat partners:', err)
+        error: (err : any) => console.error('❌ Error loading chat partners:', err)
       });
   }
 
@@ -70,32 +109,45 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatService.getChatHistory(username)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (messages) => {
+        next: (messages : any) => {
           this.currentChat = messages;
           console.log('💬 Chat history loaded:', messages.length, 'messages');
           this.scrollToBottom();
         },
-        error: (err) => console.error('❌ Error loading chat history:', err)
+        error: (err: any) => console.error('❌ Error loading chat history:', err)
       });
   }
 
   subscribeToNewMessages(): void {
     this.websocketService.messages$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(message => {
-        if (message) {
-          console.log('📨 New message received in component:', message);
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((message: ChatMessage | null) => {
+          if (!message) return;
 
-          // Add to current chat if from selected partner
-          if (message.sender === this.selectedPartner) {
-            this.currentChat.push(message);
-            this.scrollToBottom();
+          const isCurrentChat = (message.sender === this.selectedPartner && message.receiver === this.currentUsername) ||
+                                (message.receiver === this.selectedPartner && message.sender === this.currentUsername);
+
+          // Update current chat if it's the selected conversation
+          if (isCurrentChat) {
+              this.currentChat.push(message);
+              this.scrollToBottom();
           }
 
-          // Reload chat partners to update last message
-          this.loadChatPartners();
-        }
-      });
+          // Update last message in partner list locally for notifications
+          const partnerUsername = message.sender === this.currentUsername ? message.receiver : message.sender;
+          const partnerIndex = this.chatPartners.findIndex(p => p.username === partnerUsername);
+          if (partnerIndex > -1) {
+              this.chatPartners[partnerIndex].lastMessage = message.content;
+              this.chatPartners[partnerIndex].lastMessageTime = message.timestamp;
+          } else {
+              // If partner not found, optionally add them
+              this.chatPartners.unshift({
+                  username: partnerUsername,
+                  lastMessage: message.content,
+                  lastMessageTime: message.timestamp
+              });
+          }
+        });
   }
 
   sendMessage(): void {
@@ -131,5 +183,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    // this.websocketService.disconnect();
   }
 }

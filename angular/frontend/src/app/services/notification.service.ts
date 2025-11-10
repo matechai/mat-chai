@@ -1,58 +1,52 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { Notification } from '../interfaces/notification.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private apiUrl = '/api/notifications';
-  private unreadCount = new BehaviorSubject<number>(0);
+  private notificationsSubject = new BehaviorSubject<Notification[]>([]);
+  public notifications$ = this.notificationsSubject.asObservable();
 
+  private unreadCount = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCount.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  getNotifications(): Observable<Notification[]> {
-    return this.http.get<Notification[]>(this.apiUrl);
+  loadNotifications(): void {
+    this.http.get<Notification[]>('/api/notifications').subscribe((notifs: Notification[]) => {
+      this.notificationsSubject.next(notifs);
+      const unread = notifs.filter(n => !n.read).length;
+      this.unreadCount.next(unread);
+    });
   }
 
-  getUnreadCount(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/unread-count`).pipe(
-      tap(count => this.unreadCount.next(count))
-    );
-  }
-
-  markAsRead(notificationId: string): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/${notificationId}/read`, {}).pipe(
-      tap(() => this.decrementUnreadCount())
-    );
-  }
-
-  markAllAsRead(): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/read-all`, {}).pipe(
-      tap(() => this.unreadCount.next(0))
-    );
-  }
-
-  //test later
   addNotification(notification: Notification): void {
-  // Optionally: you could maintain a BehaviorSubject<Notification[]> if you want reactive updates.
-  this.incrementUnreadCount();
-
-  // If you want to store locally:
-  // (you can add a BehaviorSubject<Notification[]> in the service for this)
-  }
-
-  incrementUnreadCount(): void {
+    const current = this.notificationsSubject.value;
+    this.notificationsSubject.next([notification, ...current]);
     this.unreadCount.next(this.unreadCount.value + 1);
   }
 
-  private decrementUnreadCount(): void {
-    const current = this.unreadCount.value;
-    if (current > 0) {
-      this.unreadCount.next(current - 1);
-    }
+  markAsRead(id: string): Observable<any> {
+    return this.http.patch(`/api/notifications/${id}/read`, {}).pipe(
+      tap(() => {
+        const updated = this.notificationsSubject.value.map((n: any) =>
+          n.id === id ? { ...n, read: true } : n
+        );
+        this.notificationsSubject.next(updated);
+        this.unreadCount.next(this.unreadCount.value - 1);
+      })
+    );
+  }
+
+  markAllAsRead(): Observable<any> {
+    return this.http.patch(`/api/notifications/read-all`, {}).pipe(
+      tap(() => {
+        const updated = this.notificationsSubject.value.map((n: any) => ({ ...n, read: true }));
+        this.notificationsSubject.next(updated);
+        this.unreadCount.next(0);
+      })
+    );
   }
 }

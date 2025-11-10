@@ -38,9 +38,9 @@
 
       <div *ngIf="selectedPartner" class="messages-list">
         <div *ngFor="let message of currentChat"
-             [class.sent]="message.sender !== selectedPartner"
-             [class.received]="message.sender === selectedPartner"
-             class="message-bubble">
+            [class.sent]="message.sender === currentUsername"
+            [class.received]="message.sender !== currentUsername"
+            class="message-bubble">
           <p>{{ message.content }}</p>
           <small>{{ message.timestamp | date:'short' }}</small>
         </div>
