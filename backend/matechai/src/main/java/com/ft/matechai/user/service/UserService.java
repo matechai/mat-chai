@@ -107,6 +107,12 @@ public class UserService {
         return userRepository.isMatched(me.getUsername(), targetUsername);
     }
 
+    public float getDistance(String targetUsername) {
+
+        User me = ((PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        return (float) userRepository.getDistanceKm(me.getUsername(), targetUsername);
+    }
+
 
 
 	// SETTERS // SETTERS // SETTERS // SETTERS //

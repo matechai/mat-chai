@@ -346,6 +346,17 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                                    @Param("interests") List<String> interests,
                                    Pageable pageable);
 
+    @Query("""
+            MATCH (me:User {username: $username})
+            MATCH (u:User {username: $targetUsername})
+            WITH me, u,
+              point({longitude: me.longitude, latitude: me.latitude}) AS mePoint,
+              point({longitude: u.longitude, latitude: u.latitude}) AS uPoint
+            RETURN round(point.distance(mePoint, uPoint)) / 1000 AS distance
+            """)
+    double getDistanceKm(@Param("username") String username,
+                      @Param("targetUsername") String targetUsername);
+
     @Query("MATCH (a:User) RETURN a")
     List<User> findAllUsers();
 }

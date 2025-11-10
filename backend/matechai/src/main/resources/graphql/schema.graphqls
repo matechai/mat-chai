@@ -15,6 +15,7 @@ type User {
     imageUrls: [String]
     fame: Float
     lastOnline: DateTime
+    distance: Float
 
     liked: Boolean
     matched: Boolean
