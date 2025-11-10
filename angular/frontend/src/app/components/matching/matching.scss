@@ -11,99 +11,89 @@
   overflow: hidden;
 }
 
-// Custom Range Slider Styles (Ignite UI inspired)
-.custom-range-slider {
-  .range-input {
-    -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
+// General Range Slider Styles (for single sliders like distance)
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+    height: 8px;
+  background: #ddd;
+  border-radius: 4px;
+  outline: none;
     cursor: pointer;
 
-    &::-webkit-slider-track {
-      background: transparent;
-      height: 8px;
-      border-radius: 4px;
-    }
-
-    &::-webkit-slider-thumb {
+  &::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      height: 24px;
-      width: 24px;
+    height: 20px;
+      width: 20px;
       border-radius: 50%;
       background: #ffffff;
-      border: 3px solid #e74c3c;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid #3498db;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
       cursor: pointer;
-      transition: all 0.3s ease;
+    &:hover {
+      border-color: #2980b9;
+        box-shadow: 0 3px 12px rgba(52, 152, 219, 0.5);
+      transform: scale(1.1);
+    
 
-      &:hover {
-        transform: scale(1.1);
-        box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
-      }
-
-      &:active {
-        transform: scale(1.15);
-        box-shadow: 0 5px 20px rgba(231, 76, 60, 0.5);
-      }
-    }
-
-    // Fame range specific styling
-    &.range-min::-webkit-slider-thumb {
-      z-index: 3;
-    }
-
-    &.range-max::-webkit-slider-thumb {
-      z-index: 4;
-    }
-
-    // Firefox styling
     &::-moz-range-track {
-      background: transparent;
+    background: #ddd;
       height: 8px;
       border-radius: 4px;
       border: none;
     }
 
     &::-moz-range-thumb {
-      height: 24px;
-      width: 24px;
+    height: 20px;
+      width: 20px;
       border-radius: 50%;
       background: #ffffff;
-      border: 3px solid #e74c3c;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid #3498db;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
       cursor: pointer;
-      transition: all 0.3s ease;
-      border: none;
-
+    border: none;
       &:hover {
-        transform: scale(1.1);
-        box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
-      }
+      border-color: #2980b9;
+        box-shadow: 0 3px 12px rgba(52, 152, 219, 0.5);
     }
   }
 }
 
-// Fame range specific colors
-.custom-range-slider:has(.range-input[min="0"]) {
-  .range-input::-webkit-slider-thumb {
-    border-color: #6c5ce7;
+// Distance Slider Specific Styles
+.distance-slider {
+  &::-webkit-slider-track {
+    background: transparent;
+    height: 8px;
+    border-radius: 4px;
   }
 
-  .range-input::-webkit-slider-thumb:hover {
-    box-shadow: 0 4px 16px rgba(108, 92, 231, 0.4);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                &::-webkit-slider-thumb {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  position: relative;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  z-index: 2;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+
+// Dual Range Slider Styles (for age and fame range containers)
+.dual-range-container input[type="range"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  pointer-events: auto;
+
+  &::-webkit-slider-track {
+      background: transparent;
+      height: 6px;
+      border-radius: 3px;
   }
 
-  .range-input::-webkit-slider-thumb:active {
-    box-shadow: 0 5px 20px rgba(108, 92, 231, 0.5);
-  }
-
-  .range-input::-moz-range-thumb {
-    border-color: #6c5ce7;
-  }
-
-  .range-input::-moz-range-thumb:hover {
-    box-shadow: 0 4px 16px rgba(108, 92, 231, 0.4);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                &::-webkit-slider-thumb {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  position: relative;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  z-index: 2;
   }
 }
 .image-carousel {
@@ -288,4 +278,6 @@
     padding: 0.5rem 1rem;
     font-size: 14px;
   }
+}
+}
 }

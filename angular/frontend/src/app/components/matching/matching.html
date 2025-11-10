@@ -330,43 +330,63 @@
     <!-- Age Range -->
     <div style="margin-bottom:20px;">
       <h4 style="margin:0 0 10px 0; color:#333;">🎂 Age Range</h4>
-      <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
-        <span style="font-size:14px; color:#666;">Min:</span>
-        <input type="range" [value]="minAge()" (input)="minAge.set(+$any($event.target).value)" min="18" max="99"
-          style="flex:1;">
-        <span style="min-width:40px; text-align:center; font-size:14px; color:#666;">{{ minAge() }}</span>
-      </div>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <span style="font-size:14px; color:#666;">Max:</span>
-        <input type="range" [value]="maxAge()" (input)="maxAge.set(+$any($event.target).value)" min="18" max="99"
-          style="flex:1;">
-        <span style="min-width:40px; text-align:center; font-size:14px; color:#666;">{{ maxAge() }}</span>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <div style="display:flex; align-items:center; gap:5px; flex:1;">
+          <span style="font-size:14px; color:#666;">Min:</span>
+          <input type="number" [value]="ageRange().lower" (input)="updateAgeRange(+$any($event.target).value, ageRange().upper)"
+            min="18" max="99" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px;">
+          </div>
+        <div style="display:flex; align-items:center; gap:5px; flex:1;">
+          <span style="font-size:14px; color:#666;">Max:</span>
+          <input type="number" [value]="ageRange().upper" (input)="updateAgeRange(ageRange().lower, +$any($event.target).value)"
+            min="18" max="99" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px;">
+          </div>
       </div>
     </div>
 
     <!-- Fame Range -->
     <div style="margin-bottom:20px;">
       <h4 style="margin:0 0 10px 0; color:#333;">📊 Fame Range</h4>
-      <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
-        <span style="font-size:14px; color:#666;">Min:</span>
-        <input type="range" [value]="minFame()" (input)="minFame.set(+$any($event.target).value)" min="0" max="15"
-          style="flex:1;">
-        <span style="min-width:40px; text-align:center; font-size:14px; color:#666;">{{ minFame() }}</span>
-      </div>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <span style="font-size:14px; color:#666;">Max:</span>
-        <input type="range" [value]="maxFame()" (input)="maxFame.set(+$any($event.target).value)" min="0" max="15"
-          style="flex:1;">
-        <span style="min-width:40px; text-align:center; font-size:14px; color:#666;">{{ maxFame() }}</span>
-      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <div style="display:flex; align-items:center; gap:5px; flex:1;">
+          <span style="font-size:14px; color:#666;">Min:</span>
+          <input type="number" [value]="fameRange().lower"
+            (input)="updateFameRange(+$any($event.target).value, fameRange().upper)" min="0" max="15"
+            style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px;">
+          </div>
+        <div style="display:flex; align-items:center; gap:5px; flex:1;">
+          <span style="font-size:14px; color:#666;">Max:</span>
+          <input type="number" [value]="fameRange().upper"
+            (input)="updateFameRange(fameRange().lower, +$any($event.target).value)" min="0" max="15"
+            style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px;">
+          </div>
+          </div>
     </div>
+
     <!-- Distance -->
     <div style="margin-bottom:20px;">
       <h4 style="margin:0 0 10px 0; color:#333;">📍 Max Distance</h4>
-      <div style="display:flex; align-items:center; gap:10px;">
-        <input type="range" [value]="maxDistance()" (input)="maxDistance.set(+$any($event.target).value)" min="1"
-          max="10000" step="100" style="flex:1;">
-        <span style="min-width:80px; text-align:center;">{{ maxDistance() }} km</span>
+      <div style="position:relative; margin:20px 0;">
+        <!-- Range Track -->
+        <div style="height:8px; background:#ddd; border-radius:4px; position:relative;">
+          <!-- Active Range (0 to current value) -->
+          <div [style.width.%]="((maxDistance() - 1) / (10000 - 1)) * 100"
+            style="position:absolute; height:100%; background:linear-gradient(to right, #3498db, #2980b9, #1abc9c); border-radius:4px;">
+          </div>
+        </div>
+      
+        <!-- Distance Range Input -->
+        <input type="range" [value]="maxDistance()" (input)="maxDistance.set(+$any($event.target).value)" min="1" max="10000"
+          step="100" class="distance-slider"
+          style="position:absolute; top:-6px; width:100%; height:20px; background:transparent; pointer-events:auto; appearance:none; -webkit-appearance:none;">
+      </div>
+      
+      <!-- Value Display -->
+      <div style="display:flex; justify-content:center; align-items:center; margin-top:10px;">
+        <span style="font-size:14px; color:#666; margin-right:10px;">Max Distance:</span>
+        <input type="number" [value]="maxDistance()" (input)="maxDistance.set(+$any($event.target).value)" min="1" max="10000"
+          step="100" style="width:80px; padding:4px; border:1px solid #ddd; border-radius:4px;">
+        <span style="margin-left:5px; color:#666;">km</span>
       </div>
     </div>
 

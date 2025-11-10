@@ -97,16 +97,28 @@ export class Matching implements OnInit {
   });
 
   // Update methods for range sliders
-  updateAgeRange(lower: number, upper: number) {
-    this.ageRange.set({ lower, upper });
-    this.minAge.set(lower);
-    this.maxAge.set(upper);
+  updateAgeRange(lower: number | string, upper: number | string) {
+    const lowerNum = typeof lower === 'string' ? parseInt(lower) : lower;
+    const upperNum = typeof upper === 'string' ? parseInt(upper) : upper;
+
+    // Ensure valid range
+    if (lowerNum <= upperNum && lowerNum >= 18 && upperNum <= 99) {
+      this.ageRange.set({ lower: lowerNum, upper: upperNum });
+      this.minAge.set(lowerNum);
+      this.maxAge.set(upperNum);
+    }
   }
 
-  updateFameRange(lower: number, upper: number) {
-    this.fameRange.set({ lower, upper });
-    this.minFame.set(lower);
-    this.maxFame.set(upper);
+  updateFameRange(lower: number | string, upper: number | string) {
+    const lowerNum = typeof lower === 'string' ? parseInt(lower) : lower;
+    const upperNum = typeof upper === 'string' ? parseInt(upper) : upper;
+
+    // Ensure valid range
+    if (lowerNum <= upperNum && lowerNum >= 0 && upperNum <= 15) {
+      this.fameRange.set({ lower: lowerNum, upper: upperNum });
+      this.minFame.set(lowerNum);
+      this.maxFame.set(upperNum);
+    }
   }
 
   // Individual update methods for inputs
