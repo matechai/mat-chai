@@ -1,6 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { UserService } from '../../services/user.service';
 
 interface User {
   username: string;
@@ -34,12 +36,16 @@ interface MatchingResponse {
 @Component({
   selector: 'app-matching',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './matching.html',
   styleUrl: './matching.scss'
 })
 export class Matching implements OnInit {
   private http = inject(HttpClient);
+  private userService = inject(UserService);
+
+  // Expose Math for template use
+  Math = Math;
 
   constructor() {
     console.log('Matching component constructor called');
@@ -62,9 +68,91 @@ export class Matching implements OnInit {
   userDetail = signal<UserDetail | null>(null);
   loadingUserDetail = signal<boolean>(false);
 
+  // Filter state
+  showFilterModal = signal<boolean>(false);
+  sortBy = signal<string>('fame'); // fame, age, distance, interest
+  order = signal<string>('desc'); // asc, desc
+
+  // Search filter state
+  showSearchModal = signal<boolean>(false);
+  minAge = signal<number>(1);
+  maxAge = signal<number>(99);
+  minFame = signal<number>(0);
+  maxFame = signal<number>(15);
+  maxDistance = signal<number>(10000);
+  selectedInterests = signal<string[]>([]);
+
+  // Available interests for selection (loaded from GraphQL)
+  availableInterests = signal<string[]>([]);
+
+  // Range slider objects similar to Ignite UI pattern
+  ageRange = signal({
+    lower: 18,
+    upper: 99
+  });
+
+  fameRange = signal({
+    lower: 0,
+    upper: 15
+  });
+
+  // Update methods for range sliders
+  updateAgeRange(lower: number | string, upper: number | string) {
+    const lowerNum = typeof lower === 'string' ? parseInt(lower) : lower;
+    const upperNum = typeof upper === 'string' ? parseInt(upper) : upper;
+
+    // Ensure valid range
+    if (lowerNum <= upperNum && lowerNum >= 18 && upperNum <= 99) {
+      this.ageRange.set({ lower: lowerNum, upper: upperNum });
+      this.minAge.set(lowerNum);
+      this.maxAge.set(upperNum);
+    }
+  }
+
+  updateFameRange(lower: number | string, upper: number | string) {
+    const lowerNum = typeof lower === 'string' ? parseInt(lower) : lower;
+    const upperNum = typeof upper === 'string' ? parseInt(upper) : upper;
+
+    // Ensure valid range
+    if (lowerNum <= upperNum && lowerNum >= 0 && upperNum <= 15) {
+      this.fameRange.set({ lower: lowerNum, upper: upperNum });
+      this.minFame.set(lowerNum);
+      this.maxFame.set(upperNum);
+    }
+  }
+
+  // Individual update methods for inputs
+  onAgeRangeChange(event: any, isLower: boolean) {
+    const value = parseInt(event.target.value);
+    const current = this.ageRange();
+
+    if (isLower && value < current.upper) {
+      this.updateAgeRange(value, current.upper);
+    } else if (!isLower && value > current.lower) {
+      this.updateAgeRange(current.lower, value);
+    }
+  }
+
+  onFameRangeChange(event: any, isLower: boolean) {
+    const value = parseInt(event.target.value);
+    const current = this.fameRange();
+
+    if (isLower && value < current.upper) {
+      this.updateFameRange(value, current.upper);
+    } else if (!isLower && value > current.lower) {
+      this.updateFameRange(current.lower, value);
+    }
+  }
+
   ngOnInit() {
     console.log('Matching component initialized, loading first profile...');
     console.log('HTTP client available:', !!this.http);
+
+    // Load available interests from GraphQL
+    this.userService.getInterests().subscribe({
+      next: (data: string[]) => this.availableInterests.set(data),
+      error: (error: any) => console.error('Error loading interests:', error)
+    });
 
     // 약간의 지연 후 로딩 시작 (컴포넌트 완전 초기화 대기)
     setTimeout(() => {
@@ -104,11 +192,32 @@ export class Matching implements OnInit {
     this.isLoading.set(true);
 
     try {
-      // Call actual backend API with page parameter
+      // Call actual backend API with page and filter parameters
       const page = this.currentPage();
-      console.log('Sending GET request to:', `/api/matching?page=${page}`);
+      const sortBy = this.sortBy();
+      const order = this.order();
 
-      const response = await this.http.get<MatchingResponse>(`/api/matching?page=${page}`, {
+      // Build URL with search filter parameters
+      const params = new URLSearchParams();
+      params.set('page', page.toString());
+      params.set('sortBy', sortBy);
+      params.set('order', order);
+      params.set('minAge', this.minAge().toString());
+      params.set('maxAge', this.maxAge().toString());
+      params.set('minFame', this.minFame().toString());
+      params.set('maxFame', this.maxFame().toString());
+      params.set('distance', this.maxDistance().toString());
+
+      // Add interests if any are selected
+      const interests = this.selectedInterests();
+      if (interests.length > 0) {
+        params.set('interests', interests.join(','));
+      }
+
+      const url = `/api/matching?${params.toString()}`;
+      console.log('Sending GET request to:', url);
+
+      const response = await this.http.get<MatchingResponse>(url, {
         withCredentials: true
       }).toPromise();
 
@@ -319,5 +428,130 @@ export class Matching implements OnInit {
       // Show whole numbers for distances 10km and above
       return `${Math.round(distance)} km away`;
     }
+  }
+
+  // Filter functions
+  toggleFilterModal() {
+    console.log('toggleFilterModal called');
+    console.log('Current showFilterModal state:', this.showFilterModal());
+    const newState = !this.showFilterModal();
+    this.showFilterModal.set(newState);
+    console.log('New showFilterModal state:', this.showFilterModal());
+  }
+
+  closeFilterModal() {
+    console.log('Close filter modal called');
+    this.showFilterModal.set(false);
+  }
+
+  applySortFilter(sortBy: string, order: string) {
+    console.log('Applying sort filter:', sortBy, order);
+    this.sortBy.set(sortBy);
+    this.order.set(order);
+
+    // Reset pagination and reload
+    this.currentPage.set(0);
+    this.hasNext.set(true);
+    this.noMoreProfiles.set(false);
+    this.currentUser.set(null);
+
+    console.log('Filter applied - sortBy:', this.sortBy(), 'order:', this.order());
+
+    this.closeFilterModal();
+
+    // Force reload with new filter
+    setTimeout(() => {
+      this.loadNextProfile();
+    }, 100);
+  }
+
+  getSortLabel(): string {
+    const sortMap: { [key: string]: string } = {
+      'fame': 'Fame',
+      'age': 'Age',
+      'distance': 'Distance',
+      'interest': 'Interests'
+    };
+
+    const orderMap: { [key: string]: string } = {
+      'desc': 'Descending',
+      'asc': 'Ascending'
+    };
+
+    return `${sortMap[this.sortBy()]} ${orderMap[this.order()]}`;
+  }
+
+  // Search filter functions
+  toggleSearchModal() {
+    console.log('toggleSearchModal called');
+    this.showSearchModal.set(!this.showSearchModal());
+  }
+
+  closeSearchModal() {
+    this.showSearchModal.set(false);
+  }
+
+  applySearchFilter() {
+    console.log('Applying search filter:', {
+      minAge: this.minAge(),
+      maxAge: this.maxAge(),
+      minFame: this.minFame(),
+      maxFame: this.maxFame(),
+      maxDistance: this.maxDistance(),
+      interests: this.selectedInterests()
+    });
+
+    // Reset pagination and reload
+    this.currentPage.set(0);
+    this.hasNext.set(true);
+    this.noMoreProfiles.set(false);
+    this.currentUser.set(null);
+
+    this.closeSearchModal();
+
+    // Force reload with new filter
+    setTimeout(() => {
+      this.loadNextProfile();
+    }, 100);
+  }
+
+  resetSearchFilter() {
+    this.minAge.set(1);
+    this.maxAge.set(99);
+    this.minFame.set(0);
+    this.maxFame.set(15);
+    this.maxDistance.set(10000);
+    this.selectedInterests.set([]);
+  }
+
+  toggleInterest(interest: string) {
+    const current = this.selectedInterests();
+    if (current.includes(interest)) {
+      this.selectedInterests.set(current.filter((i: string) => i !== interest));
+    } else {
+      this.selectedInterests.set([...current, interest]);
+    }
+  }
+
+  getSearchFilterLabel(): string {
+    const filters = [];
+
+    if (this.minAge() !== 1 || this.maxAge() !== 99) {
+      filters.push(`Age: ${this.minAge()}-${this.maxAge()}`);
+    }
+
+    if (this.minFame() !== 0 || this.maxFame() !== 15) {
+      filters.push(`Fame: ${this.minFame()}-${this.maxFame()}`);
+    }
+
+    if (this.maxDistance() !== 10000) {
+      filters.push(`Distance: ${this.maxDistance()}km`);
+    }
+
+    if (this.selectedInterests().length > 0) {
+      filters.push(`Interests: ${this.selectedInterests().length}`);
+    }
+
+    return filters.length > 0 ? filters.join(', ') : 'No filters';
   }
 }
