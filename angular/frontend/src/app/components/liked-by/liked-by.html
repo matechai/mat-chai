@@ -1,0 +1,87 @@
+<div class="liked-by-container">
+	<!-- Header -->
+	<div class="header">
+		<button class="back-btn" (click)="goBack()">
+			← Back
+		</button>
+		<h1 class="title">💖 People Who Liked You</h1>
+		<button class="refresh-btn" (click)="refresh()" [disabled]="isLoading()">
+			🔄 Refresh
+		</button>
+	</div>
+
+	<!-- Loading State -->
+	@if (isLoading()) {
+	<div class="loading">
+		<div class="spinner"></div>
+		<p>Loading users who liked you...</p>
+	</div>
+	}
+
+	<!-- Error State -->
+	@if (error() && !isLoading()) {
+	<div class="error">
+		<div class="error-icon">❌</div>
+		<p>{{ error() }}</p>
+		<button class="retry-btn" (click)="refresh()">Try Again</button>
+	</div>
+	}
+
+	<!-- Success State -->
+	@if (!isLoading() && !error() && likedByUsers().length > 0) {
+	<div class="users-grid">
+		@for (user of likedByUsers(); track user.username) {
+		<div class="user-card" (click)="viewProfile(user.username)">
+			<!-- Profile Image -->
+			<div class="profile-image">
+				@if (user.profileImage) {
+				<img [src]="user.profileImage" [alt]="user.username + ' profile'">
+				} @else {
+				<div class="default-avatar">👤</div>
+				}
+			</div>
+
+			<!-- User Info -->
+			<div class="user-info">
+				<h3 class="username">{{ user.username }}</h3>
+				@if (user.dateOfBirth) {
+				<p class="age">{{ calculateAge(user.dateOfBirth) }} years old</p>
+				}
+			</div>
+
+			<!-- Like Badge -->
+			<div class="like-badge">
+				💖
+			</div>
+		</div>
+		}
+	</div>
+
+	<!-- Loading More Indicator -->
+	@if (isLoadingMore()) {
+	<div class="loading-more">
+		<div class="spinner-small"></div>
+		<p>Loading more users...</p>
+	</div>
+	}
+
+	<!-- End of List Indicator -->
+	@if (last() && !isLoadingMore()) {
+	<div class="end-of-list">
+		<p>📄 You've seen all {{ totalElements() }} users who liked you!</p>
+	</div>
+	}
+	}
+
+	<!-- Empty State -->
+	@if (!isLoading() && !error() && likedByUsers().length === 0) {
+	<div class="empty-state">
+		<div class="empty-icon">💔</div>
+		<h3>No likes yet</h3>
+		<p>Nobody has liked your profile yet. Keep updating your profile and being active!</p>
+		<button class="update-profile-btn" (click)="updateProfile()">
+			Update Profile
+		</button>
+	</div>
+	}
+</div>
