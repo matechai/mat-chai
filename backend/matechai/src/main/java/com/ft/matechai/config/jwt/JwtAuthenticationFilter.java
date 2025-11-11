@@ -59,8 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (token == null)
                     throw new AuthExceptions.UnauthorizedException("Unauthorized: accessToken missing");
 
-                if (!jwtUtil.validateToken(token))
-                    throw new AuthExceptions.UnauthorizedException("Unauthorized: invalid token");
+                jwtUtil.validateToken(token);
 
                 User user = userRepository.findByUsernameOrThrow(jwtUtil.getUsernameFromToken(token));
 
