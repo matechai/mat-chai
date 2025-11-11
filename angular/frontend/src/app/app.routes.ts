@@ -56,21 +56,4 @@ export const routes: Routes = [
 ];
 
 
-// export const routes: Routes = [
-// 	{ path: 'login', component: Login },
-// 	{ path: 'signup', component: Signup },
-// 	{ path: 'profile/edit', component: ProfileEdit },
-// 	{ path: 'matches', component: Matches },
-// 	{ path: 'matching/:id', component: Matching },
-// 	{ path: 'chat', component: ChatComponent },
-// 	{ path: 'setting', component: Matching },
-// 	{ path: 'updateprofile', component: ProfileEdit },
-// 	{ path: '', canActivate: [AuthGuard], component: Login, pathMatch: 'full' },
-// 	{ path: '**', component: Notfound }
-// ];
 
-
-
-// import { Routes } from '@angular/router';
-// import { AuthGuard } from './guards/auth.guard';
-//
