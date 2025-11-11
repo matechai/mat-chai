@@ -74,6 +74,7 @@ export class LikedBy implements OnInit {
 	loadingUserDetail = signal<boolean>(false);
 
 	ngOnInit() {
+		console.log('LikedBy component initialized');
 		this.loadLikedByUsers();
 		this.setupInfiniteScroll();
 	}
@@ -239,6 +240,11 @@ export class LikedBy implements OnInit {
 		}));
 	}
 
+	// Get current image index for a user
+	getCurrentImageIndex(username: string): number {
+		return this.currentImageIndexes()[username] || 0;
+	}
+
 	// Get current image URL for a user
 	getCurrentImageUrl(user: LikedByUser): string {
 		const images = this.getUserImages(user);
@@ -313,6 +319,44 @@ export class LikedBy implements OnInit {
 			return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
 		} else {
 			return lastOnlineDate.toLocaleDateString();
+		}
+	}
+
+	// Get fame level description
+	getFameLevel(fame: number): string {
+		// Convert 0-15 scale to 0-100 scale for display
+		const famePercent = Math.round((fame / 15) * 100);
+
+		if (famePercent >= 80) return '⭐⭐⭐⭐⭐ Celebrity';
+		if (famePercent >= 60) return '⭐⭐⭐⭐ Popular';
+		if (famePercent >= 40) return '⭐⭐⭐ Well-known';
+		if (famePercent >= 20) return '⭐⭐ Rising';
+		return '⭐ Newcomer';
+	}
+
+
+	// Get fame percentage
+	getFamePercentage(fame: number): number {
+		return Math.round((fame / 15) * 100);
+	}
+
+	// Format distance
+	formatDistance(distance: number): string {
+		if (!distance && distance !== 0) return 'Distance unknown';
+
+		if (distance < 0.1) {
+			// Show "Nearby" for distances less than 100m
+			return 'Nearby';
+		} else if (distance < 1) {
+			// Show meters for distances less than 1km but more than 100m
+			const meters = Math.round(distance * 1000);
+			return `${meters}m away`;
+		} else if (distance < 10) {
+			// Show one decimal place for distances less than 10km
+			return `${distance.toFixed(1)} km away`;
+		} else {
+			// Show whole numbers for distances 10km and above
+			return `${Math.round(distance)} km away`;
 		}
 	}
 
