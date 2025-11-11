@@ -84,7 +84,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     @Query ("""
                 MATCH (a:User {username: $username})
                 MATCH (b:User {username: $targetUsername})
-                MERGE (a)-[:LIKED]->(b)
+                MERGE (a)-[l:LIKED]->(b)
+                SET l.likedAt = timestamp()
             """)
     void like(@Param("username") String username,
               @Param("targetUsername") String targetUsername);
