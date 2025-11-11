@@ -197,13 +197,7 @@
 					<img *ngFor="let imageUrl of (userDetail()?.imageUrls || [])" [src]="convertImagePath(imageUrl)"
 						style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #ddd;"
 						onerror="this.style.display='none'">
-				</div>
 			</div>
-
-			<!-- Contact Info -->
-			<div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1rem;">
-				<strong style="color:#333; display:block; margin-bottom:0.5rem;">Contact:</strong>
-				<p style="color:#666; margin:0; font-size:14px;">{{ userDetail()?.email }}</p>
 			</div>
 
 		</div>
