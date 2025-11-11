@@ -21,7 +21,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.info(e.getMessage());
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json;charset=UTF-8");
             String body = String.format("""
