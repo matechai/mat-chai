@@ -38,6 +38,19 @@ public class ProfileService {
                 ));
     }
 
+    public Page<UserBasicProfileDTO> getUsersWhoLikedMe(User user, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return userRepository.findUsersWhoLikedMe(user.getUsername(), pageable)
+                .map(viewed -> new UserBasicProfileDTO(
+                        viewed.getUsername(),
+                        viewed.getDateOfBirth(),
+                        viewed.getProfileImageUrl(),
+                        viewed.getImageUrls()
+                ));
+    }
+
     @Transactional
     public void updateLocation(String username, LocationDTO location) {
 
