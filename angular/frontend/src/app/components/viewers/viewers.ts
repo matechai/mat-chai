@@ -10,7 +10,6 @@ interface UserBasicProfile {
 }
 
 interface UserDetail {
-	email: string;
 	username: string;
 	dateOfBirth: string;
 	firstName: string;
@@ -227,7 +226,7 @@ export class Viewers implements OnInit {
 		try {
 			// GraphQL query to get detailed user information
 			const query = {
-				query: `query {getUserByUsername(username: "${username}") { email username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline distance } }`
+				query: `query {getUserByUsername(username: "${username}") { username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline distance } }`
 			};
 
 			const response = await this.http.post<{ data: { getUserByUsername: UserDetail } }>('/api/graphql', query, {
