@@ -10,6 +10,21 @@ interface LikedByUser {
 	imageUrls?: string[];
 }
 
+interface UserDetail {
+	email: string;
+	username: string;
+	dateOfBirth: string;
+	firstName: string;
+	lastName: string;
+	biography: string;
+	interests: string[];
+	profileImageUrl: string;
+	imageUrls: string[];
+	fame: number;
+	lastOnline: string;
+	distance: number;
+}
+
 interface LikedByResponse {
 	content: LikedByUser[];
 	totalElements: number;
@@ -50,6 +65,14 @@ export class LikedBy implements OnInit {
 	last = signal<boolean>(false);
 	totalElements = signal<number>(0);
 
+	// Image carousel state for each user
+	currentImageIndexes = signal<{ [username: string]: number }>({});
+
+	// User detail modal state
+	showUserDetail = signal<boolean>(false);
+	userDetail = signal<UserDetail | null>(null);
+	loadingUserDetail = signal<boolean>(false);
+
 	ngOnInit() {
 		this.loadLikedByUsers();
 		this.setupInfiniteScroll();
@@ -83,6 +106,17 @@ export class LikedBy implements OnInit {
 				this.currentPage.set(response.number);
 				this.last.set(response.last);
 				this.totalElements.set(response.totalElements);
+
+				// Initialize image indexes for new users
+				if (response.content) {
+					const indexes = { ...this.currentImageIndexes() };
+					response.content.forEach((user: LikedByUser) => {
+						if (!(user.username in indexes)) {
+							indexes[user.username] = 0;
+						}
+					});
+					this.currentImageIndexes.set(indexes);
+				}
 			},
 			error: (error: any) => {
 				console.error('❌ Failed to load liked-by users:', error);
@@ -129,7 +163,7 @@ export class LikedBy implements OnInit {
 	}
 
 	viewProfile(username: string) {
-		this.router.navigate(['/profile', username]);
+		this.showUserDetailModal(username);
 	}
 
 	calculateAge(dateOfBirth: string): number {
@@ -143,6 +177,143 @@ export class LikedBy implements OnInit {
 		}
 
 		return age;
+	}
+
+	// Convert backend path to nginx static file path
+	convertImagePath(imagePath: string): string {
+		if (!imagePath) return '';
+		return imagePath.replace('/app/uploads/', '/uploads/');
+	}
+
+	// Get all images for a user (profile image + additional images)
+	getUserImages(user: LikedByUser): string[] {
+		const images: string[] = [];
+
+		// Always add profileImage first
+		if (user.profileImage) {
+			images.push(this.convertImagePath(user.profileImage));
+		}
+
+		// Add additional images
+		if (user.imageUrls && user.imageUrls.length > 0) {
+			const additionalImages = user.imageUrls
+				.filter(url => url && url !== user.profileImage)
+				.map(url => this.convertImagePath(url));
+			images.push(...additionalImages);
+		}
+
+		return images;
+	}
+
+	// Navigate to previous image
+	previousImage(username: string) {
+		const user = this.likedByUsers().find(u => u.username === username);
+		if (!user) return;
+
+		const images = this.getUserImages(user);
+		if (images.length <= 1) return;
+
+		const currentIndex = this.currentImageIndexes()[username] || 0;
+		const newIndex = currentIndex > 0 ? currentIndex - 1 : images.length - 1;
+
+		this.currentImageIndexes.update(indexes => ({
+			...indexes,
+			[username]: newIndex
+		}));
+	}
+
+	// Navigate to next image
+	nextImage(username: string) {
+		const user = this.likedByUsers().find(u => u.username === username);
+		if (!user) return;
+
+		const images = this.getUserImages(user);
+		if (images.length <= 1) return;
+
+		const currentIndex = this.currentImageIndexes()[username] || 0;
+		const newIndex = currentIndex < images.length - 1 ? currentIndex + 1 : 0;
+
+		this.currentImageIndexes.update(indexes => ({
+			...indexes,
+			[username]: newIndex
+		}));
+	}
+
+	// Get current image URL for a user
+	getCurrentImageUrl(user: LikedByUser): string {
+		const images = this.getUserImages(user);
+		if (images.length === 0) return '';
+
+		const currentIndex = this.currentImageIndexes()[user.username] || 0;
+		return images[currentIndex] || '';
+	}
+
+	// Set image index for a user
+	setImageIndex(username: string, index: number) {
+		this.currentImageIndexes.update(indexes => ({
+			...indexes,
+			[username]: index
+		}));
+	}
+
+	// Show user detail modal
+	async showUserDetailModal(username: string) {
+		console.log('Opening user detail for:', username);
+		this.showUserDetail.set(true);
+		this.loadingUserDetail.set(true);
+
+		try {
+			// GraphQL query to get detailed user information
+			const query = {
+				query: `query {getUserByUsername(username: "${username}") { email username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline distance } }`
+			};
+
+			const response = await this.http.post<{ data: { getUserByUsername: UserDetail } }>('/api/graphql', query, {
+				withCredentials: true,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).toPromise();
+
+			if (response?.data?.getUserByUsername) {
+				this.userDetail.set(response.data.getUserByUsername);
+				console.log('User detail loaded:', response.data.getUserByUsername);
+			}
+		} catch (error) {
+			console.error('Failed to load user detail:', error);
+		} finally {
+			this.loadingUserDetail.set(false);
+		}
+	}
+
+	// Close user detail modal
+	closeUserDetailModal() {
+		this.showUserDetail.set(false);
+		this.userDetail.set(null);
+	}
+
+	// Format last online time
+	formatLastOnline(lastOnline: string): string {
+		if (!lastOnline) return 'Unknown';
+
+		const lastOnlineDate = new Date(lastOnline);
+		const now = new Date();
+		const diffInMs = now.getTime() - lastOnlineDate.getTime();
+		const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+		const diffInHours = Math.floor(diffInMinutes / 60);
+		const diffInDays = Math.floor(diffInHours / 24);
+
+		if (diffInMinutes < 1) {
+			return 'Just now';
+		} else if (diffInMinutes < 60) {
+			return `${diffInMinutes} min${diffInMinutes > 1 ? 's' : ''} ago`;
+		} else if (diffInHours < 24) {
+			return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+		} else if (diffInDays < 7) {
+			return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+		} else {
+			return lastOnlineDate.toLocaleDateString();
+		}
 	}
 
 	refresh() {
