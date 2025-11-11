@@ -112,11 +112,14 @@
 }
 
 .app-main {
-	min-height: calc(100vh - 80px);
+	min-height: 100vh;
 	background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+	padding-top: 80px;
+		margin-top: -80px;
 
 	@media (max-width: 768px) {
-		min-height: calc(100vh - 70px);
+		padding-top: 70px;
+			margin-top: -70px;
 	}
 }
 
