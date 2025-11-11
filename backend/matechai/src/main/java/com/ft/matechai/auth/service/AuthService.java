@@ -70,7 +70,7 @@ public class AuthService {
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
 
-            Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs);
+            Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs * 4);
             Cookie refreshCookie = createCookie("refreshToken", refreshToken, refreshTokenExpirationMs);
 
             response.addCookie(accessCookie);
