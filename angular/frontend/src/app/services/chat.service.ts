@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 import { ChatMessage } from '../interfaces/chat-message.model';
 import { ChatPartner } from '../interfaces/chat-partner.model';
 
@@ -16,8 +16,19 @@ export class ChatService {
 
   constructor(private http: HttpClient) {}
 
+  // getChatPartners(): Observable<ChatPartner[]> {
+  //   return this.http.get<ChatPartner[]>(`${this.apiUrl}/history`);
+  // }
+
   getChatPartners(): Observable<ChatPartner[]> {
-    return this.http.get<ChatPartner[]>(`${this.apiUrl}/history`);
+    return this.http.get<any[]>(`api/users/matches`).pipe(
+      tap((users :any) => console.log('Matched users:', users)),
+      map((users: any[]) => users.map((u : any) => ({
+        username: u.username,
+        lastMessage: '', // Placeholder, as lastMessage is not provided by the backend
+        lastMessageTimestamp: null // Placeholder, as lastMessageTimestamp is not provided by the backend
+      })))
+    );
   }
 
   getChatHistory(username: string): Observable<ChatMessage[]> {

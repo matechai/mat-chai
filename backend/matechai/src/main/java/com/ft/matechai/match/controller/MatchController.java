@@ -75,4 +75,10 @@ public class MatchController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/users/matches")
+    public ResponseEntity<List<User>> getMatchedUsers(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        List<User> matchedUsers = MatchService.getMatchedUsers(principalDetails.getUser());
+        return ResponseEntity.ok(matchedUsers);
+    }
 }

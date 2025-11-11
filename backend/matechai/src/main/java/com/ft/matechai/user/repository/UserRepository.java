@@ -359,4 +359,13 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     @Query("MATCH (a:User) RETURN a")
     List<User> findAllUsers();
+
+    @Query("""
+    MATCH (me:User {username: $username})-[:MATCHED]-(matched:User)
+    WHERE (matched.isBanned IS NULL OR matched.isBanned = false)
+    RETURN matched
+    ORDER BY matched.fame DESC
+    """)
+    List<User> findMatchedUsers(@Param("username") String username);
+
 }

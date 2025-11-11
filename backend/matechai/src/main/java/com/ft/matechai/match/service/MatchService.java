@@ -121,6 +121,10 @@ public class MatchService {
             String message = username + " unlike you. :( ";
             notificationService.createAndSendNotification(username, targetUsername, NotificationType.UNLIKE, message);
         }
-       
+    }
+
+    public List<User> getMatchedUsers(User user) 
+    {
+        return userRepository.findMatchedUsers(user.getUsername());
     }
 }
