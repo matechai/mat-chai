@@ -1,61 +1,76 @@
-<!-- Signup Container -->
-<div class="signup-container">
+<div style="max-width:500px; margin:2rem auto; padding:2rem; border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Arial, sans-serif; background:white;">
+  
   <!-- Header -->
-  <div class="signup-header">
-    <h2>Create Account</h2>
-    <p>Join us to find your perfect match</p>
+  <div style="text-align:center; margin-bottom:2rem;">
+    <h2 style="color:#333; margin:0; font-size:28px; font-weight:600;">Create Account</h2>
+    <p style="color:#666; margin:0.5rem 0 0 0; font-size:16px;">Join us to find your perfect match</p>
   </div>
+
   <!-- Signup Form -->
-  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" style="display:flex; flex-direction:column; gap:1.5rem;">
     <!-- Name Row -->
-    <div class="name-row">
-      <div class="form-group">
-        <label for="firstName">First Name</label>
-        <input id="firstName" formControlName="firstName" type="text" placeholder="Enter your first name" required>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+      <div>
+        <label for="firstName" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">First Name</label>
+        <input id="firstName" formControlName="firstName" type="text" placeholder="Enter your first name" required
+               style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
+               onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
       </div>
-      <div class="form-group">
-        <label for="lastName">Last Name</label>
-        <input id="lastName" formControlName="lastName" type="text" placeholder="Enter your last name" required>
+      <div>
+        <label for="lastName" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">Last Name</label>
+        <input id="lastName" formControlName="lastName" type="text" placeholder="Enter your last name" required
+               style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
+               onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
       </div>
     </div>
-
 
     <!-- Username -->
-    <div class="form-group">
-      <label for="userName">Username</label>
-      <input id="userName" formControlName="userName" type="text" placeholder="Choose a unique username" required>
+    <div>
+      <label for="userName" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">Username</label>
+      <input id="userName" formControlName="userName" type="text" placeholder="Choose a unique username" required
+             style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
+             onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
     </div>
     <!-- Email -->
-    <div class="form-group">
-      <label for="email">Email Address</label>
-      <input id="email" formControlName="email" type="email" placeholder="Enter your email address" required>
+    <div>
+      <label for="email" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">Email Address</label>
+      <input id="email" formControlName="email" type="email" placeholder="Enter your email address" required
+             style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
+             onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
     </div>
 
     <!-- Date of Birth -->
-    <div class="form-group">
-      <label for="dateOfBirth">Date of Birth</label>
-      <input id="dateOfBirth" formControlName="dateOfBirth" type="date" required>
+    <div>
+      <label for="dateOfBirth" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">Date of Birth</label>
+      <input id="dateOfBirth" formControlName="dateOfBirth" type="date" required
+             style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
+             onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
       @if (signupForm.get('dateOfBirth')?.value) {
-        <div class="age-display">
-          <span class="age-label">Age: </span>
-          <span class="age-value">{{ calculateAge(signupForm.get('dateOfBirth')?.value) }} years old</span>
+        <div style="margin-top:0.5rem; padding:0.5rem; background:#f8f9fa; border:1px solid #e9ecef; border-radius:6px; font-size:14px;">
+          <span style="color:#6c757d; font-weight:500;">Age: </span>
+          <span style="color:#28a745; font-weight:600;">{{ calculateAge(signupForm.get('dateOfBirth')?.value) }} years old</span>
         </div>
       }
     </div>
     <!-- Password -->
-    <div class="form-group">
-      <label for="password">Password</label>
+    <div>
+      <label for="password" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">Password</label>
       <input id="password" formControlName="password" type="password" placeholder="Create a strong password"
-        (input)="onPasswordInput()" required>
+        (input)="onPasswordInput()" required
+        style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
       <!-- Password Strength Indicator -->
       @if (signupForm.get('password')?.value) {
-      <div class="password-strength">
-        <span class="strength-label">Strength:</span>
-        <span class="strength-value" [ngClass]="{
-                                      'weak': passwordStrength === 'Weak',
-                                      'medium': passwordStrength === 'Medium', 
-                                      'strong': passwordStrength === 'Strong'
-                                    }">
+      <div style="margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem; font-size:14px;">
+        <span style="color:#666;">Strength:</span>
+        <span [ngClass]="{
+                          'weak': passwordStrength === 'Weak',
+                          'medium': passwordStrength === 'Medium', 
+                          'strong': passwordStrength === 'Strong'
+                        }"
+              [style]="passwordStrength === 'Weak' ? 'color:#dc3545; font-weight:600;' : 
+                       passwordStrength === 'Medium' ? 'color:#ffc107; font-weight:600;' : 
+                       'color:#28a745; font-weight:600;'">
           {{ passwordStrength }}
         </span>
       </div>
@@ -63,23 +78,25 @@
     </div>
 
     <!-- Confirm Password -->
-    <div class="form-group">
-      <label for="confirmPassword">Confirm Password</label>
-      <input id="confirmPassword" formControlName="confirmPassword" type="password" placeholder="Confirm your password"
-        required>
+    <div>
+      <label for="confirmPassword" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">Confirm Password</label>
+      <input id="confirmPassword" formControlName="confirmPassword" type="password" placeholder="Confirm your password" required
+             style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
+             onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
     </div>
+
     <!-- Validation Messages -->
     @if (hasValidationErrors()) {
-    <div class="validation-messages">
+    <div style="margin-top:1rem;">
       @if (passwordContainsPersonalInfo()) {
-      <div class="validation-error">
-        <span class="error-icon">⚠️</span>
+      <div style="display:flex; align-items:center; gap:0.5rem; color:#dc3545; font-size:14px; margin-bottom:0.5rem;">
+        <span>⚠️</span>
         <span>Password should not contain your personal information</span>
       </div>
       }
       @if (passwordsMismatch()) {
-      <div class="validation-error">
-        <span class="error-icon">⚠️</span>
+      <div style="display:flex; align-items:center; gap:0.5rem; color:#dc3545; font-size:14px; margin-bottom:0.5rem;">
+        <span>⚠️</span>
         <span>Passwords do not match</span>
       </div>
       }
@@ -87,8 +104,12 @@
     }
 
     <!-- Submit Button -->
-    <button type="submit" class="submit-button" [disabled]="!isPasswordValid() || isLoading"
-      [class.disabled]="!isPasswordValid() || isLoading">
+    <button type="submit" [disabled]="!isPasswordValid() || isLoading"
+            style="width:100%; padding:0.75rem; background:#007bff; color:white; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; transition:background-color 0.2s; margin-top:1rem;"
+            [style.background]="(!isPasswordValid() || isLoading) ? '#6c757d' : '#007bff'"
+            [style.cursor]="(!isPasswordValid() || isLoading) ? 'not-allowed' : 'pointer'"
+            onmouseover="if(!this.disabled) this.style.background='#0056b3'"
+            onmouseout="if(!this.disabled) this.style.background='#007bff'">
       @if (isLoading) {
       <span>Creating Account...</span>
       } @else {
@@ -97,11 +118,20 @@
     </button>
   </form>
 
+  <!-- Divider -->
+  <div style="margin:1.5rem 0; display:flex; align-items:center; gap:1rem;">
+    <div style="flex:1; height:1px; background:#e9ecef;"></div>
+    <span style="color:#666; font-size:14px;">or</span>
+    <div style="flex:1; height:1px; background:#e9ecef;"></div>
+  </div>
+
   <!-- Login Link -->
-  <div class="login-link">
-    <p>
-      Already have an account?
-      <a routerLink="/login">Sign in</a>
-      </p>
-      </div>
+  <div style="text-align:center;">
+    <p style="color:#666; margin:0; font-size:14px;">
+      Already have an account? 
+      <a routerLink="/login" style="color:#007bff; text-decoration:none; font-weight:600;">
+        Sign in
+      </a>
+    </p>
+  </div>
 </div>
