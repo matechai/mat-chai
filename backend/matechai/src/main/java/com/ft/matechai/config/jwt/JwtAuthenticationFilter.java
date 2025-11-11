@@ -37,12 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        // ✅ Skip WebSocket handshakes — these are validated by JwtHandShakeInterceptor instead
-        // if (path.startsWith("/ws-chat")) 
-        // {
-        //     filterChain.doFilter(request, response);
-        //     return;
-        // }
         Cookie[] cookies = request.getCookies();
 
         if (!path.startsWith("/api/auth/") || path.startsWith("/api/auth/logout")) {
@@ -59,8 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (token == null)
                     throw new AuthExceptions.UnauthorizedException("Unauthorized: accessToken missing");
 
-                if (!jwtUtil.validateToken(token))
-                    throw new AuthExceptions.UnauthorizedException("Unauthorized: invalid token");
+                jwtUtil.validateToken(token);
 
                 User user = userRepository.findByUsernameOrThrow(jwtUtil.getUsernameFromToken(token));
 

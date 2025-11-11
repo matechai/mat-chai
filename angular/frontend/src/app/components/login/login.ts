@@ -37,7 +37,13 @@ export class Login {
                 this.isLoading = false;
                 console.log('User info:', userInfo);
 
-                if (userInfo.data?.me?.gender === null || userInfo.data?.me?.gender === undefined) {
+                const user = userInfo.data?.me;
+                if (user) {
+                  // Update auth service state for immediate UI update
+                  this.authService.setAuthenticatedState(user);
+                }
+
+                if (user?.gender === null || user?.gender === undefined) {
                   // If gender is null, redirect to profile edit page
                   alert('✅ Login successful! Please complete your profile.');
                   this.router.navigate(['/profile/edit']);

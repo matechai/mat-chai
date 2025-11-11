@@ -70,7 +70,7 @@ public class AuthService {
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
 
-            Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs);
+            Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs * 4);
             Cookie refreshCookie = createCookie("refreshToken", refreshToken, refreshTokenExpirationMs);
 
             response.addCookie(accessCookie);
@@ -114,8 +114,7 @@ public class AuthService {
     // Create new Access token using refresh token
     public void refreshAccessToken(String refreshToken, HttpServletResponse response) {
 
-        if (!jwtUtil.validateToken(refreshToken))
-            throw new AuthExceptions.UnauthorizedException();
+        jwtUtil.validateToken(refreshToken);
 
         String username = jwtUtil.getUsernameFromToken(refreshToken);
         User user = userRepository.findByUsernameOrThrow(username);

@@ -1,0 +1,44 @@
+<header class="app-header">
+	<nav class="main-nav">
+		<!-- MATÉCHAI Logo -->
+		<div class="logo" (click)="navigateToHome()">
+			MATÉCHAI
+		</div>
+
+		<!-- Navigation before login -->
+		<div *ngIf="!isAuthenticated()" class="nav-links">
+			<!-- <button class="nav-btn secondary" (click)="navigateToLogin()">
+				🔑 Login
+			</button>
+			<button class="nav-btn primary" (click)="navigateToSignup()">
+				✨ Sign Up
+			</button> -->
+		</div>
+
+		<!-- Navigation after login -->
+		<div *ngIf="isAuthenticated()" class="nav-links">
+			<button class="nav-btn" (click)="navigateToMatching()">
+				🍵 Discover
+			</button>
+			<button class="nav-btn" (click)="navigateToChat()">
+				💬 Chats
+			</button>
+			<button class="nav-btn" (click)="navigateToViewers()">
+				👀 Viewers
+			</button>
+			<button class="nav-btn" (click)="navigateToUpdateProfile()">
+				✏️ Profile
+			</button>
+			<button class="nav-btn" (click)="navigateToSettings()">
+				🔧 Settings
+			</button>
+			<button class="nav-btn danger" (click)="logout()">
+				🚪 Logout
+			</button>
+		</div>
+	</nav>
+</header>
+
+<main class="app-main">
+	<router-outlet></router-outlet>
+</main>

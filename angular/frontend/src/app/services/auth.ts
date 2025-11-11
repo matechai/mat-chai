@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { SignupInterface } from '../interfaces/signup-interface';
 
 @Injectable({
@@ -10,6 +10,15 @@ export class Auth {
 
   private http = inject(HttpClient);
   private apiUrl = '/api';
+
+  // Authentication state subject for real-time updates
+  private authStateSubject = new BehaviorSubject<{ isAuthenticated: boolean, user: any | null }>({
+    isAuthenticated: false,
+    user: null
+  });
+
+  // Public observable for components to subscribe
+  public authState$ = this.authStateSubject.asObservable();
 
   signup_request(request: SignupInterface): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/signup`, request);
@@ -35,6 +44,37 @@ export class Auth {
       `${this.apiUrl}/auth/refresh`, {},
       { withCredentials: true }
     );
+  }
+
+  // Check token status (HttpOnly cookies cannot be accessed directly, so check via server request)
+  checkTokenStatus(): Observable<any> {
+    // Call simple authenticated endpoint to verify token validity
+    return this.http.get(`${this.apiUrl}/auth/status`, {
+      withCredentials: true
+    });
+  }
+
+  // Indirectly check token existence (server returns authentication status)
+  hasValidTokens(): Observable<boolean> {
+    return new Observable((observer: any) => {
+      this.checkTokenStatus().subscribe({
+        next: (response: any) => {
+          // If server returns success response, tokens are valid
+          observer.next(true);
+          observer.complete();
+        },
+        error: (error: any) => {
+          // 401/403 errors mean tokens are missing or expired
+          if (error.status === 401 || error.status === 403) {
+            observer.next(false);
+          } else {
+            // Other errors might be network issues, so uncertain
+            observer.next(null);
+          }
+          observer.complete();
+        }
+      });
+    });
   }
 
   // Get current user information using GraphQL (no more JWT headaches!)
@@ -137,8 +177,9 @@ export class Auth {
         next: (response: any) => {
           const username = response.data?.me?.username;
           if (username) {
-            // Cache the username
+            // Cache the username and update auth state
             sessionStorage.setItem('username', username);
+            this.updateAuthState(true, { username });
             observer.next(username);
             observer.complete();
           } else {
@@ -191,10 +232,33 @@ export class Auth {
   // Clear user cache
   clearUserCache(): void {
     sessionStorage.removeItem('username');
+    // Update auth state when clearing cache
+    this.updateAuthState(false, null);
   }
 
   // Get cached username (synchronous)
   getCachedUsername(): string | null {
     return sessionStorage.getItem('username');
+  }
+
+  // Update authentication state (notify all subscribers)
+  updateAuthState(isAuthenticated: boolean, user: any = null): void {
+    this.authStateSubject.next({
+      isAuthenticated,
+      user
+    });
+  }
+
+  // Set authenticated state (call after successful login)
+  setAuthenticatedState(user: any): void {
+    if (user?.username) {
+      sessionStorage.setItem('username', user.username);
+    }
+    this.updateAuthState(true, user);
+  }
+
+  // Get current auth state (synchronous)
+  getCurrentAuthState(): { isAuthenticated: boolean, user: any | null } {
+    return this.authStateSubject.value;
   }
 }

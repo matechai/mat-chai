@@ -196,7 +196,7 @@ public class UserService {
             }
         } catch (Exception e) {
 
-            log.error("[" + e + "] : " + e.getMessage());
+            log.info("[" + e + "] : " + e.getMessage());
         }
     }
 }
