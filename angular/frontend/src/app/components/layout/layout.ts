@@ -135,13 +135,13 @@ export class LayoutComponent implements OnInit {
 		this.router.navigate(['/']);
 	}
 
-	navigateToLogin() {
-		this.router.navigate(['/login']);
-	}
+	// navigateToLogin() {
+	// 	this.router.navigate(['/login']);
+	// }
 
-	navigateToSignup() {
-		this.router.navigate(['/signup']);
-	}
+	// navigateToSignup() {
+	// 	this.router.navigate(['/signup']);
+	// }
 
 	navigateToMatching() {
 		this.navigateWithAuthCheck(['/matching']);
