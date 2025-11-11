@@ -8,6 +8,7 @@ import { Notfound } from './components/notfound/notfound';
 import { ProfileEdit } from './components/profile-edit/profile-edit';
 import { Matches } from './components/matches/matches';
 import { Viewers } from './components/viewers/viewers';
+import { LikedBy } from './components/liked-by/liked-by';
 import { AuthGuard } from './guards/auth.guard';
 
 
@@ -18,6 +19,7 @@ export const routes: Routes = [
 	{ path: 'matches', component: Matches },
 	{ path: 'matching', component: Matching },
 	{ path: 'viewers', component: Viewers },
+	{ path: 'liked-by', component: LikedBy },
 	{ path: 'chat', component: Chat },
 	{ path: 'setting', component: Matching },
 	{ path: 'updateprofile', component: ProfileEdit },

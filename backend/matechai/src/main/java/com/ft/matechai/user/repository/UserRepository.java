@@ -84,7 +84,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     @Query ("""
                 MATCH (a:User {username: $username})
                 MATCH (b:User {username: $targetUsername})
-                MERGE (a)-[:LIKED]->(b)
+                MERGE (a)-[l:LIKED]->(b)
+                SET l.likedAt = timestamp()
             """)
     void like(@Param("username") String username,
               @Param("targetUsername") String targetUsername);
@@ -95,6 +96,19 @@ public interface UserRepository extends Neo4jRepository<User, String> {
             """)
     boolean isLiked(@Param("username") String username,
                     @Param("targetUsername") String targetUsername);
+
+    @Query (
+            value = """
+                        MATCH (u:User)-[l:LIKED]->(me:User {username: $username})
+                        RETURN u, l.createdAt AS likedAt
+                        ORDER BY likedAt DESC
+                    """,
+            countQuery = """
+                            MATCH (u:User)-[l:LIKED]->(me:User {username: $username})
+                            RETURN count(u)
+                         """
+    )
+    Page<User> findUsersWhoLikedMe(@Param("username") String username, Pageable pageable);
 
 
     // Pass

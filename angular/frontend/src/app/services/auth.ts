@@ -46,12 +46,10 @@ export class Auth {
     );
   }
 
-  // Check token status (HttpOnly cookies cannot be accessed directly, so check via server request)
+  // Check token status using GraphQL me query (more efficient than separate endpoint)
   checkTokenStatus(): Observable<any> {
-    // Call simple authenticated endpoint to verify token validity
-    return this.http.get(`${this.apiUrl}/auth/status`, {
-      withCredentials: true
-    });
+    // Use existing GraphQL endpoint to verify token validity
+    return this.getUserAuthInfo();
   }
 
   // Indirectly check token existence (server returns authentication status)
@@ -59,8 +57,12 @@ export class Auth {
     return new Observable((observer: any) => {
       this.checkTokenStatus().subscribe({
         next: (response: any) => {
-          // If server returns success response, tokens are valid
-          observer.next(true);
+          // If GraphQL returns user data, tokens are valid
+          if (response.data?.me) {
+            observer.next(true);
+          } else {
+            observer.next(false);
+          }
           observer.complete();
         },
         error: (error: any) => {

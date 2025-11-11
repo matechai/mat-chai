@@ -10,7 +10,6 @@ interface UserBasicProfile {
 }
 
 interface UserDetail {
-	email: string;
 	username: string;
 	dateOfBirth: string;
 	firstName: string;
@@ -26,10 +25,21 @@ interface UserDetail {
 
 interface ViewersResponse {
 	content: UserBasicProfile[];
-	currentPage: number;
-	totalPages: number;
-	hasNext: boolean;
 	totalElements: number;
+	totalPages: number;
+	first: boolean;
+	last: boolean;
+	size: number;
+	number: number;
+	numberOfElements: number;
+	empty: boolean;
+	pageable: {
+		pageNumber: number;
+		pageSize: number;
+		offset: number;
+		paged: boolean;
+		unpaged: boolean;
+	};
 }@Component({
 	selector: 'app-viewers',
 	standalone: true,
@@ -44,7 +54,7 @@ export class Viewers implements OnInit {
 	viewers = signal<UserBasicProfile[]>([]);
 	currentPage = signal<number>(0);
 	totalPages = signal<number>(0);
-	hasNext = signal<boolean>(true);
+	last = signal<boolean>(false);
 	isLoading = signal<boolean>(false);
 	totalElements = signal<number>(0);
 
@@ -157,9 +167,9 @@ export class Viewers implements OnInit {
 					this.viewers.set([...this.viewers(), ...response.content]);
 				}
 
-				this.currentPage.set(response.currentPage);
+				this.currentPage.set(response.number);
 				this.totalPages.set(response.totalPages);
-				this.hasNext.set(response.hasNext);
+				this.last.set(response.last);
 				this.totalElements.set(response.totalElements);
 
 				// Initialize image indexes for new users
@@ -186,14 +196,14 @@ export class Viewers implements OnInit {
 		const clientHeight = document.documentElement.clientHeight || window.innerHeight;
 
 		// Load next page when scrolled to bottom
-		if (scrollTop + clientHeight >= scrollHeight - 100 && this.hasNext() && !this.isLoading()) {
+		if (scrollTop + clientHeight >= scrollHeight - 100 && !this.last() && !this.isLoading()) {
 			this.loadNextPage();
 		}
 	}
 
 	// Load next page
 	async loadNextPage() {
-		if (this.hasNext() && !this.isLoading()) {
+		if (!this.last() && !this.isLoading()) {
 			this.currentPage.set(this.currentPage() + 1);
 			await this.loadViewers();
 		}
@@ -216,7 +226,7 @@ export class Viewers implements OnInit {
 		try {
 			// GraphQL query to get detailed user information
 			const query = {
-				query: `query {getUserByUsername(username: "${username}") { email username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline distance } }`
+				query: `query {getUserByUsername(username: "${username}") { username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline distance } }`
 			};
 
 			const response = await this.http.post<{ data: { getUserByUsername: UserDetail } }>('/api/graphql', query, {

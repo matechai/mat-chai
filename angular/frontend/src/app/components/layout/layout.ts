@@ -159,6 +159,10 @@ export class LayoutComponent implements OnInit {
 		this.navigateWithAuthCheck(['/viewers']);
 	}
 
+	navigateToLikedBy() {
+		this.navigateWithAuthCheck(['/liked-by']);
+	}
+
 	navigateToUpdateProfile() {
 		this.navigateWithAuthCheck(['/updateprofile']);
 	}

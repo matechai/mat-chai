@@ -44,15 +44,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (cookies != null) {
 
                 String token = null;
+                String refreshToken = null;
                 for (Cookie c : cookies) {
                     if ("accessToken".equals(c.getName())) {
                         token = c.getValue();
                         break;
+                    } else if ("refreshToken".equals(c.getName())) {
+                        refreshToken = c.getValue();
+                        break;
                     }
                 }
-                if (token == null)
+                log.info("refresh token : " + refreshToken);
+                if (token == null) {
+                    try {
+                        jwtUtil.validateToken(refreshToken);
+                        throw new AuthExceptions.UnauthorizedException("Token expired");
+                    } catch (Exception e) {
+                        log.info("doesn't have access token and refresh token : " + e.toString());
+                    }
                     throw new AuthExceptions.UnauthorizedException("Unauthorized: accessToken missing");
-
+                }
                 jwtUtil.validateToken(token);
 
                 User user = userRepository.findByUsernameOrThrow(jwtUtil.getUsernameFromToken(token));
