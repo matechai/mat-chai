@@ -25,17 +25,6 @@ public class ChatController
         this.chatService = chatService;
     }
 
-    // @MessageMapping("/chat.send/{receiver}")
-    // public void sendMessage(@AuthenticationPrincipal PrincipalDetails principalDetails,
-    //                         @DestinationVariable String receiver,
-    //                         @Payload String content) 
-    // {
-    //     if (principal == null) {
-    //     log.error("[WS] Principal is null!");
-    //     return;
-    //     }
-    //     chatService.sendMessage(principalDetails.getUser(), receiver, content);
-    // }
     @MessageMapping("/chat.send/{receiver}")
     public void sendMessage(
         Principal principal,

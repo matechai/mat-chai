@@ -32,43 +32,58 @@ export class WebSocketService {
 );
 
   public connect(): void {
-    if (this.stompClient?.connected) {
-      console.log('WebSocket already connected');
-      return;
-    }
-
-    this.stompClient = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws-chat'),
-      connectHeaders: {},
-      debug: (str: any) => console.log('STOMP: ' + str),
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      onConnect: () => {
-        console.log('✅ WebSocket Connected');
-        this.isConnectedValue = true;
-        this.connected.next(true);
-        this.ready.next(true);
-        this.channelsSubscribed = false;
-        this.subscribeToChannels();
-      },
-
-      onWebSocketClose: () => {
-        console.log('🔌 WebSocket closed');
-        this.isConnectedValue = false;
-        this.connected.next(false);
-        this.channelsSubscribed = false;
-      },
-      onWebSocketError: (error: any) => {
-        console.error('❌ WebSocket error:', error);
-        this.isConnectedValue = false;
-        this.connected.next(false);
-      },
-
-    });
-
-    this.stompClient.activate();
+  if (this.stompClient?.connected) {
+    console.log('WebSocket already connected');
+    return;
   }
+
+  this.stompClient = new Client({
+    webSocketFactory: () => new SockJS('http://localhost:8080/ws-chat'),
+    connectHeaders: {},
+    debug: (str: any) => console.log('STOMP: ' + str),
+    reconnectDelay: 5000, // Handles reconnects automatically
+    heartbeatIncoming: 4000,
+    heartbeatOutgoing: 4000,
+
+    onConnect: () => {
+      console.log('✅ WebSocket Connected');
+      this.isConnectedValue = true;
+      this.connected.next(true);
+      this.ready.next(true);
+      // ❌ Do NOT resubscribe here
+    },
+
+    onDisconnect: () => {
+      console.log('🔌 WebSocket disconnected');
+      this.isConnectedValue = false;
+      this.connected.next(false);
+    },
+
+    onWebSocketClose: () => {
+      console.log('🔌 WebSocket closed');
+      this.isConnectedValue = false;
+      this.connected.next(false);
+    },
+
+    onWebSocketError: (error: any) => {
+      console.error('❌ WebSocket error:', error);
+      this.isConnectedValue = false;
+      this.connected.next(false);
+    },
+  });
+
+  this.stompClient.onConnect = (frame) => {
+    console.log('✅ Connected to WebSocket:', frame.headers);
+    // Subscribe just once
+    if (!this.channelsSubscribed) {
+      this.subscribeToChannels();
+      this.channelsSubscribed = true;
+    }
+  };
+
+  this.stompClient.activate();
+}
+
 
   public connectIfNeeded(): void {
     if (!this.isConnected()) {
@@ -79,24 +94,24 @@ export class WebSocketService {
   }
 
   private subscribeToChannels(): void {
-    if (!this.stompClient || this.channelsSubscribed) return;
-    this.channelsSubscribed = true;
+  if (!this.stompClient) return;
+  console.log('🔔 Subscribing to STOMP channels');
 
-    // ✅ Subscribe once to chat messages
-    this.stompClient.subscribe('/user/queue/messages', (message: IMessage) => {
-      console.log('📨 New message received:', message.body);
-      const chatMessage: ChatMessage = JSON.parse(message.body);
-      this.messagesSubject.next(chatMessage);
-    });
+  this.stompClient.subscribe('/user/queue/messages', (message: IMessage) => {
+    console.log('📨 Message received:', message.body);
+    const chatMessage: ChatMessage = JSON.parse(message.body);
+    this.messagesSubject.next(chatMessage);
+  });
 
-    // ✅ Subscribe once to notifications
-    this.stompClient.subscribe('/user/queue/notifications', (message: IMessage) => {
-      console.log('🔔 New notification received:', message.body);
-      const notification: Notification = JSON.parse(message.body);
-      this.notificationsSubject.next(notification);
-    });
-  }
+  this.stompClient.subscribe('/user/queue/notifications', (message: IMessage) => {
+    console.log('🔔 Notification received:', message.body);
+    const notification: Notification = JSON.parse(message.body);
+    this.notificationsSubject.next(notification);
+  });
+}
 
+
+  
   sendMessage(receiver: string, content: string): void {
     if (this.stompClient?.connected) {
       this.stompClient.publish({
