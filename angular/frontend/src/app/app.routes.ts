@@ -9,6 +9,7 @@ import { ProfileEdit } from './components/profile-edit/profile-edit';
 import { Matches } from './components/matches/matches';
 import { Viewers } from './components/viewers/viewers';
 import { LikedBy } from './components/liked-by/liked-by';
+import { Setting } from './components/setting/setting';
 import { AuthGuard } from './guards/auth.guard';
 
 
@@ -21,7 +22,7 @@ export const routes: Routes = [
 	{ path: 'viewers', component: Viewers },
 	{ path: 'liked-by', component: LikedBy },
 	{ path: 'chat', component: Chat },
-	{ path: 'setting', component: Matching },
+	{ path: 'setting', component: Setting },
 	{ path: 'updateprofile', component: ProfileEdit },
 	{ path: '', canActivate: [AuthGuard], component: Login, pathMatch: 'full' },
 	{ path: '**', component: Notfound }
