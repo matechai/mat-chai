@@ -58,7 +58,9 @@ public class SecurityConfig {
                     .requestMatchers("/api/auth/signup",
                                             "/api/auth/login",
                                             "/api/auth/verify",
-                                            "/api/auth/refresh").permitAll()
+                                            "/api/auth/refresh",
+                                            "/api/auth/forgot-password",
+                                            "/api/auth/reset-password").permitAll()
                     .requestMatchers("/api/auth/logout").authenticated()
                     .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN", "GOD")
                     .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "GOD")

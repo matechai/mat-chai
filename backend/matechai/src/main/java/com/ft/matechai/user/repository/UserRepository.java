@@ -31,6 +31,9 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     boolean existsByEmail(String email);
 
+    @Query("MATCH (me:User {email: $email}) Return me")
+    User findByEmail(@Param("email") String email);
+
 
     // Gender
     @Transactional
