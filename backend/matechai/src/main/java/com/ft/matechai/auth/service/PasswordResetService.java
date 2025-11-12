@@ -29,13 +29,4 @@ public class PasswordResetService {
 
         emailService.sendPasswordResetEmail(user.getEmail(), token);
     }
-
-    public boolean verifyToken(String token) {
-
-        PasswordResetToken rt = passwordResetTokenRepository.findByToken(token);
-        if (rt == null)
-            return false;
-
-        User user = userRepository.findByUsernameOrThrow()
-    }
 }
