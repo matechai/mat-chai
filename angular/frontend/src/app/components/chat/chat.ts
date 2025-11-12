@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { takeUntil, startWith } from 'rxjs/operators';
 import { ChatService } from '../../services/chat.service';
 import { WebSocketService } from '../../services/websocket.service';
@@ -21,6 +21,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private websocketService = inject(WebSocketService);
   private authService = inject(Auth);
   private destroy$ = new Subject<void>();
+  private messageSub?: Subscription; 
 
   chatPartners: ChatPartner[] = [];
   currentChat: ChatMessage[] = [];
@@ -46,59 +47,53 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.loadChatPartners();
   }
 
-  private setupMessageSubscription() {
-  this.websocketService.connectIfNeeded();
+  private setupMessageSubscription(): void {
+    // ✅ If we already have a subscription, clean it up first
+    this.messageSub?.unsubscribe();
 
-  // Wait until WebSocket is connected before subscribing
-  this.websocketService.onConnected$
-    .pipe(takeUntil(this.destroy$), startWith(true))
-    .subscribe(() => {
-      console.log('✅ Subscribed to incoming messages');
-    });
+    // ✅ Subscribe only once to shared message stream
+    this.messageSub = this.websocketService.messages$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((message: ChatMessage | null) => {
+        if (!message) return;
 
-  // 🔥 Single subscription for messages — not nested!
-  this.websocketService.messages$
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((message: ChatMessage | null) => {
-      if (!message) return;
+        const isCurrentChat =
+          (message.sender === this.selectedPartner && message.receiver === this.currentUsername) ||
+          (message.receiver === this.selectedPartner && message.sender === this.currentUsername);
 
-      const isCurrentChat =
-        (message.sender === this.selectedPartner && message.receiver === this.currentUsername) ||
-        (message.receiver === this.selectedPartner && message.sender === this.currentUsername);
-
-      // Push new message into open chat
-      if (isCurrentChat) {
-        this.currentChat.push(message);
-        this.scrollToBottom();
-      }
-
-      // Update chat partner list (last message preview)
-      const partnerUsername =
-        message.sender === this.currentUsername ? message.receiver : message.sender;
-      const partnerIndex = this.chatPartners.findIndex(p => p.username === partnerUsername);
-
-      if (partnerIndex > -1) {
-        const partner = this.chatPartners[partnerIndex];
-        partner.lastMessage = message.content;
-        partner.lastMessageTime = message.timestamp;
-
-        if (message.receiver === this.currentUsername && !isCurrentChat) {
-          partner.unread = true;
+        // Push new message into open chat
+        if (isCurrentChat) {
+          this.currentChat.push(message);
+          this.scrollToBottom();
         }
 
-        this.chatPartners.splice(partnerIndex, 1);
-        this.chatPartners.unshift(partner);
-      } else {
-        this.chatPartners.unshift({
-          username: partnerUsername,
-          lastMessage: message.content,
-          lastMessageTime: message.timestamp,
-          unread: message.receiver === this.currentUsername,
-          isNew: false
-        });
-      }
-    });
-}
+        // Update chat partner list (last message preview)
+        const partnerUsername =
+          message.sender === this.currentUsername ? message.receiver : message.sender;
+        const partnerIndex = this.chatPartners.findIndex(p => p.username === partnerUsername);
+
+        if (partnerIndex > -1) {
+          const partner = this.chatPartners[partnerIndex];
+          partner.lastMessage = message.content;
+          partner.lastMessageTime = message.timestamp;
+
+          if (message.receiver === this.currentUsername && !isCurrentChat) {
+            partner.unread = true;
+          }
+
+          this.chatPartners.splice(partnerIndex, 1);
+          this.chatPartners.unshift(partner);
+        } else {
+          this.chatPartners.unshift({
+            username: partnerUsername,
+            lastMessage: message.content,
+            lastMessageTime: message.timestamp,
+            unread: message.receiver === this.currentUsername,
+            isNew: false
+          });
+        }
+      });
+  }
 
 
   loadChatPartners(): void {

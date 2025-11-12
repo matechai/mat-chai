@@ -4,7 +4,7 @@ import SockJS from 'sockjs-client';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { ChatMessage } from '../interfaces/chat-message.model';
 import { Notification, NotificationType } from '../interfaces/notification.model';
-import { filter, startWith } from 'rxjs/operators';
+import { filter, startWith, shareReplay } from 'rxjs/operators';
 
 
 @Injectable({
@@ -15,13 +15,15 @@ export class WebSocketService {
   private connected = new ReplaySubject<boolean>(1);
   private ready = new BehaviorSubject<boolean>(false);
   private isConnectedValue = false;
-  private channelsSubscribed = false; // ✅ NEW: prevent duplicate subscriptions
+  private channelsSubscribed = false; 
 
+  
+  
   private messagesSubject = new BehaviorSubject<ChatMessage | null>(null);
   private notificationsSubject = new BehaviorSubject<Notification | null>(null);
+  public messages$ = this.messagesSubject.asObservable().pipe(shareReplay(1));
+  public notifications$ = this.notificationsSubject.asObservable().pipe(shareReplay(1));
 
-  public messages$: Observable<ChatMessage | null> = this.messagesSubject.asObservable();
-  public notifications$: Observable<Notification | null> = this.notificationsSubject.asObservable();
   public connected$: Observable<boolean> = this.connected.asObservable();
   public ready$ = this.ready.asObservable();
 
