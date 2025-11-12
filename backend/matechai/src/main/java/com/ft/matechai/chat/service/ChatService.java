@@ -1,6 +1,7 @@
 package com.ft.matechai.chat.service;
 
 import java.time.LocalDateTime;
+
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import com.ft.matechai.chat.model.ChatMessage;
@@ -10,7 +11,10 @@ import com.ft.matechai.notification.service.NotificationService;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ChatService
 {
 	private final ChatInterface messageRepository;
@@ -32,12 +36,9 @@ public class ChatService
         User receiver = userRepository.findByUsernameOrThrow(receiverUsername);
         ChatMessage message = new ChatMessage(sender.getUsername(), receiver.getUsername(), content, LocalDateTime.now());
         messageRepository.save(message);
-        if (!receiver.getUsername().equals(sender.getUsername()) && !userRepository.isBlocked(receiverUsername, sender.getUsername()))
-        {
             messagingTemplate.convertAndSendToUser(receiver.getUsername(), "/queue/messages", message);
             String notifyMessage = "you got a message from " + sender.getUsername();
-        }
-        // if (!userRepository.isBlocked(receiverUsername, sender.getUsername()))
-        //     notificationService.createAndSendNotification(sender.getUsername(), receiverUsername, NotificationType.CHAT, notifyMessage);
+        if (!userRepository.isBlocked(receiverUsername, sender.getUsername()))
+            notificationService.createAndSendNotification(sender.getUsername(), receiverUsername, NotificationType.CHAT, notifyMessage);
     }
 }
