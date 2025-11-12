@@ -84,10 +84,10 @@ export class ResetPassword implements OnInit {
 			return;
 		}
 
-		if (passwordValue.length < 8) {
-			this.errorMessage.set('Password must be at least 8 characters long');
-			return;
-		}
+		// if (passwordValue.length < 8) {
+		// 	this.errorMessage.set('Password must be at least 8 characters long');
+		// 	return;
+		// }
 
 		if (passwordValue !== confirmPasswordValue) {
 			this.errorMessage.set('Passwords do not match');
