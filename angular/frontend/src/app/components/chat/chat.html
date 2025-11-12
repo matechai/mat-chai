@@ -11,7 +11,10 @@
         [class.active]="selectedPartner === partner.username"
         class="partner-item">
         <div class="partner-info">
-          <div class="partner-name">{{ partner.username }}</div>
+          <div class="partner-name">
+            {{ partner.username }}
+            <span *ngIf="partner.unread" class="unread-indicator"></span>
+          </div>
           <div class="last-message">{{ partner.lastMessage }}</div>
           <div class="timestamp">{{ partner.lastMessageTime | date:'short' }}</div>
         </div>
@@ -38,9 +41,9 @@
 
       <div *ngIf="selectedPartner" class="messages-list">
         <div *ngFor="let message of currentChat"
-            [class.sent]="message.sender === currentUsername"
-            [class.received]="message.sender !== currentUsername"
-            class="message-bubble">
+             [class.sent]="message.sender === currentUsername"
+             [class.received]="message.sender !== currentUsername"
+             class="message-bubble">
           <p>{{ message.content }}</p>
           <small>{{ message.timestamp | date:'short' }}</small>
         </div>

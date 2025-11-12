@@ -37,4 +37,13 @@ public class ChatHistoryController {
 
         return ResponseEntity.ok(chatHistoryService.getChatBetween(principalDetails.getUser(), receiver));
     }
+
+    @PutMapping("/mark-read/{partner}")
+    public ResponseEntity<Void> markMessagesAsRead(
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
+        @PathVariable String partner) 
+    {
+        chatHistoryService.markMessagesAsRead(principalDetails.getUser(), partner);
+        return ResponseEntity.ok().build();
+    }
 }

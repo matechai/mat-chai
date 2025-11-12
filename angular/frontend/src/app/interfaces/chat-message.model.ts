@@ -4,4 +4,5 @@
   receiver: string;
   content: string;
   timestamp: string;
+  read: boolean;
 }

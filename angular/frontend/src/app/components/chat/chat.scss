@@ -45,10 +45,26 @@
   }
 }
 
+.partner-info {
+  display: flex;
+  flex-direction: column;
+}
+
 .partner-name {
   font-weight: 600;
   color: #333;
   margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+
+  .unread-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #d32f2f;
+    border-radius: 50%;
+    margin-left: 8px;
+  }
 }
 
 .last-message {
@@ -231,5 +247,9 @@
   .partners-panel {
     width: 100%;
     max-height: 40vh;
+  }
+
+  .chat-panel {
+    flex: 1;
   }
 }
