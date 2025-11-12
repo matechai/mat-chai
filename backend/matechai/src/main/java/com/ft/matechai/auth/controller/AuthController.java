@@ -85,4 +85,13 @@ public class AuthController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/reset-password")
+    public ResponseEntity<?> verifyResetPasswordToken(@RequestParam("token") String token) {
+
+        if (!authService.verifyResetPasswordToken(token))
+            return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.ok().build();
+    }
 }

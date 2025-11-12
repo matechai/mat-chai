@@ -1,6 +1,8 @@
 package com.ft.matechai.auth.service;
 
 import com.ft.matechai.auth.dto.*;
+import com.ft.matechai.auth.node.PasswordResetToken;
+import com.ft.matechai.auth.repository.PasswordResetTokenRepository;
 import com.ft.matechai.enums.Role;
 import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
@@ -32,16 +34,18 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
     private final PasswordResetService passwordResetService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     public AuthService(UserRepository userRepository,
                        VerificationService verificationService,
                        PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil, PasswordResetService passwordResetService) {
+                       JwtUtil jwtUtil, PasswordResetService passwordResetService, PasswordResetTokenRepository passwordResetTokenRepository) {
         this.userRepository = userRepository;
         this.verificationService = verificationService;
         this.encoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.passwordResetService = passwordResetService;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
 
@@ -140,6 +144,15 @@ public class AuthService {
             return false;
 
         passwordResetService.sendPasswordResetEmail(user);
+
+        return true;
+    }
+
+    public boolean verifyResetPasswordToken(String token) {
+
+        PasswordResetToken rt = passwordResetTokenRepository.findByToken(token);
+        if (rt == null)
+            return false;
 
         return true;
     }
