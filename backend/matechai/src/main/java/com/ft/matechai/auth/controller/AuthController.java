@@ -94,4 +94,13 @@ public class AuthController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequestDTO dto) {
+
+        if (!authService.resetPassword(dto))
+            return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -157,6 +157,23 @@ public class AuthService {
         return true;
     }
 
+    public boolean resetPassword (PasswordResetRequestDTO dto) {
+
+        if (!verifyResetPasswordToken(dto.getToken()))
+            return false;
+
+        PasswordResetToken rt = passwordResetTokenRepository.findByToken(dto.getToken());
+        String username = rt.getUsername();
+        User user = userRepository.findByUsernameOrThrow(username);
+
+        String hash = encoder.encode(dto.getPassword());
+        user.setPassword(hash);
+
+        userRepository.save(user);
+
+        return true;
+    }
+
     private Cookie createCookie(String name, String token, long expirationMs) {
 
         Cookie tokenCookie = new Cookie(name, token);
