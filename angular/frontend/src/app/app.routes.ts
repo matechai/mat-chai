@@ -10,12 +10,14 @@ import { Matches } from './components/matches/matches';
 import { Viewers } from './components/viewers/viewers';
 import { LikedBy } from './components/liked-by/liked-by';
 import { Setting } from './components/setting/setting';
+import { ForgotPassword } from './components/forgot-password/forgot-password';
 import { AuthGuard } from './guards/auth.guard';
 
 
 export const routes: Routes = [
 	{ path: 'login', component: Login },
 	{ path: 'signup', component: Signup },
+	{ path: 'forgot-password', component: ForgotPassword },
 	{ path: 'profile/edit', component: ProfileEdit },
 	{ path: 'matches', component: Matches },
 	{ path: 'matching', component: Matching },
