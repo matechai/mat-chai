@@ -16,6 +16,10 @@ public class EmailService {
     @Value("${app.url}")
     private String address;
 
+    @Value("${frontend.url}")
+    private String frontendURL;
+
+
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
@@ -31,8 +35,17 @@ public class EmailService {
 
         log.info("Email verify URL : " + link);
     }
+
+    public void sendPasswordResetEmail(String to, String token) {
+
+        String link = frontendURL + "/reset-password?token=" + token;
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Password reset");
+        message.setText("Click the link to reset your password : " + link);
         mailSender.send(message);
 
-        log.info("Email verify address : " + link);
+        log.info("Password reset URL : " + link);
     }
 }

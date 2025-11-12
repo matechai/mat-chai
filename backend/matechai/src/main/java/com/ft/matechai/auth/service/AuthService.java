@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -30,15 +31,17 @@ public class AuthService {
     private final VerificationService verificationService;
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
+    private final PasswordResetService passwordResetService;
 
     public AuthService(UserRepository userRepository,
                        VerificationService verificationService,
                        PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil) {
+                       JwtUtil jwtUtil, PasswordResetService passwordResetService) {
         this.userRepository = userRepository;
         this.verificationService = verificationService;
         this.encoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.passwordResetService = passwordResetService;
     }
 
 
@@ -126,6 +129,19 @@ public class AuthService {
         Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs);
 
         response.addCookie(accessCookie);
+    }
+
+    public boolean forgotPassword(Map<String, String> req) {
+
+        String email = req.get("email");
+        // todo 예외 처리 확인
+        User user = userRepository.findByEmail(email);
+        if (user == null)
+            return false;
+
+        passwordResetService.sendPasswordResetEmail(user);
+
+        return true;
     }
 
     private Cookie createCookie(String name, String token, long expirationMs) {

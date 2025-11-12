@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -74,5 +75,14 @@ public class AuthController {
         authService.refreshAccessToken(refreshToken, response);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> req) {
+
+        if (!authService.forgotPassword(req))
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok().build();
     }
 }
