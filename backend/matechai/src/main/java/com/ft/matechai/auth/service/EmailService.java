@@ -27,7 +27,10 @@ public class EmailService {
         message.setTo(to);
         message.setSubject("Verify your account");
         message.setText("Click the link to verify your account: " + link);
-        log.info("Click the link to verify your account: " + link);
+        mailSender.send(message);
+
+        log.info("Email verify URL : " + link);
+    }
         mailSender.send(message);
 
         log.info("Email verify address : " + link);
