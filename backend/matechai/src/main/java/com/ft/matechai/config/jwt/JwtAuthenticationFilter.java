@@ -48,13 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 for (Cookie c : cookies) {
                     if ("accessToken".equals(c.getName())) {
                         token = c.getValue();
-                        break;
                     } else if ("refreshToken".equals(c.getName())) {
                         refreshToken = c.getValue();
-                        break;
                     }
+                    if (token != null && refreshToken != null)
+                        break;
                 }
-                log.info("refresh token : " + refreshToken);
                 if (token == null) {
                     try {
                         jwtUtil.validateToken(refreshToken);
