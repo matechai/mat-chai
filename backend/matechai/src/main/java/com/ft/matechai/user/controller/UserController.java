@@ -41,7 +41,7 @@ public class UserController {
         return userService.getUserInfo(username);
     }
 
-    @PostMapping("/{username}")
+    @PatchMapping("/{username}")
     @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
     public ResponseEntity<?> updateUserInformation(@PathVariable String username,
                                                    @RequestBody UserInfoDTO userInfoDTO) {

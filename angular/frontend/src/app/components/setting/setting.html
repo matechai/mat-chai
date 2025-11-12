@@ -1,26 +1,93 @@
-<div style="max-width:500px; margin:2rem auto; padding:2rem; border:1px solid #ccc; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); font-family:Arial, sans-serif;">
+<div class="setting-container">
+  <div class="setting-form">
+    <h2>Account Settings</h2>
 
-  <h2 style="text-align:center; margin-bottom:1rem;">Settings</h2>
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading()" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading user information...</p>
+    </div>
+    
+    <!-- Success/Error Messages -->
+    <div class="message-container">
+      <div *ngIf="successMessage()" class="success-message">
+        {{ successMessage() }}
+      </div>
+      <div *ngIf="errorMessage()" class="error-message">
+        {{ errorMessage() }}
+      </div>
+    </div>
+    
+    <!-- User Information Display -->
+    <div *ngIf="!isLoading() && !isEditing()" class="user-info-display">
+      <div class="info-section">
+        <h3>Personal Information</h3>
+    
+        <div class="info-row">
+          <label>Username:</label>
+          <span class="info-value">{{ userInfo().username }}</span>
+        </div>
+    
+        <div class="info-row">
+          <label>Email:</label>
+          <span class="info-value">{{ userInfo().email }}</span>
+        </div>
+    
+        <div class="info-row">
+          <label>First Name:</label>
+          <span class="info-value">{{ userInfo().firstName }}</span>
+        </div>
+    
+        <div class="info-row">
+          <label>Last Name:</label>
+          <span class="info-value">{{ userInfo().lastName }}</span>
+        </div>
+      </div>
+    
+      <div class="action-buttons">
+        <button type="button" class="btn btn-primary" (click)="startEditing()">
+          Edit Information
+        </button>
+      </div>
+    </div>
+    
+    <!-- Edit Form -->
+    <div *ngIf="!isLoading() && isEditing()" class="edit-form">
+      <form (ngSubmit)="updateUserInfo()" #userForm="ngForm">
+    
+        <div class="form-section">
+          <h3>Edit Personal Information</h3>
+    
+          <div class="form-group">
+            <label for="email">Email <span class="required">*</span></label>
+            <input type="email" id="email" class="form-control" [value]="editForm().email"
+              (input)="updateFormField('email', $event.target.value)" required placeholder="Enter your email" />
+          </div>
 
-  <!-- Account Settings -->
-  <h3>Account</h3>
-  <ul style="list-style:none; padding:0; color:#333;">
-    <li style="margin-bottom:0.5rem;">Email: john.smith@example.com <button style="margin-left:1rem; padding:0.2rem 0.5rem;">Edit</button></li>
-    <li style="margin-bottom:0.5rem;">Password: ******** <button style="margin-left:1rem; padding:0.2rem 0.5rem;">Change</button></li>
-    <li style="margin-bottom:0.5rem;">Notifications: On <button style="margin-left:1rem; padding:0.2rem 0.5rem;">Toggle</button></li>
-  </ul>
+          <div class="form-group">
+            <label for="firstName">First Name <span class="required">*</span></label>
+            <input type="text" id="firstName" class="form-control" [value]="editForm().firstName"
+              (input)="updateFormField('firstName', $event.target.value)" required placeholder="Enter your first name" />
+          </div>
 
-  <!-- Preferences -->
-  <h3>Preferences</h3>
-  <ul style="list-style:none; padding:0; color:#333;">
-    <li style="margin-bottom:0.5rem;">Gender Preference: Any <button style="margin-left:1rem; padding:0.2rem 0.5rem;">Edit</button></li>
-    <li style="margin-bottom:0.5rem;">Distance: 10 miles <button style="margin-left:1rem; padding:0.2rem 0.5rem;">Edit</button></li>
-    <li style="margin-bottom:0.5rem;">Age Range: 25-35 <button style="margin-left:1rem; padding:0.2rem 0.5rem;">Edit</button></li>
-  </ul>
+          <div class="form-group">
+            <label for="lastName">Last Name <span class="required">*</span></label>
+            <input type="text" id="lastName" class="form-control" [value]="editForm().lastName"
+              (input)="updateFormField('lastName', $event.target.value)" required placeholder="Enter your last name" />
+          </div>
+          </div>
 
-  <div style="text-align:center; margin-top:1.5rem;">
-    <button style="background:#f44336; color:white; border:none; padding:0.75rem 1.5rem; border-radius:8px; cursor:pointer;">
-      Delete Account
-    </button>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancelEditing()" [disabled]="isLoading()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="isLoading() || !userForm.valid">
+            <span *ngIf="isLoading()">Updating...</span>
+            <span *ngIf="!isLoading()">Save Changes</span>
+          </button>
+        </div>
+        </form>
+        </div>
+
   </div>
 </div>
