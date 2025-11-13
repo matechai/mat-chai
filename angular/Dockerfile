@@ -6,10 +6,11 @@ COPY frontend/package*.json ./
 
 RUN npm install -g @angular/cli && npm install
 
-# COPY frontend/ .
+COPY frontend/ .
 
 # ---- DEV Mode (hot reload) ----
-CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000", "--proxy-config", "proxy.conf.json"]
+CMD ["sh", "-c", "npm install && ng serve --host 0.0.0.0 --poll 2000 --proxy-config proxy.conf.json"]
+# CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000", "--proxy-config", "proxy.conf.json"]
 
 # CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]
 
