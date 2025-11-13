@@ -37,12 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        // ✅ Skip WebSocket handshakes — these are validated by JwtHandShakeInterceptor instead
-        // if (path.startsWith("/ws-chat")) 
-        // {
-        //     filterChain.doFilter(request, response);
-        //     return;
-        // }
         Cookie[] cookies = request.getCookies();
 
         if (!path.startsWith("/api/auth/") || path.startsWith("/api/auth/logout")) {
@@ -50,17 +44,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (cookies != null) {
 
                 String token = null;
+                String refreshToken = null;
                 for (Cookie c : cookies) {
                     if ("accessToken".equals(c.getName())) {
                         token = c.getValue();
-                        break;
+                    } else if ("refreshToken".equals(c.getName())) {
+                        refreshToken = c.getValue();
                     }
+                    if (token != null && refreshToken != null)
+                        break;
                 }
-                if (token == null)
+                if (token == null) {
+                    try {
+                        jwtUtil.validateToken(refreshToken);
+                        throw new AuthExceptions.UnauthorizedException("Token expired");
+                    } catch (Exception e) {
+                        log.info("doesn't have access token and refresh token : " + e.toString());
+                    }
                     throw new AuthExceptions.UnauthorizedException("Unauthorized: accessToken missing");
-
-                if (!jwtUtil.validateToken(token))
-                    throw new AuthExceptions.UnauthorizedException("Unauthorized: invalid token");
+                }
+                jwtUtil.validateToken(token);
 
                 User user = userRepository.findByUsernameOrThrow(jwtUtil.getUsernameFromToken(token));
 

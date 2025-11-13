@@ -50,9 +50,32 @@ export const routes: Routes = [
 	canActivate: [AuthGuard]
   },
   {
+	path: 'forgot-password',
+	loadComponent: () => import('./components/forgot-password/forgot-password').then(m => m.ForgotPassword),
+	canActivate: [PublicGuard]
+  },
+  {
+	path: 'reset-password',
+	loadComponent: () => import('./components/reset-password/reset-password').then(m => m.ResetPassword),
+	canActivate: [PublicGuard]
+  },
+  {
+	path: 'viewers', 
+	loadComponent: () => import('./components/viewers/viewers').then(m => m.Viewers),
+	canActivate: [PublicGuard]
+  },
+  {
+	path: 'liked-by',
+	loadComponent: () => import('./components/liked-by/liked-by').then(m => m.LikedBy),
+	canActivate: [PublicGuard]
+  },
+
+  {
 	path: '**',
 	loadComponent: () => import('./components/notfound/notfound').then(m => m.Notfound)
   }
+
+	
 ];
 
 

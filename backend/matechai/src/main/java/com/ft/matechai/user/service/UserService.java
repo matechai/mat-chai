@@ -117,13 +117,14 @@ public class UserService {
 
 	// SETTERS // SETTERS // SETTERS // SETTERS //
 
+    @Transactional
     public void updateUserInfo(String username, UserInfoDTO dto) {
 
         User user = userRepository.findByUsernameOrThrow(username);
 
-        user.setEmail(dto.getEmail());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
+        if (dto.getEmail()      != null) user.setEmail(dto.getEmail());
+        if (dto.getFirstName()  != null) user.setFirstName(dto.getFirstName());
+        if (dto.getLastName()   != null) user.setLastName(dto.getLastName());
 
         userRepository.save(user);
     }
@@ -196,7 +197,7 @@ public class UserService {
             }
         } catch (Exception e) {
 
-            log.error("[" + e + "] : " + e.getMessage());
+            log.info("[" + e + "] : " + e.getMessage());
         }
     }
 }

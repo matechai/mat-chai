@@ -31,6 +31,15 @@ public class ProfileController {
         return ResponseEntity.ok(viewers);
     }
 
+    @GetMapping("/users/me/liked-by")
+    public ResponseEntity<Page<UserBasicProfileDTO>> getUsersWhoLikedMe(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                        @RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "20") int size) {
+
+        Page<UserBasicProfileDTO> response = profileService.getUsersWhoLikedMe(principalDetails.getUser(), page, size);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/users/{username}/location")
     @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
     public ResponseEntity<?> updateLocation(@PathVariable String username,

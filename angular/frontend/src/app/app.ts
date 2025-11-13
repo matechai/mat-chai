@@ -11,6 +11,8 @@ import { Auth } from './services/auth';
 import { WebSocketService } from './services/websocket.service';
 import { NotificationService } from './services/notification.service';
 import { NotificationsComponent } from './components/notifications/notfications';
+import { Component, signal } from '@angular/core';
+import { LayoutComponent } from './components/layout/layout';
 
 @Component({
   selector: 'app-root',
@@ -20,12 +22,14 @@ import { NotificationsComponent } from './components/notifications/notfications'
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
-    NotificationsComponent
+    NotificationsComponent,
+    LayoutComponent
   ],
-  templateUrl: './app.html',
-  styleUrls: ['./app.scss']
 })
+
 export class AppComponent implements OnInit, OnDestroy {
+
+  protected readonly title = signal('Matéchai');
   private authService = inject(Auth);
   private websocketService = inject(WebSocketService);
   private notificationService = inject(NotificationService);

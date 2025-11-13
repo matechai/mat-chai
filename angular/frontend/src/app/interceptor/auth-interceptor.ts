@@ -36,16 +36,19 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
         req.url.includes('/refresh') ||
         req.url.includes('/logout');
 
-      // handles the error when accessToken is expired (but not for auth endpoints or external services)
-      if (err.status == 401 && !isAuthEndpoint && !isExternalGeoService)
+      // Refresh only when accessToken has expired (check specific error message)
+      const isTokenExpiredError = err.status === 401 &&
+        err.error?.message === "Token expired";
+
+      if (isTokenExpiredError && !isAuthEndpoint && !isExternalGeoService)
       {
-        // if state is already refreshing, skip duplicate requests
+        // If already refreshing, prevent duplicate requests
         if (isRefreshing) {
           console.log('[Interceptor] Already refreshing, skipping...');
           return throwError(() => err);
         }
 
-        console.log('[Interceptor] 401 detected, refreshing token...');
+        console.log('[Interceptor] AccessToken expired, refreshing token...');
         isRefreshing = true;
 
         return authService.refresh_request().pipe(
@@ -67,7 +70,22 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
             console.error('[Interceptor] ❌ Token refresh failed:', refreshErr);
             // if refresh expires/fails
             isRefreshing = false;
-            authService.logout_request();
+
+            authService.clearUserCache();
+
+            // Send logout request and redirect to login page
+            authService.logout_request().subscribe({
+              next: () => {
+                console.log('[Interceptor] Logout completed');
+                window.location.href = '/login';
+              },
+              error: (logoutErr: any) => {
+                console.error('[Interceptor] Logout failed:', logoutErr);
+                // Even if logout fails, redirect to login page
+                window.location.href = '/login';
+              }
+            });
+
             return throwError(() => refreshErr);
           })
         );

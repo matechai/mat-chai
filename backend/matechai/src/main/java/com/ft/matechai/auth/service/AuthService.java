@@ -1,6 +1,8 @@
 package com.ft.matechai.auth.service;
 
 import com.ft.matechai.auth.dto.*;
+import com.ft.matechai.auth.node.PasswordResetToken;
+import com.ft.matechai.auth.repository.PasswordResetTokenRepository;
 import com.ft.matechai.enums.Role;
 import com.ft.matechai.exception.AuthExceptions;
 import com.ft.matechai.user.node.User;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -30,15 +33,19 @@ public class AuthService {
     private final VerificationService verificationService;
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
+    private final PasswordResetService passwordResetService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     public AuthService(UserRepository userRepository,
                        VerificationService verificationService,
                        PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil) {
+                       JwtUtil jwtUtil, PasswordResetService passwordResetService, PasswordResetTokenRepository passwordResetTokenRepository) {
         this.userRepository = userRepository;
         this.verificationService = verificationService;
         this.encoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.passwordResetService = passwordResetService;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
 
@@ -70,7 +77,7 @@ public class AuthService {
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
 
-            Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs);
+            Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs * 4);
             Cookie refreshCookie = createCookie("refreshToken", refreshToken, refreshTokenExpirationMs);
 
             response.addCookie(accessCookie);
@@ -114,8 +121,7 @@ public class AuthService {
     // Create new Access token using refresh token
     public void refreshAccessToken(String refreshToken, HttpServletResponse response) {
 
-        if (!jwtUtil.validateToken(refreshToken))
-            throw new AuthExceptions.UnauthorizedException();
+        jwtUtil.validateToken(refreshToken);
 
         String username = jwtUtil.getUsernameFromToken(refreshToken);
         User user = userRepository.findByUsernameOrThrow(username);
@@ -127,6 +133,45 @@ public class AuthService {
         Cookie accessCookie = createCookie("accessToken", accessToken, accessTokenExpirationMs);
 
         response.addCookie(accessCookie);
+    }
+
+    public boolean forgotPassword(Map<String, String> req) {
+
+        String email = req.get("email");
+        // todo 예외 처리 확인
+        User user = userRepository.findByEmail(email);
+        if (user == null)
+            return false;
+
+        passwordResetService.sendPasswordResetEmail(user);
+
+        return true;
+    }
+
+    public boolean verifyResetPasswordToken(String token) {
+
+        PasswordResetToken rt = passwordResetTokenRepository.findByToken(token);
+        if (rt == null)
+            return false;
+
+        return true;
+    }
+
+    public boolean resetPassword (PasswordResetRequestDTO dto) {
+
+        if (!verifyResetPasswordToken(dto.getToken()))
+            return false;
+
+        PasswordResetToken rt = passwordResetTokenRepository.findByToken(dto.getToken());
+        String username = rt.getUsername();
+        User user = userRepository.findByUsernameOrThrow(username);
+
+        String hash = encoder.encode(dto.getPassword());
+        user.setPassword(hash);
+
+        userRepository.save(user);
+
+        return true;
     }
 
     private Cookie createCookie(String name, String token, long expirationMs) {

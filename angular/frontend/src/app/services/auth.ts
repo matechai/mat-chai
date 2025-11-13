@@ -15,6 +15,14 @@ export class Auth {
 
   // Public observable for other components
   user$ = this.currentUserSubject.asObservable();
+  // Authentication state subject for real-time updates
+  private authStateSubject = new BehaviorSubject<{ isAuthenticated: boolean, user: any | null }>({
+    isAuthenticated: false,
+    user: null
+  });
+
+  // Public observable for components to subscribe
+  public authState$ = this.authStateSubject.asObservable();
 
   signup_request(request: SignupInterface): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/signup`, request);
@@ -58,6 +66,39 @@ export class Auth {
       `${this.apiUrl}/auth/refresh`, {},
       { withCredentials: true }
     );
+  }
+
+  // Check token status using GraphQL me query (more efficient than separate endpoint)
+  checkTokenStatus(): Observable<any> {
+    // Use existing GraphQL endpoint to verify token validity
+    return this.getUserAuthInfo();
+  }
+
+  // Indirectly check token existence (server returns authentication status)
+  hasValidTokens(): Observable<boolean> {
+    return new Observable((observer: any) => {
+      this.checkTokenStatus().subscribe({
+        next: (response: any) => {
+          // If GraphQL returns user data, tokens are valid
+          if (response.data?.me) {
+            observer.next(true);
+          } else {
+            observer.next(false);
+          }
+          observer.complete();
+        },
+        error: (error: any) => {
+          // 401/403 errors mean tokens are missing or expired
+          if (error.status === 401 || error.status === 403) {
+            observer.next(false);
+          } else {
+            // Other errors might be network issues, so uncertain
+            observer.next(null);
+          }
+          observer.complete();
+        }
+      });
+    });
   }
 
   // Get current user information using GraphQL (no more JWT headaches!)
@@ -160,8 +201,9 @@ export class Auth {
         next: (response: any) => {
           const username = response.data?.me?.username;
           if (username) {
-            // Cache the username
+            // Cache the username and update auth state
             sessionStorage.setItem('username', username);
+            this.updateAuthState(true, { username });
             observer.next(username);
             observer.complete();
           } else {
@@ -238,10 +280,33 @@ export class Auth {
   clearUserCache(): void {
     sessionStorage.removeItem('username');
     this.setCurrentUser(null);
+    // Update auth state when clearing cache
+    this.updateAuthState(false, null);
   }
 
   // Get cached username (synchronous)
   getCachedUsername(): string | null {
     return sessionStorage.getItem('username');
+  }
+
+  // Update authentication state (notify all subscribers)
+  updateAuthState(isAuthenticated: boolean, user: any = null): void {
+    this.authStateSubject.next({
+      isAuthenticated,
+      user
+    });
+  }
+
+  // Set authenticated state (call after successful login)
+  setAuthenticatedState(user: any): void {
+    if (user?.username) {
+      sessionStorage.setItem('username', user.username);
+    }
+    this.updateAuthState(true, user);
+  }
+
+  // Get current auth state (synchronous)
+  getCurrentAuthState(): { isAuthenticated: boolean, user: any | null } {
+    return this.authStateSubject.value;
   }
 }
