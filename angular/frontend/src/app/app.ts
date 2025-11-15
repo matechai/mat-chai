@@ -1,7 +1,7 @@
 
 
 
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, Router, RouterLinkActive } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -11,12 +11,11 @@ import { Auth } from './services/auth';
 import { WebSocketService } from './services/websocket.service';
 import { NotificationService } from './services/notification.service';
 import { NotificationsComponent } from './components/notifications/notfications';
-import { Component, signal } from '@angular/core';
 import { LayoutComponent } from './components/layout/layout';
 
 @Component({
   selector: 'app-root',
-  // standalone: true,
+  standalone: true,
   imports: [
     CommonModule,
     RouterOutlet,
@@ -25,6 +24,8 @@ import { LayoutComponent } from './components/layout/layout';
     NotificationsComponent,
     LayoutComponent
   ],
+  templateUrl: './app.html',
+	styleUrl: './app.scss'
 })
 
 export class AppComponent implements OnInit, OnDestroy {

@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 interface ForgotPasswordRequest {
@@ -11,7 +11,7 @@ interface ForgotPasswordRequest {
 @Component({
 	selector: 'app-forgot-password',
 	standalone: true,
-	imports: [CommonModule, FormsModule, RouterLink],
+	imports: [CommonModule, FormsModule],
 	templateUrl: './forgot-password.html',
 	styleUrl: './forgot-password.scss'
 })

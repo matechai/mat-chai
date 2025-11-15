@@ -40,14 +40,14 @@ public class JwtUtil {
     }
 
     // Validate JWT Token
-    public void validateToken(String token) {
+    public boolean validateToken(String token) {
 
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-
+            return true;
         } catch (ExpiredJwtException e) {
             log.info("[JWT] Token expired: {}", e.getMessage());
             throw new AuthExceptions.UnauthorizedException("Token expired");
