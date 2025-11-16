@@ -67,7 +67,7 @@ export const routes: Routes = [
   {
 	path: 'liked-by',
 	loadComponent: () => import('./components/liked-by/liked-by').then(m => m.LikedBy),
-	canActivate: [PublicGuard]
+	canActivate: [AuthGuard]
   },
 
   {
