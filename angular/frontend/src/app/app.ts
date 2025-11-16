@@ -10,7 +10,7 @@ import { takeUntil, delay } from 'rxjs/operators';
 import { Auth } from './services/auth';
 import { WebSocketService } from './services/websocket.service';
 import { NotificationService } from './services/notification.service';
-import { NotificationsComponent } from './components/notifications/notfications';
+import { NotificationsComponent } from './components/notifications/notifications';
 import { LayoutComponent } from './components/layout/layout';
 
 @Component({
