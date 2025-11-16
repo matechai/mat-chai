@@ -62,7 +62,7 @@ export const routes: Routes = [
   {
 	path: 'viewers', 
 	loadComponent: () => import('./components/viewers/viewers').then(m => m.Viewers),
-	canActivate: [PublicGuard]
+	canActivate: [AuthGuard]
   },
   {
 	path: 'liked-by',
