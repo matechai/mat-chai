@@ -1,78 +1,95 @@
 package com.ft.matechai.chat.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
 import com.ft.matechai.chat.dto.ChatPartnerDto;
 import com.ft.matechai.chat.model.ChatMessage;
 import com.ft.matechai.chat.repository.ChatInterface;
-import com.ft.matechai.user.repository.UserRepository;
+import com.ft.matechai.match.service.MatchService;
 import com.ft.matechai.user.node.User;
+import com.ft.matechai.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class ChatHistoryService {
-	
-	private final ChatInterface chatRepository;
-	private final UserRepository userRepository;
 
-	public ChatHistoryService(ChatInterface chatRepository, UserRepository userRepository)
-	{
-		this.chatRepository = chatRepository;
-		this.userRepository = userRepository;
-	}
+    private final MatchService matchService;
+    private final ChatInterface chatRepository;
+    private final UserRepository userRepository;
+    private final MongoTemplate mongoTemplate;
 
-	// Get chat messages between two users, excluding messages from blocked users
-    public List<ChatMessage> getChatBetween(User user, String receiverUsername) 
-	{
-        User receiver = userRepository.findByUsernameOrThrow(receiverUsername);
+    /**
+     * Returns all matched users for the current user,
+     * including last message info and unread state.
+     */
+    public List<ChatPartnerDto> getChatPartners(User currentUser) {
+        List<User> matchedUsers = matchService.getMatchedUsers(currentUser);
+        List<ChatPartnerDto> partners = new ArrayList<>();
 
-        // Fetch all messages between the two users
-        List<ChatMessage> messages = chatRepository.findBySenderAndReceiverOrReceiverAndSender(
-                user.getUsername(), receiver.getUsername(),
-                receiver.getUsername(), user.getUsername()
-        );
+        for (User partner : matchedUsers) {
+            // Fetch the last message (in either direction)
+            List<ChatMessage> lastMessages = chatRepository.findLastMessageBetweenUsers(
+                    currentUser.getUsername(),
+                    partner.getUsername()
+            );
 
-        // Remove messages where sender is blocked by the current user
-        messages.removeIf(msg -> userRepository.isBlocked(user.getUsername(), msg.getSender()));
+            ChatPartnerDto dto = new ChatPartnerDto();
+            dto.setUsername(partner.getUsername());
 
-        return messages;
-    }
+            if (!lastMessages.isEmpty()) {
+                ChatMessage lastMessage = lastMessages.get(0); // since we sorted desc by timestamp
 
-	// Get chat partners with the last message, excluding blocked users
-    public List<ChatPartnerDto> getChatPartners(User currentUser) 
-	{
-        String username = currentUser.getUsername();
-
-        // Fetch all messages where the user is sender or receiver
-        List<ChatMessage> allMessages = chatRepository.findBySenderOrReceiver(username, username);
-
-        Map<String, ChatMessage> lastMessages = new HashMap<>();
-        for (ChatMessage msg : allMessages) {
-            String partner = msg.getSender().equals(username) ? msg.getReceiver() : msg.getSender();
-
-            // Skip partner if blocked by current user
-            if (userRepository.isBlocked(username, partner)) continue;
-
-            ChatMessage existing = lastMessages.get(partner);
-            if (existing == null || msg.getTimestamp().isAfter(existing.getTimestamp())) {
-                lastMessages.put(partner, msg);
+                dto.setLastMessage(lastMessage.getContent());
+                dto.setLastMessageTime(lastMessage.getTimestamp());
+                dto.setUnread(!lastMessage.isRead() && lastMessage.getReceiver().equals(currentUser.getUsername()));
+                dto.setNew(false);
+            } else {
+                // no chat yet between these users
+                dto.setLastMessage(null);
+                dto.setLastMessageTime(null);
+                dto.setUnread(false);
+                dto.setNew(true);
             }
+
+            partners.add(dto);
         }
 
-        return lastMessages.entrySet().stream()
-                .map(entry -> {
-                    ChatMessage msg = entry.getValue();
-                    return new ChatPartnerDto(
-                            entry.getKey(),
-                            msg.getContent(),
-                            msg.getTimestamp()
-                    );
-                })
-                .sorted((a, b) -> b.getLastMessageTime().compareTo(a.getLastMessageTime())) // latest first
-                .collect(Collectors.toList());
+        // sort by last message time (newest chats first)
+        partners.sort((a, b) -> {
+            if (a.getLastMessageTime() == null && b.getLastMessageTime() == null) return 0;
+            if (a.getLastMessageTime() == null) return 1;
+            if (b.getLastMessageTime() == null) return -1;
+            return b.getLastMessageTime().compareTo(a.getLastMessageTime());
+        });
+
+        return partners;
+    }
+
+    /**
+     * Returns the full chat history between current user and receiver.
+     */
+    public List<ChatMessage> getChatBetween(User currentUser, String receiverUsername) {
+        return chatRepository.findChatBetweenUsers(currentUser.getUsername(), receiverUsername);
+    }
+
+    /**
+     * Marks all unread messages from the partner as read
+     * when the current user opens the chat.
+     */
+    public void markMessagesAsRead(User currentUser, String partnerUsername) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("sender").is(partnerUsername)
+                .and("receiver").is(currentUser.getUsername())
+                .and("read").is(false));
+
+        Update update = new Update().set("read", true);
+        mongoTemplate.updateMulti(query, update, ChatMessage.class);
     }
 }

@@ -57,7 +57,8 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
             isRefreshing = false;
 
             // Reload page after successful token refresh
-            window.location.reload();
+            return next(req.clone({ withCredentials: true}));
+            // window.location.reload();
 
             // Retry original request after refresh (this won't execute due to page reload)
             const retryRequest = req.clone({
@@ -92,4 +93,4 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
       return throwError(() => err);
     })
   );
-};
+};  

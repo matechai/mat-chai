@@ -1,0 +1,255 @@
+.chat-container {
+  display: flex;
+  height: calc(100vh - 64px);
+  background-color: #f5f5f5;
+}
+
+.partners-panel {
+  width: 320px;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fafafa;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+  }
+}
+
+.partners-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.partner-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+
+  &.active {
+    background-color: #e3f2fd;
+    border-left: 4px solid #1976d2;
+  }
+}
+
+.partner-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.partner-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+
+  .unread-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #d32f2f;
+    border-radius: 50%;
+    margin-left: 8px;
+  }
+}
+
+.last-message {
+  color: #666;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.timestamp {
+  color: #999;
+  font-size: 0.75rem;
+}
+
+.no-chats {
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+}
+
+.chat-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.chat-header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fafafa;
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+  }
+}
+
+.messages-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #fafafa;
+}
+
+.no-chat-selected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  gap: 20px;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  word-wrap: break-word;
+  animation: fadeIn 0.3s;
+
+  p {
+    margin: 0 0 4px 0;
+    line-height: 1.4;
+  }
+
+  small {
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+
+  &.sent {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  &.received {
+    align-self: flex-start;
+    background-color: white;
+    color: #333;
+    border: 1px solid #e0e0e0;
+    border-bottom-left-radius: 4px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-input-area {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid #e0e0e0;
+  background: white;
+}
+
+.message-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 24px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: #1976d2;
+  }
+}
+
+.send-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Scrollbar styling
+.partners-list::-webkit-scrollbar,
+.messages-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.partners-list::-webkit-scrollbar-track,
+.messages-area::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.partners-list::-webkit-scrollbar-thumb,
+.messages-area::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.partners-list::-webkit-scrollbar-thumb:hover,
+.messages-area::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .chat-container {
+    flex-direction: column;
+  }
+
+  .partners-panel {
+    width: 100%;
+    max-height: 40vh;
+  }
+
+  .chat-panel {
+    flex: 1;
+  }
+}

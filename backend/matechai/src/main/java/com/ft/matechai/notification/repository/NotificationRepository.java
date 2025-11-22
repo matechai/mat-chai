@@ -14,4 +14,7 @@ public interface NotificationRepository extends MongoRepository<Notification, St
     // // Optional: fetch only unread notifications
     // List<Notification> findByReceiverAndReadFalseOrderByCreatedAtDesc(String receiver);
     List<Notification> findByReceiver(String receiver);
+    long countByReceiverAndReadFalse(String receiver);
+
+    List<Notification> findByReceiverOrderByCreatedAtDesc(String receiver);
 }

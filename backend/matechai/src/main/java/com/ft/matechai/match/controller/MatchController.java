@@ -5,6 +5,8 @@ import com.ft.matechai.match.dto.LikeResponseDTO;
 import com.ft.matechai.match.dto.PaginatedUserDTO;
 import com.ft.matechai.match.service.MatchService;
 import com.ft.matechai.profile.service.RecommendationService;
+import com.ft.matechai.user.node.User;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -74,5 +76,11 @@ public class MatchController {
         matchService.block(principalDetails.getUser(), targetUsername);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/users/matches")
+    public ResponseEntity<List<User>> getMatchedUsers(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        List<User> matchedUsers = matchService.getMatchedUsers(principalDetails.getUser());
+        return ResponseEntity.ok(matchedUsers);
     }
 }

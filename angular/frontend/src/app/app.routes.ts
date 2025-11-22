@@ -1,33 +1,82 @@
 import { Routes } from '@angular/router';
-import { Login } from './components/login/login';
-import { Signup } from './components/signup/signup';
-import { Profile } from './components/profile/profile';
-import { Matching } from './components/matching/matching';
-import { Chat } from './components/chat/chat';
-import { Notfound } from './components/notfound/notfound';
-import { ProfileEdit } from './components/profile-edit/profile-edit';
-import { Matches } from './components/matches/matches';
-import { Viewers } from './components/viewers/viewers';
-import { LikedBy } from './components/liked-by/liked-by';
-import { Setting } from './components/setting/setting';
-import { ForgotPassword } from './components/forgot-password/forgot-password';
-import { ResetPassword } from './components/reset-password/reset-password';
 import { AuthGuard } from './guards/auth.guard';
+import { PublicGuard } from './guards/public.guard';
 
 
 export const routes: Routes = [
-	{ path: 'login', component: Login },
-	{ path: 'signup', component: Signup },
-	{ path: 'forgot-password', component: ForgotPassword },
-	{ path: 'reset-password', component: ResetPassword },
-	{ path: 'profile/edit', component: ProfileEdit },
-	{ path: 'matches', component: Matches },
-	{ path: 'matching', component: Matching },
-	{ path: 'viewers', component: Viewers },
-	{ path: 'liked-by', component: LikedBy },
-	{ path: 'chat', component: Chat },
-	{ path: 'setting', component: Setting },
-	{ path: 'updateprofile', component: ProfileEdit },
-	{ path: '', canActivate: [AuthGuard], component: Login, pathMatch: 'full' },
-	{ path: '**', component: Notfound }
+  {
+	path: '',
+	redirectTo: '/matching',
+	pathMatch: 'full'
+  },
+  {
+	path: 'login',
+	loadComponent: () => import('./components/login/login').then(m => m.Login),
+	canActivate: [PublicGuard]
+  },
+  {
+	path: 'signup',
+	loadComponent: () => import('./components/signup/signup').then(m => m.Signup),
+	canActivate: [PublicGuard]
+  },
+  {
+	path: 'chat',
+	loadComponent: () => import('./components/chat/chat').then(m => m.ChatComponent),
+	canActivate: [AuthGuard]
+  },
+  {
+	path: 'matches',
+	loadComponent: () => import('./components/matches/matches').then(m => m.Matches),
+	canActivate: [AuthGuard]
+  },
+  {
+	path: 'matching',
+	loadComponent: () => import('./components/matching/matching').then(m => m.Matching),
+	canActivate: [AuthGuard]
+  },
+  {
+	path: 'profile',
+	loadComponent: () => import('./components/profile/profile').then(m => m.Profile),
+	canActivate: [AuthGuard]
+  },
+  {
+	path: 'profile/edit',
+	loadComponent: () => import('./components/profile-edit/profile-edit').then(m => m.ProfileEdit),
+	canActivate: [AuthGuard]
+  },
+  {
+	path: 'settings',
+	loadComponent: () => import('./components/setting/setting').then(m => m.Setting),
+	canActivate: [AuthGuard]
+  },
+  {
+	path: 'forgot-password',
+	loadComponent: () => import('./components/forgot-password/forgot-password').then(m => m.ForgotPassword),
+	canActivate: [PublicGuard]
+  },
+  {
+	path: 'reset-password',
+	loadComponent: () => import('./components/reset-password/reset-password').then(m => m.ResetPassword),
+	canActivate: [PublicGuard]
+  },
+  {
+	path: 'viewers', 
+	loadComponent: () => import('./components/viewers/viewers').then(m => m.Viewers),
+	canActivate: [AuthGuard]
+  },
+  {
+	path: 'liked-by',
+	loadComponent: () => import('./components/liked-by/liked-by').then(m => m.LikedBy),
+	canActivate: [AuthGuard]
+  },
+
+  {
+	path: '**',
+	loadComponent: () => import('./components/notfound/notfound').then(m => m.Notfound)
+  }
+
+	
 ];
+
+
+

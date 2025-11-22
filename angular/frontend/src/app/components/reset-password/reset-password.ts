@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 interface ResetPasswordRequest {
@@ -12,7 +12,7 @@ interface ResetPasswordRequest {
 @Component({
 	selector: 'app-reset-password',
 	standalone: true,
-	imports: [CommonModule, FormsModule, RouterLink],
+	imports: [CommonModule, FormsModule],
 	templateUrl: './reset-password.html',
 	styleUrl: './reset-password.scss'
 })

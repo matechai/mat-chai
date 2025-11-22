@@ -13,4 +13,6 @@ public class ChatPartnerDto {
 	private String username;
 	private String lastMessage;
 	private LocalDateTime lastMessageTime;
+	private boolean unread;
+    private boolean isNew;
 }
