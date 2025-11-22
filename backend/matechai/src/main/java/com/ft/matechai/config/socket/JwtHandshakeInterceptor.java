@@ -38,16 +38,17 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                 for (Cookie c : cookies) {
                     if ("accessToken".equals(c.getName())) {
                         String token = c.getValue();
-                        if (jwtUtil.validateToken(token)) {
-                            String username = jwtUtil.getUsernameFromToken(token);
-                            User user = userRepository.findByUsernameOrThrow(username);
-                            PrincipalDetails principal = new PrincipalDetails(user);
+                        
+                        jwtUtil.validateToken(token);
+                        
+                        String username = jwtUtil.getUsernameFromToken(token);
+                        User user = userRepository.findByUsernameOrThrow(username);
+                        PrincipalDetails principal = new PrincipalDetails(user);
 
-                            UsernamePasswordAuthenticationToken auth =
-                                    new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-                            attributes.put("simpUser", auth);
-                            log.info("[WS] WebSocket handshake authenticated user: {}", username);
-                        }
+                        UsernamePasswordAuthenticationToken auth =
+                                new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+                        attributes.put("simpUser", auth);
+                        log.info("[WS] WebSocket handshake authenticated user: {}", username);
                     }
                 }
             }
