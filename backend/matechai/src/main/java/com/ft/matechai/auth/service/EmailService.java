@@ -24,17 +24,36 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
+    // public void sendVerificationEmail(String to, String token) {
+    //     String link = address + "/api/auth/verify?token=" + token;
+
+    //     SimpleMailMessage message = new SimpleMailMessage();
+    //     message.setTo(to);
+    //     message.setSubject("Verify your account");
+    //     message.setText("Click the link to verify your account: " + link);
+    //     mailSender.send(message);
+
+    //     log.info("Email verify URL : " + link);
+    // }
+    
+    @Value("${app.disable-email:false}")
+    private boolean disableEmail;
+
     public void sendVerificationEmail(String to, String token) {
         String link = address + "/api/auth/verify?token=" + token;
+
+        if (disableEmail) {
+            log.warn("⚠️ EMAIL DISABLED — Verification link for {} : {}", to, link);
+            return;
+        }
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Verify your account");
-        message.setText("Click the link to verify your account: " + link);
+        message.setText("Click the link: " + link);
         mailSender.send(message);
-
-        log.info("Email verify URL : " + link);
     }
+
 
     public void sendPasswordResetEmail(String to, String token) {
 
