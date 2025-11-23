@@ -47,7 +47,7 @@ public class JwtUtil {
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-
+            
         } catch (ExpiredJwtException e) {
             log.info("[JWT] Token expired: {}", e.getMessage());
             throw new AuthExceptions.UnauthorizedException("Token expired");

@@ -7,6 +7,9 @@ import com.ft.matechai.notification.service.NotificationService;
 import com.ft.matechai.profile.service.FameService;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
+
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +45,9 @@ public class MatchService {
             userRepository.match(user.getUsername(), targetUser.getUsername());
             fameService.receiveMatch(user);
             fameService.receiveMatch(targetUser);
-            String matchMessage = "you have matched with ";
-            notificationService.createAndSendNotification(user.getUsername(), targetUser.getUsername(), NotificationType.MATCH, user.getUsername() + matchMessage);
-            notificationService.createAndSendNotification(targetUser.getUsername(), user.getUsername(), NotificationType.MATCH, targetUser.getUsername() + matchMessage);
+            String matchMessage = " you have matched with ";
+            notificationService.createAndSendNotification(user.getUsername(), targetUser.getUsername(), NotificationType.MATCH, matchMessage + user.getUsername());
+            notificationService.createAndSendNotification(targetUser.getUsername(), user.getUsername(), NotificationType.MATCH, matchMessage + targetUser.getUsername());
 
             return LikeResponseDTO.builder()
                     .liked(true)
@@ -121,6 +124,10 @@ public class MatchService {
             String message = username + " unlike you. :( ";
             notificationService.createAndSendNotification(username, targetUsername, NotificationType.UNLIKE, message);
         }
-       
+    }
+
+    public List<User> getMatchedUsers(User user) 
+    {
+        return userRepository.findMatchedUsers(user.getUsername());
     }
 }
