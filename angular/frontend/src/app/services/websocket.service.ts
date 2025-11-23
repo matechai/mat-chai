@@ -1,17 +1,34 @@
-﻿import { Injectable, inject } from '@angular/core';
-import { Client, IMessage } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+﻿import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { ChatMessage } from '../interfaces/chat-message.model';
 import { Notification, NotificationType } from '../interfaces/notification.model';
-import { filter, startWith, shareReplay } from 'rxjs/operators';
+import { filter, shareReplay } from 'rxjs/operators';
+
+// Type definitions for WebSocket
+interface StompClient {
+  connected: boolean;
+  activate: () => void;
+  deactivate: () => void;
+  subscribe: (destination: string, callback: (message: any) => void) => any;
+  publish: (params: { destination: string; body?: string; headers?: any }) => void;
+  onConnect?: (frame: any) => void;
+}
+
+interface StompMessage {
+  body: string;
+  headers: any;
+}
+
+// Declare external libraries as any to avoid type issues
+declare const SockJS: any;
+declare const StompJs: any;
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService {
-  private stompClient: Client | null = null;
+  private stompClient: StompClient | null = null;
   private connected = new ReplaySubject<boolean>(1);
   private ready = new BehaviorSubject<boolean>(false);
   private isConnectedValue = false;
@@ -37,10 +54,10 @@ export class WebSocketService {
     return;
   }
 
-  this.stompClient = new Client({
+    this.stompClient = new StompJs.Client({
     webSocketFactory: () => new SockJS('http://localhost:8080/ws-chat'),
     connectHeaders: {},
-    debug: (str: any) => console.log('STOMP: ' + str),
+    debug: (str: string) => console.log('STOMP: ' + str),
     reconnectDelay: 5000, // Handles reconnects automatically
     heartbeatIncoming: 4000,
     heartbeatOutgoing: 4000,
@@ -72,7 +89,7 @@ export class WebSocketService {
     },
   });
 
-  this.stompClient.onConnect = (frame) => {
+    this.stompClient!.onConnect = (frame: any) => {
     console.log('✅ Connected to WebSocket:', frame.headers);
     // Subscribe just once
     if (!this.channelsSubscribed) {
@@ -81,7 +98,7 @@ export class WebSocketService {
     }
   };
 
-  this.stompClient.activate();
+    this.stompClient!.activate();
 }
 
 
@@ -97,13 +114,13 @@ export class WebSocketService {
   if (!this.stompClient) return;
   console.log('🔔 Subscribing to STOMP channels');
 
-  this.stompClient.subscribe('/user/queue/messages', (message: IMessage) => {
+    this.stompClient.subscribe('/user/queue/messages', (message: any) => {
     console.log('📨 Message received:', message.body);
     const chatMessage: ChatMessage = JSON.parse(message.body);
     this.messagesSubject.next(chatMessage);
   });
 
-  this.stompClient.subscribe('/user/queue/notifications', (message: IMessage) => {
+    this.stompClient.subscribe('/user/queue/notifications', (message: any) => {
     console.log('🔔 Notification received:', message.body);
     const notification: Notification = JSON.parse(message.body);
     this.notificationsSubject.next(notification);

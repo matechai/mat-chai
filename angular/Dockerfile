@@ -4,7 +4,10 @@ WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
 
-RUN npm install -g @angular/cli && npm install
+RUN npm install -g @angular/cli \
+	&& npm install \
+	&& npm install @stomp/stompjs sockjs-client \
+	&& npm install --save-dev @types/sockjs-client
 
 COPY frontend/ .
 
