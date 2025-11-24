@@ -24,12 +24,7 @@ export const routes: Routes = [
 	loadComponent: () => import('./components/chat/chat').then(m => m.ChatComponent),
 	canActivate: [AuthGuard]
   },
-  {
-	path: 'matches',
-	loadComponent: () => import('./components/matches/matches').then(m => m.Matches),
-	canActivate: [AuthGuard]
-  },
-  {
+	{
 	path: 'matching',
 	loadComponent: () => import('./components/matching/matching').then(m => m.Matching),
 	canActivate: [AuthGuard]
