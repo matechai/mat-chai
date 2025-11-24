@@ -336,6 +336,18 @@ export class Matching implements OnInit {
     this.showUserDetail.set(false);
   }
 
+  // Handle like from modal (matching mode)
+  async onModalLike(username: string) {
+    console.log('Modal like:', username);
+    await this.onLike(); // 기존 onLike 메서드 재사용
+  }
+
+  // Handle pass from modal (matching mode)
+  async onModalPass(username: string) {
+    console.log('Modal pass:', username);
+    await this.onPass(); // 기존 onPass 메서드 재사용
+  }
+
   // Filter functions
   toggleFilterModal() {
     console.log('toggleFilterModal called');

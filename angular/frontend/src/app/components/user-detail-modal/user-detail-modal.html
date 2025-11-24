@@ -97,6 +97,38 @@
 				</div>
 			</div>
 
+			<!-- View Mode: Like/Unlike Button -->
+			<div *ngIf="mode === 'view'" style="margin-top:1.5rem; text-align:center;">
+				<button (click)="toggleLike()" [disabled]="isLikeProcessing()"
+					[style.background]="userDetail()?.iLikeTarget ? '#f44336' : '#4CAF50'"
+					[style.opacity]="isLikeProcessing() ? '0.6' : '1'"
+					style="color:white; border:none; border-radius:24px; padding:0.75rem 2rem; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(0,0,0,0.15); width:100%; max-width:300px;"
+					[style.cursor]="isLikeProcessing() ? 'not-allowed' : 'pointer'"
+					onmouseover="if(!this.disabled) this.style.transform='translateY(-2px)'; if(!this.disabled) this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)'"
+					onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
+					<span *ngIf="!isLikeProcessing()">
+						{{ userDetail()?.iLikeTarget ? '💔 Unlike' : '❤️ Like' }}
+					</span>
+					<span *ngIf="isLikeProcessing()">Processing...</span>
+				</button>
+			</div>
+			
+			<!-- Matching Mode: Like & Pass Buttons -->
+			<div *ngIf="mode === 'matching'" style="margin-top:1.5rem; display:flex; gap:1rem; justify-content:center;">
+				<button (click)="onMatchingPass()" [disabled]="isLikeProcessing()"
+					style="background:#ff9800; color:white; border:none; border-radius:24px; padding:0.75rem 1.5rem; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex:1; max-width:150px;"
+					onmouseover="if(!this.disabled) this.style.transform='translateY(-2px)'; if(!this.disabled) this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)'"
+					onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
+					👋 Pass
+				</button>
+				<button (click)="onMatchingLike()" [disabled]="isLikeProcessing()"
+					style="background:#4CAF50; color:white; border:none; border-radius:24px; padding:0.75rem 1.5rem; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex:1; max-width:150px;"
+					onmouseover="if(!this.disabled) this.style.transform='translateY(-2px)'; if(!this.disabled) this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)'"
+					onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
+					❤️ Like
+				</button>
+			</div>
+
 		</div>
 	</div>
 </div>

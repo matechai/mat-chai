@@ -14,6 +14,7 @@ export interface UserDetail {
 	fame: number;
 	lastOnline: string;
 	distance: number;
+	iLikeTarget: boolean;
 }
 
 @Component({
@@ -27,11 +28,15 @@ export class UserDetailModal {
 	private http = inject(HttpClient);
 
 	@Input() show = false;
+	@Input() mode: 'view' | 'matching' = 'view'; // view: 일반 보기, matching: 매칭 페이지
 	@Output() showChange = new EventEmitter<boolean>();
 	@Output() close = new EventEmitter<void>();
+	@Output() like = new EventEmitter<string>(); // matching 모드에서 like 시 username 전달
+	@Output() pass = new EventEmitter<string>(); // matching 모드에서 pass 시 username 전달
 
 	loading = signal<boolean>(false);
 	userDetail = signal<UserDetail | null>(null);
+	isLikeProcessing = signal<boolean>(false);
 
 	// Load user detail by username
 	async loadUserDetail(username: string) {
@@ -54,6 +59,7 @@ export class UserDetailModal {
 						fame
 						lastOnline
 						distance
+						iLikeTarget
 					}
 				}`
 			};
@@ -165,5 +171,65 @@ export class UserDetailModal {
 			// Show whole numbers for distances 10km and above
 			return `${Math.round(distance)} km away`;
 		}
+	}
+
+	// Toggle like status (view 모드용)
+	async toggleLike() {
+		const user = this.userDetail();
+		if (!user || this.isLikeProcessing()) return;
+
+		this.isLikeProcessing.set(true);
+
+		try {
+			if (user.iLikeTarget) {
+				// Unlike: DELETE request
+				await this.http.delete(`/api/users/${user.username}/like`, {
+					withCredentials: true
+				}).toPromise();
+
+				// Update local state
+				this.userDetail.set({
+					...user,
+					iLikeTarget: false
+				});
+
+				console.log('Unliked user:', user.username);
+			} else {
+				// Like: POST request
+				await this.http.post(`/api/users/${user.username}/like`, {}, {
+					withCredentials: true
+				}).toPromise();
+
+				// Update local state
+				this.userDetail.set({
+					...user,
+					iLikeTarget: true
+				});
+
+				console.log('Liked user:', user.username);
+			}
+		} catch (error) {
+			console.error('Failed to toggle like:', error);
+		} finally {
+			this.isLikeProcessing.set(false);
+		}
+	}
+
+	// Matching 모드: Like 버튼 클릭
+	onMatchingLike() {
+		const user = this.userDetail();
+		if (!user || this.isLikeProcessing()) return;
+
+		this.like.emit(user.username);
+		this.closeModal(); // 모달 닫고 부모에서 처리
+	}
+
+	// Matching 모드: Pass 버튼 클릭
+	onMatchingPass() {
+		const user = this.userDetail();
+		if (!user || this.isLikeProcessing()) return;
+
+		this.pass.emit(user.username);
+		this.closeModal(); // 모달 닫고 부모에서 처리
 	}
 }
