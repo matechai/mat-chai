@@ -221,8 +221,7 @@ e2e/*.map
 neo4j_logs/
 
 ## Backend ##
-uploads/*
-uploads/profiles/*
+uploads/profiles/
 !uploads/profiles/1.png
 !uploads/profiles/2.png
 !uploads/profiles/3.png
