@@ -35,6 +35,7 @@ export class UserDetailModal {
 	@Output() close = new EventEmitter<void>();
 	@Output() like = new EventEmitter<string>(); // matching 모드에서 like 시 username 전달
 	@Output() pass = new EventEmitter<string>(); // matching 모드에서 pass 시 username 전달
+	@Output() likeStatusChanged = new EventEmitter<{ username: string; iLikeTarget: boolean; matched: boolean }>(); // view 모드에서 좋아요 상태 변경 시
 
 	loading = signal<boolean>(false);
 	userDetail = signal<UserDetail | null>(null);
@@ -198,19 +199,37 @@ export class UserDetailModal {
 				});
 
 				console.log('Unliked user:', user.username);
+
+				// Emit event to parent component
+				this.likeStatusChanged.emit({
+					username: user.username,
+					iLikeTarget: false,
+					matched: false
+				});
 			} else {
-				// Like: POST request
-				await this.http.post(`/api/users/${user.username}/like`, {}, {
+				// Like: POST request - response may contain matched status
+				const response = await this.http.post<{ matched?: boolean }>(`/api/users/${user.username}/like`, {}, {
 					withCredentials: true
 				}).toPromise();
+
+				// Check if matched (백엔드가 matched 값을 반환하는 경우)
+				const matched = response?.matched || false;
 
 				// Update local state
 				this.userDetail.set({
 					...user,
-					iLikeTarget: true
+					iLikeTarget: true,
+					matched: matched
 				});
 
-				console.log('Liked user:', user.username);
+				console.log('Liked user:', user.username, 'Matched:', matched);
+
+				// Emit event to parent component
+				this.likeStatusChanged.emit({
+					username: user.username,
+					iLikeTarget: true,
+					matched: matched
+				});
 			}
 		} catch (error) {
 			console.error('Failed to toggle like:', error);

@@ -262,6 +262,20 @@ export class LikedBy implements OnInit {
 		this.showUserDetail.set(false);
 	}
 
+	// Handle like status changed from modal
+	onLikeStatusChanged(event: { username: string; iLikeTarget: boolean; matched: boolean }) {
+		console.log('Like status changed:', event);
+
+		// Update the user in the list
+		this.likedByUsers.update(users =>
+			users.map(user =>
+				user.username === event.username
+					? { ...user, matched: event.matched }
+					: user
+			)
+		);
+	}
+
 	refresh() {
 		// Reset pagination state
 		this.currentPage.set(0);

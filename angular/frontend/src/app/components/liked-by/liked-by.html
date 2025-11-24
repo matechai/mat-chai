@@ -102,5 +102,6 @@
 </div>
 
 <!-- User Detail Modal -->
-<app-user-detail-modal [show]="showUserDetail()" (close)="closeUserDetailModal()">
+<app-user-detail-modal [show]="showUserDetail()" (close)="closeUserDetailModal()"
+	(likeStatusChanged)="onLikeStatusChanged($event)">
 </app-user-detail-modal>
