@@ -67,7 +67,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public void report(User user, ReportRequestDTO dto) {
+    public void reports(User user, ReportRequestDTO dto) {
 
         User targetUser = userRepository.findByUsernameOrThrow(dto.getTargetUsername());
 
