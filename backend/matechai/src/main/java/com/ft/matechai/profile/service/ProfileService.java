@@ -25,29 +25,33 @@ public class ProfileService {
     }
 
 
-    public Page<UserBasicProfileDTO> getViewers(User user, int page, int size) {
+    public Page<UserBasicProfileDTO> getViewers(User me, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return userRepository.findViewersByUserId(user.getUsername(), pageable)
+        return userRepository.findViewersByUserId(me.getUsername(), pageable)
                 .map(viewed -> new UserBasicProfileDTO(
                         viewed.getUsername(),
                         viewed.getDateOfBirth(),
                         viewed.getProfileImageUrl(),
-                        viewed.getImageUrls()
+                        viewed.getImageUrls(),
+                        userRepository.targetLikesMe(me.getUsername(), viewed.getUsername()),
+                        userRepository.isMatched(me.getUsername(), viewed.getUsername())
                 ));
     }
 
-    public Page<UserBasicProfileDTO> getUsersWhoLikedMe(User user, int page, int size) {
+    public Page<UserBasicProfileDTO> getUsersWhoLikedMe(User me, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return userRepository.findUsersWhoLikedMe(user.getUsername(), pageable)
+        return userRepository.findUsersWhoLikedMe(me.getUsername(), pageable)
                 .map(viewed -> new UserBasicProfileDTO(
                         viewed.getUsername(),
                         viewed.getDateOfBirth(),
                         viewed.getProfileImageUrl(),
-                        viewed.getImageUrls()
+                        viewed.getImageUrls(),
+                        userRepository.targetLikesMe(me.getUsername(), viewed.getUsername()),
+                        userRepository.isMatched(me.getUsername(), viewed.getUsername())
                 ));
     }
 
