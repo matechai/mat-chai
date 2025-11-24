@@ -113,8 +113,10 @@
 				</div>
 			</div>
 
-			<!-- View Mode: Like/Unlike Button -->
-			<div *ngIf="mode === 'view'" style="margin-top:1.5rem; text-align:center;">
+		<!-- View Mode: Like/Unlike Button & Report Button -->
+		<div *ngIf="mode === 'view'" style="margin-top:1.5rem;">
+			<!-- Like/Unlike Button -->
+			<div style="text-align:center; margin-bottom:1rem;">
 				<button (click)="toggleLike()" [disabled]="isLikeProcessing()"
 					[style.background]="userDetail()?.iLikeTarget ? '#f44336' : '#4CAF50'"
 					[style.opacity]="isLikeProcessing() ? '0.6' : '1'"
@@ -129,22 +131,102 @@
 				</button>
 			</div>
 			
-			<!-- Matching Mode: Like & Pass Buttons -->
-			<div *ngIf="mode === 'matching'" style="margin-top:1.5rem; display:flex; gap:1rem; justify-content:center;">
-				<button (click)="onMatchingPass()" [disabled]="isLikeProcessing()"
-					style="background:#ff9800; color:white; border:none; border-radius:24px; padding:0.75rem 1.5rem; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex:1; max-width:150px;"
-					onmouseover="if(!this.disabled) this.style.transform='translateY(-2px)'; if(!this.disabled) this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)'"
-					onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
-					👋 Pass
-				</button>
-				<button (click)="onMatchingLike()" [disabled]="isLikeProcessing()"
-					style="background:#4CAF50; color:white; border:none; border-radius:24px; padding:0.75rem 1.5rem; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex:1; max-width:150px;"
-					onmouseover="if(!this.disabled) this.style.transform='translateY(-2px)'; if(!this.disabled) this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)'"
-					onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
-					❤️ Like
-				</button>
-			</div>
-
+		<!-- Report Button -->
+		<div style="text-align:center;">
+			<button (click)="openReportModal()"
+				style="background:#ff5252; color:white; border:none; border-radius:20px; padding:0.5rem 1.5rem; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(255,82,82,0.3);"
+				onmouseover="this.style.background='#ff1744'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(255,82,82,0.4)'"
+				onmouseout="this.style.background='#ff5252'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(255,82,82,0.3)'">
+				🚫 Report User
+			</button>
+		</div>
+		</div>
+	<!-- Matching Mode: Like & Pass Buttons -->
+	<div *ngIf="mode === 'matching'" style="margin-top:1.5rem;">
+		<div style="display:flex; gap:1rem; justify-content:center; margin-bottom:1rem;">
+			<button (click)="onMatchingPass()" [disabled]="isLikeProcessing()"
+				style="background:#ff9800; color:white; border:none; border-radius:24px; padding:0.75rem 1.5rem; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex:1; max-width:150px;"
+				onmouseover="if(!this.disabled) this.style.transform='translateY(-2px)'; if(!this.disabled) this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)'"
+				onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
+				👋 Pass
+			</button>
+			<button (click)="onMatchingLike()" [disabled]="isLikeProcessing()"
+				style="background:#4CAF50; color:white; border:none; border-radius:24px; padding:0.75rem 1.5rem; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex:1; max-width:150px;"
+				onmouseover="if(!this.disabled) this.style.transform='translateY(-2px)'; if(!this.disabled) this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)'"
+				onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
+				❤️ Like
+			</button>
+		</div>
+		<!-- Report Button for Matching Mode -->
+		<div style="text-align:center;">
+			<button (click)="openReportModal()"
+				style="background:#ff5252; color:white; border:none; border-radius:20px; padding:0.5rem 1.5rem; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(255,82,82,0.3);"
+				onmouseover="this.style.background='#ff1744'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(255,82,82,0.4)'"
+				onmouseout="this.style.background='#ff5252'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(255,82,82,0.3)'">
+				🚫 Report User
+			</button>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		<!-- Report Modal -->
+		<div *ngIf="showReportModal()"
+			style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1001; display:flex; align-items:center; justify-content:center; padding:20px;"
+			(click)="closeReportModal()">
+		
+			<div style="background:white; border-radius:16px; max-width:500px; width:100%; padding:2rem; box-shadow:0 8px 32px rgba(0,0,0,0.3);"
+				(click)="$event.stopPropagation()">
+		
+				<!-- Report Modal Header -->
+				<div style="margin-bottom:1.5rem;">
+					<h3 style="margin:0 0 0.5rem 0; color:#333; font-size:22px; font-weight:600;">🚫 Report User</h3>
+					<p style="margin:0; color:#666; font-size:14px;">Please provide a reason for reporting this user. Your
+						report will be reviewed by our team.</p>
+				</div>
+		
+				<!-- User Info -->
+				<div *ngIf="userDetail()"
+					style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1.5rem; border-left:4px solid #ff5252;">
+					<div style="font-weight:600; color:#333; margin-bottom:0.25rem;">Reporting:</div>
+					<div style="color:#666; font-size:14px;">@{{ userDetail()?.username }} ({{ userDetail()?.firstName }} {{
+						userDetail()?.lastName }})</div>
+				</div>
+		
+				<!-- Reason Input -->
+				<div style="margin-bottom:1.5rem;">
+					<label style="display:block; color:#333; font-weight:600; margin-bottom:0.5rem; font-size:14px;">
+						Reason for Report <span style="color:#ff5252;">*</span>
+					</label>
+					<textarea [(ngModel)]="reportReason"
+						placeholder="Please describe why you are reporting this user (e.g., inappropriate behavior, harassment, fake profile, etc.)"
+						rows="5"
+						style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:14px; font-family:inherit; resize:vertical; box-sizing:border-box;"
+						[style.border-color]="reportReason().trim() ? '#4CAF50' : '#ddd'"></textarea>
+					<div style="text-align:right; margin-top:0.25rem; font-size:12px; color:#999;">
+						{{ reportReason().length }} characters
+					</div>
+				</div>
+		
+				<!-- Action Buttons -->
+				<div style="display:flex; gap:1rem; justify-content:flex-end;">
+					<button (click)="closeReportModal()" [disabled]="isReportProcessing()"
+						style="background:#e0e0e0; color:#333; border:none; border-radius:8px; padding:0.75rem 1.5rem; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s;"
+						[style.opacity]="isReportProcessing() ? '0.5' : '1'"
+						[style.cursor]="isReportProcessing() ? 'not-allowed' : 'pointer'"
+						onmouseover="if(!this.disabled) this.style.background='#d5d5d5'"
+						onmouseout="this.style.background='#e0e0e0'">
+						Cancel
+					</button>
+					<button (click)="submitReport()" [disabled]="!reportReason().trim() || isReportProcessing()"
+						[style.opacity]="!reportReason().trim() || isReportProcessing() ? '0.5' : '1'"
+						[style.cursor]="!reportReason().trim() || isReportProcessing() ? 'not-allowed' : 'pointer'"
+						style="background:#ff5252; color:white; border:none; border-radius:8px; padding:0.75rem 1.5rem; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(255,82,82,0.3);"
+						onmouseover="if(!this.disabled) this.style.background='#ff1744'; if(!this.disabled) this.style.boxShadow='0 4px 12px rgba(255,82,82,0.4)'"
+						onmouseout="this.style.background='#ff5252'; this.style.boxShadow='0 2px 8px rgba(255,82,82,0.3)'">
+						<span *ngIf="!isReportProcessing()">Submit Report</span>
+						<span *ngIf="isReportProcessing()">Submitting...</span>
+					</button>
 		</div>
 	</div>
 </div>

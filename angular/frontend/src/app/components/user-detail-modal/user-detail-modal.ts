@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 export interface UserDetail {
@@ -22,7 +23,7 @@ export interface UserDetail {
 @Component({
 	selector: 'app-user-detail-modal',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule, FormsModule],
 	templateUrl: './user-detail-modal.html',
 	styleUrl: './user-detail-modal.scss'
 })
@@ -40,6 +41,9 @@ export class UserDetailModal {
 	loading = signal<boolean>(false);
 	userDetail = signal<UserDetail | null>(null);
 	isLikeProcessing = signal<boolean>(false);
+	showReportModal = signal<boolean>(false);
+	reportReason = signal<string>('');
+	isReportProcessing = signal<boolean>(false);
 
 	// Load user detail by username
 	async loadUserDetail(username: string) {
@@ -254,5 +258,53 @@ export class UserDetailModal {
 
 		this.pass.emit(user.username);
 		this.closeModal(); // 모달 닫고 부모에서 처리
+	}
+
+	// Open report modal
+	openReportModal() {
+		this.showReportModal.set(true);
+		this.reportReason.set('');
+	}
+
+	// Close report modal
+	closeReportModal() {
+		this.showReportModal.set(false);
+		this.reportReason.set('');
+	}
+
+	// Submit report
+	async submitReport() {
+		const user = this.userDetail();
+		const reason = this.reportReason().trim();
+
+		if (!user || !reason) {
+			alert('Please enter a reason for reporting.');
+			return;
+		}
+
+		if (this.isReportProcessing()) return;
+
+		this.isReportProcessing.set(true);
+
+		try {
+			await this.http.post('/api/reports', {
+				targetUsername: user.username,
+				reason: reason
+			}, {
+				withCredentials: true,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).toPromise();
+
+			console.log('Report submitted successfully for:', user.username);
+			alert('Report submitted successfully. Thank you for helping keep our community safe.');
+			this.closeReportModal();
+		} catch (error) {
+			console.error('Failed to submit report:', error);
+			alert('Failed to submit report. Please try again.');
+		} finally {
+			this.isReportProcessing.set(false);
+		}
 	}
 }
