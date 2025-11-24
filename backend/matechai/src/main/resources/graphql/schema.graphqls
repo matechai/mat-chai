@@ -18,6 +18,7 @@ type User {
     distance: Float
 
     targetLikesMe: Boolean
+    iLikeTarget: Boolean
     matched: Boolean
     enabled: Boolean
 }

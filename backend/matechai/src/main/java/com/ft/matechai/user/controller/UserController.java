@@ -102,6 +102,12 @@ public class UserController {
         return userService.getTargetLikesMe(targetUser.getUsername());
     }
 
+    @SchemaMapping(typeName = "User", field = "iLikeTarget")
+    public Boolean getILikeTarget(User targetUser) {
+
+        return userService.getILikeTarget(targetUser.getUsername());
+    }
+
     @SchemaMapping(typeName = "User", field = "matched")
     public Boolean getMatched(User targetUser) {
 

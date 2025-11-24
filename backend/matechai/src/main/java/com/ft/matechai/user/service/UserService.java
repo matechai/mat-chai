@@ -101,6 +101,12 @@ public class UserService {
         return userRepository.targetLikesMe(me.getUsername(), targetUsername);
     }
 
+    public Boolean getILikeTarget(String targetUsername) {
+
+        User me = ((PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        return userRepository.iLikeTarget(me.getUsername(), targetUsername);
+    }
+
     public Boolean getMatched(String targetUsername) {
 
         User me = ((PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
