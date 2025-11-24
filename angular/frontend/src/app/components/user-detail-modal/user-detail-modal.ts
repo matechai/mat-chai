@@ -1,0 +1,169 @@
+import { Component, EventEmitter, Input, Output, signal, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+
+export interface UserDetail {
+	username: string;
+	dateOfBirth: string;
+	firstName: string;
+	lastName: string;
+	biography: string;
+	interests: string[];
+	profileImageUrl: string;
+	imageUrls: string[];
+	fame: number;
+	lastOnline: string;
+	distance: number;
+}
+
+@Component({
+	selector: 'app-user-detail-modal',
+	standalone: true,
+	imports: [CommonModule],
+	templateUrl: './user-detail-modal.html',
+	styleUrl: './user-detail-modal.scss'
+})
+export class UserDetailModal {
+	private http = inject(HttpClient);
+
+	@Input() show = false;
+	@Output() showChange = new EventEmitter<boolean>();
+	@Output() close = new EventEmitter<void>();
+
+	loading = signal<boolean>(false);
+	userDetail = signal<UserDetail | null>(null);
+
+	// Load user detail by username
+	async loadUserDetail(username: string) {
+		console.log('Loading user detail for:', username);
+		this.loading.set(true);
+
+		try {
+			// GraphQL query to get detailed user information
+			const query = {
+				query: `query {
+					getUserByUsername(username: "${username}") {
+						username
+						dateOfBirth
+						firstName
+						lastName
+						biography
+						interests
+						profileImageUrl
+						imageUrls
+						fame
+						lastOnline
+						distance
+					}
+				}`
+			};
+
+			const response = await this.http.post<{ data: { getUserByUsername: UserDetail } }>('/api/graphql', query, {
+				withCredentials: true,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).toPromise();
+
+			if (response?.data?.getUserByUsername) {
+				this.userDetail.set(response.data.getUserByUsername);
+				console.log('User detail loaded:', response.data.getUserByUsername);
+			}
+		} catch (error) {
+			console.error('Failed to load user detail:', error);
+		} finally {
+			this.loading.set(false);
+		}
+	}
+
+	// Close modal
+	closeModal() {
+		this.show = false;
+		this.showChange.emit(false);
+		this.close.emit();
+		this.userDetail.set(null);
+	}
+
+	// Calculate age from date of birth
+	calculateAge(dateOfBirth: string): number {
+		if (!dateOfBirth) return 0;
+
+		const today = new Date();
+		const birthDate = new Date(dateOfBirth);
+		let age = today.getFullYear() - birthDate.getFullYear();
+		const monthDiff = today.getMonth() - birthDate.getMonth();
+
+		if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+			age--;
+		}
+
+		return age;
+	}
+
+	// Convert backend path to nginx static file path
+	convertImagePath(imagePath: string): string {
+		if (!imagePath) return '';
+		return imagePath.replace('/app/uploads/', '/uploads/');
+	}
+
+	// Format last online time
+	formatLastOnline(lastOnline: string): string {
+		if (!lastOnline) return 'Unknown';
+
+		const lastOnlineDate = new Date(lastOnline);
+		const now = new Date();
+		const diffInMs = now.getTime() - lastOnlineDate.getTime();
+		const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+		const diffInHours = Math.floor(diffInMinutes / 60);
+		const diffInDays = Math.floor(diffInHours / 24);
+
+		if (diffInMinutes < 1) {
+			return 'Just now';
+		} else if (diffInMinutes < 60) {
+			return `${diffInMinutes} min${diffInMinutes > 1 ? 's' : ''} ago`;
+		} else if (diffInHours < 24) {
+			return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+		} else if (diffInDays < 7) {
+			return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+		} else {
+			return lastOnlineDate.toLocaleDateString();
+		}
+	}
+
+	// Get fame level description
+	getFameLevel(fame: number): string {
+		// Convert 0-15 scale to 0-100 scale for display
+		const famePercent = Math.round((fame / 15) * 100);
+
+		if (famePercent >= 80) return '⭐⭐⭐⭐⭐ Celebrity';
+		if (famePercent >= 60) return '⭐⭐⭐⭐ Popular';
+		if (famePercent >= 40) return '⭐⭐⭐ Well-known';
+		if (famePercent >= 20) return '⭐⭐ Rising';
+		return '⭐ Newcomer';
+	}
+
+	// Get fame percentage
+	getFamePercentage(fame: number): number {
+		return Math.round((fame / 15) * 100);
+	}
+
+	// Format distance
+	formatDistance(distance: number): string {
+		if (!distance && distance !== 0) return 'Distance unknown';
+
+		if (distance < 0.1) {
+			// Show "Nearby" for distances less than 100m
+			return 'Nearby';
+		} else if (distance < 1) {
+			// Show meters for distances less than 1km but more than 100m
+			const meters = Math.round(distance * 1000);
+			return `${meters}m away`;
+		} else if (distance < 10) {
+			// Show one decimal place for distances less than 10km
+			return `${distance.toFixed(1)} km away`;
+		} else {
+			// Show whole numbers for distances 10km and above
+			return `${Math.round(distance)} km away`;
+		}
+	}
+}

@@ -1,26 +1,13 @@
-import { Component, OnInit, inject, signal, HostListener } from '@angular/core';
+import { Component, OnInit, inject, signal, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { UserDetailModal } from '../user-detail-modal/user-detail-modal';
 
 interface UserBasicProfile {
 	username: string;
 	dateOfBirth: string;
 	profileImage: string;
 	imageUrls: string[];
-}
-
-interface UserDetail {
-	username: string;
-	dateOfBirth: string;
-	firstName: string;
-	lastName: string;
-	biography: string;
-	interests: string[];
-	profileImageUrl: string;
-	imageUrls: string[];
-	fame: number;
-	lastOnline: string;
-	distance: number;
 }
 
 interface ViewersResponse {
@@ -43,12 +30,14 @@ interface ViewersResponse {
 }@Component({
 	selector: 'app-viewers',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule, UserDetailModal],
 	templateUrl: './viewers.html',
 	styleUrl: './viewers.scss'
 })
 export class Viewers implements OnInit {
 	private http = inject(HttpClient);
+
+	@ViewChild(UserDetailModal) userDetailModal?: UserDetailModal;
 
 	// Signals for state management
 	viewers = signal<UserBasicProfile[]>([]);
@@ -62,9 +51,7 @@ export class Viewers implements OnInit {
 	currentImageIndexes = signal<{ [username: string]: number }>({});
 
 	// User detail modal state
-	showUserDetail = signal<boolean>(false);
-	userDetail = signal<UserDetail | null>(null);
-	loadingUserDetail = signal<boolean>(false); ngOnInit() {
+	showUserDetail = signal<boolean>(false); ngOnInit() {
 		console.log('Viewers component initialized');
 		this.loadViewers();
 	}
@@ -219,94 +206,14 @@ export class Viewers implements OnInit {
 
 	// Show user detail modal
 	async showUserDetailModal(username: string) {
-		console.log('Opening user detail for:', username);
 		this.showUserDetail.set(true);
-		this.loadingUserDetail.set(true);
-
-		try {
-			// GraphQL query to get detailed user information
-			const query = {
-				query: `query {getUserByUsername(username: "${username}") { username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline distance } }`
-			};
-
-			const response = await this.http.post<{ data: { getUserByUsername: UserDetail } }>('/api/graphql', query, {
-				withCredentials: true,
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			}).toPromise();
-
-			if (response?.data?.getUserByUsername) {
-				this.userDetail.set(response.data.getUserByUsername);
-				console.log('User detail loaded:', response.data.getUserByUsername);
-			}
-		} catch (error) {
-			console.error('Failed to load user detail:', error);
-		} finally {
-			this.loadingUserDetail.set(false);
+		if (this.userDetailModal) {
+			await this.userDetailModal.loadUserDetail(username);
 		}
 	}
 
 	// Close user detail modal
 	closeUserDetailModal() {
 		this.showUserDetail.set(false);
-		this.userDetail.set(null);
-	}
-
-	// Format last online time
-	formatLastOnline(lastOnline: string): string {
-		if (!lastOnline) return 'Unknown';
-
-		const date = new Date(lastOnline);
-		const now = new Date();
-		const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-
-		if (diffInMinutes < 1) return 'Just now';
-		if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
-
-		const diffInHours = Math.floor(diffInMinutes / 60);
-		if (diffInHours < 24) return `${diffInHours} hours ago`;
-
-		const diffInDays = Math.floor(diffInHours / 24);
-		if (diffInDays < 7) return `${diffInDays} days ago`;
-
-		return date.toLocaleDateString();
-	}
-
-	// Get fame level description
-	getFameLevel(fame: number): string {
-		// Convert 0-15 scale to 0-100 scale for display
-		const famePercent = Math.round((fame / 15) * 100);
-
-		if (famePercent >= 80) return '⭐⭐⭐⭐⭐ Celebrity';
-		if (famePercent >= 60) return '⭐⭐⭐⭐ Popular';
-		if (famePercent >= 40) return '⭐⭐⭐ Well-known';
-		if (famePercent >= 20) return '⭐⭐ Rising';
-		return '⭐ Newcomer';
-	}
-
-	// Get fame percentage (0-100) from 0-15 scale
-	getFamePercentage(fame: number): number {
-		return Math.round((fame / 15) * 100);
-	}
-
-	// Format distance for display
-	formatDistance(distance: number): string {
-		if (!distance && distance !== 0) return 'Distance unknown';
-
-		if (distance < 0.1) {
-			// Show "Nearby" for distances less than 100m
-			return 'Nearby';
-		} else if (distance < 1) {
-			// Show meters for distances less than 1km but more than 100m
-			const meters = Math.round(distance * 1000);
-			return `${meters}m away`;
-		} else if (distance < 10) {
-			// Show one decimal place for distances less than 10km
-			return `${distance.toFixed(1)} km away`;
-		} else {
-			// Show whole numbers for distances 10km and above
-			return `${Math.round(distance)} km away`;
-		}
 	}
 }
