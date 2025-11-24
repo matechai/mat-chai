@@ -94,10 +94,10 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     @Query ("""
                 MATCH (target:User {username: $targetUsername})-[r:LIKED]->(me:User {username: $username})
-                RETURN COUNT(r) > 0 AS isLiked
+                RETURN COUNT(r) > 0 AS targetLikesMe
             """)
     boolean targetLikesMe(@Param("username") String username,
-                    @Param("targetUsername") String targetUsername);
+                          @Param("targetUsername") String targetUsername);
 
     @Query (
             value = """
