@@ -134,8 +134,10 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                @Param("targetUsername") String targetUsername);
 
     @Query ("""
-                MATCH (u1:User {username: $username})-[r:MATCHED]-(u2:User {username: $targetUsername})
-                RETURN COUNT(r) > 0
+                MATCH (a:User {username:$username})
+                MATCH (b:User {username:$targetUsername})
+                RETURN EXISTS((a)-[:MATCHED]->(b))
+                    OR EXISTS((b)-[:MATCHED]->(a)) AS isMatched;
             """)
     boolean isMatched(@Param("username") String username,
                       @Param("targetUsername") String targetUsername);
