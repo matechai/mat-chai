@@ -96,10 +96,10 @@ public class UserController {
         return userService.getInterests(user.getUsername());
     }
 
-    @SchemaMapping(typeName = "User", field = "liked")
-    public Boolean getLiked(User targetUser) {
+    @SchemaMapping(typeName = "User", field = "targetLikesMe")
+    public Boolean getTargetLikesMe(User targetUser) {
 
-        return userService.getLiked(targetUser.getUsername());
+        return userService.getTargetLikesMe(targetUser.getUsername());
     }
 
     @SchemaMapping(typeName = "User", field = "matched")

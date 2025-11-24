@@ -17,7 +17,7 @@ type User {
     lastOnline: DateTime
     distance: Float
 
-    liked: Boolean      # Whether the target has liked me
+    targetLikesMe: Boolean
     matched: Boolean
     enabled: Boolean
 }

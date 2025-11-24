@@ -12,7 +12,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 
@@ -97,7 +96,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                 MATCH (target:User {username: $targetUsername})-[r:LIKED]->(me:User {username: $username})
                 RETURN COUNT(r) > 0 AS isLiked
             """)
-    boolean isLiked(@Param("username") String username,
+    boolean targetLikesMe(@Param("username") String username,
                     @Param("targetUsername") String targetUsername);
 
     @Query (
