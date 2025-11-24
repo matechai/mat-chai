@@ -10,6 +10,7 @@ interface User {
   dateOfBirth: string;
   profileImage: string;
   imageUrls: string[];
+  targetLikesMe?: boolean;
 }
 
 interface MatchingResponse {

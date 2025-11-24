@@ -8,6 +8,8 @@ interface UserBasicProfile {
 	dateOfBirth: string;
 	profileImage: string;
 	imageUrls: string[];
+	matched?: boolean;
+	targetLikesMe?: boolean;
 }
 
 interface ViewersResponse {

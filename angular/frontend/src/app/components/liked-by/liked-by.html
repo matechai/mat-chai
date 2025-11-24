@@ -31,16 +31,20 @@
 			style="background:white; border:1px solid #ddd; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:transform 0.2s, box-shadow 0.2s; cursor:pointer; position:relative;"
 			onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)'"
 			onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
-			title="Click to view profile details">
+		title="Click to view profile details">
 
-			<!-- Like Badge -->
-			<div
-				style="position:absolute; top:10px; right:10px; background:rgba(255,20,147,0.9); color:white; padding:6px 12px; border-radius:20px; font-size:14px; font-weight:600; z-index:10; backdrop-filter:blur(5px);">
-				💖 LIKED
-			</div>
+	<!-- Status Badge -->
+	<div *ngIf="user.matched"
+		style="position:absolute; top:10px; right:10px; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:6px 12px; border-radius:20px; font-size:14px; font-weight:600; z-index:10; backdrop-filter:blur(5px); box-shadow:0 4px 12px rgba(102,126,234,0.4);">
+		💑 MATCHED
+	</div>
+	<div *ngIf="!user.matched"
+		style="position:absolute; top:10px; right:10px; background:rgba(255,20,147,0.9); color:white; padding:6px 12px; border-radius:20px; font-size:14px; font-weight:600; z-index:10; backdrop-filter:blur(5px); box-shadow:0 4px 12px rgba(255,20,147,0.4);">
+		💖 LIKED
+	</div>
 
-			<!-- Image Carousel -->
-			<div style="position:relative; height:300px; overflow:hidden;">
+	<!-- Image Carousel -->
+	<div style="position:relative; height:300px; overflow:hidden;">
 				<!-- Main Image -->
 				<img [src]="getCurrentImageUrl(user) || '/uploads/default-avatar.png'" [alt]="user.username + ' photo'"
 					style="width:100%; height:100%; object-fit:cover;"

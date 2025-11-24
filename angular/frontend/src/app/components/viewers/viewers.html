@@ -26,21 +26,30 @@
 <div *ngIf="viewers().length > 0" style="max-width:800px; margin:2rem auto; padding:0 1rem;">
 	<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1.5rem;">
 
-		<!-- Viewer Card -->
-		<div *ngFor="let viewer of viewers()" (click)="showUserDetailModal(viewer.username)"
-			style="background:white; border:1px solid #ddd; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:transform 0.2s, box-shadow 0.2s; cursor:pointer;"
-			onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)'"
-			onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
-			title="Click to view profile details">
+	<!-- Viewer Card -->
+	<div *ngFor="let viewer of viewers()" (click)="showUserDetailModal(viewer.username)"
+		style="background:white; border:1px solid #ddd; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:transform 0.2s, box-shadow 0.2s; cursor:pointer; position:relative;"
+		onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)'"
+		onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+		title="Click to view profile details">
 
-			<!-- Image Carousel -->
-			<div style="position:relative; height:300px; overflow:hidden;">
-				<!-- Main Image -->
-				<img [src]="getUserImages(viewer)[getCurrentImageIndex(viewer.username)]"
-					[alt]="viewer.username + ' photo'" style="width:100%; height:100%; object-fit:cover;"
-					onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+	<!-- Status Badge -->
+	<div *ngIf="viewer.matched"
+		style="position:absolute; top:10px; right:10px; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:6px 12px; border-radius:20px; font-size:14px; font-weight:600; z-index:10; backdrop-filter:blur(5px); box-shadow:0 4px 12px rgba(102,126,234,0.4);">
+		💑 MATCHED
+	</div>
+	<div *ngIf="!viewer.matched && viewer.targetLikesMe"
+		style="position:absolute; top:10px; right:10px; background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color:white; padding:6px 12px; border-radius:20px; font-size:14px; font-weight:600; z-index:10; backdrop-filter:blur(5px); box-shadow:0 4px 12px rgba(240,147,251,0.4);">
+		💝 LIKES YOU
+	</div>
 
-				<!-- Navigation Arrows (only show if multiple images) -->
+	<!-- Image Carousel -->
+	<div style="position:relative; height:300px; overflow:hidden;">
+		<!-- Main Image -->
+		<img [src]="getUserImages(viewer)[getCurrentImageIndex(viewer.username)]" [alt]="viewer.username + ' photo'"
+			style="width:100%; height:100%; object-fit:cover;"
+			onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+		<!-- Navigation Arrows (only show if multiple images) -->
 				<div *ngIf="getUserImages(viewer).length > 1">
 					<!-- Left Arrow -->
 					<button (click)="previousImage(viewer); $event.stopPropagation()"

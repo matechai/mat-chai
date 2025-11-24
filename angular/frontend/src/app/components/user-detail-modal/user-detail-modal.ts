@@ -15,6 +15,8 @@ export interface UserDetail {
 	lastOnline: string;
 	distance: number;
 	iLikeTarget: boolean;
+	matched: boolean;
+	targetLikesMe: boolean;
 }
 
 @Component({
@@ -60,6 +62,8 @@ export class UserDetailModal {
 						lastOnline
 						distance
 						iLikeTarget
+						matched
+						targetLikesMe
 					}
 				}`
 			};

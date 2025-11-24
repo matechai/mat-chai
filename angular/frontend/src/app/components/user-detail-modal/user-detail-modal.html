@@ -44,6 +44,22 @@
 				</p>
 			</div>
 
+			<!-- Match Status Badge -->
+			<div *ngIf="userDetail()?.matched"
+				style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:0.75rem 1rem; border-radius:12px; margin-bottom:1rem; text-align:center; box-shadow:0 4px 12px rgba(102,126,234,0.3);">
+				<div style="font-size:20px; margin-bottom:0.25rem;">💑</div>
+				<div style="font-weight:600; font-size:16px;">It's a Match!</div>
+				<div style="font-size:14px; opacity:0.9; margin-top:0.25rem;">You both like each other</div>
+			</div>
+			
+			<!-- Target Likes Me Badge (not matched yet) -->
+			<div *ngIf="!userDetail()?.matched && userDetail()?.targetLikesMe"
+				style="background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color:white; padding:0.75rem 1rem; border-radius:12px; margin-bottom:1rem; text-align:center; box-shadow:0 4px 12px rgba(245,87,108,0.3);">
+				<div style="font-size:20px; margin-bottom:0.25rem;">💝</div>
+				<div style="font-weight:600; font-size:16px;">{{ userDetail()?.firstName }} likes you!</div>
+				<div style="font-size:14px; opacity:0.9; margin-top:0.25rem;">Like back to make it a match</div>
+			</div>
+
 			<!-- Fame Score -->
 			<div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center;">
 				<div style="color:#333; font-weight:600; margin-bottom:0.5rem;">Fame Level</div>

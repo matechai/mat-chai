@@ -9,6 +9,7 @@ interface LikedByUser {
 	dateOfBirth: string;
 	profileImage?: string;
 	imageUrls?: string[];
+	matched?: boolean;
 }
 
 interface LikedByResponse {
