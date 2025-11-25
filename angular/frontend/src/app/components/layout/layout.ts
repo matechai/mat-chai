@@ -152,7 +152,7 @@ export class LayoutComponent implements OnInit {
 	}
 
 	navigateToSettings() {
-		this.navigateWithAuthCheck(['/setting']);
+		this.navigateWithAuthCheck(['/settings']);
 	}
 
 	navigateToViewers() {
