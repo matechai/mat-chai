@@ -93,7 +93,14 @@ export class Login {
             this.isLoading = false;
             console.log('Login failed:', err);
             if (err.status === 403) {
-              this.showAlert('❌ Email verification required. Please check your email and verify your account before logging in.', 'error');
+              // Check if the error message indicates the user is banned
+              const errorMessage = err.error?.message || '';
+              if (errorMessage === 'User is banned') {
+                this.showAlert('🚫 Your account has been banned. Please contact support for more information.', 'error');
+              } else {
+                // Email verification required
+                this.showAlert('❌ Email verification required. Please check your email and verify your account before logging in.', 'error');
+              }
             } else if (err.status === 401) {
               this.showAlert('❌ Login failed. Invalid username or password. Please try again.', 'error');
             } else {
