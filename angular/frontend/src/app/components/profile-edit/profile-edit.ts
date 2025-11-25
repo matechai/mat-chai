@@ -80,7 +80,7 @@ export class ProfileEdit implements OnInit {
 				sessionStorage.setItem('username', user.username);
 			},
 			error: (error: any) => {
-				console.error('❌ Error loading current user from GraphQL:', error);
+				// console.error('❌ Error loading current user from GraphQL:', error);
 
 				// Clear potentially stale cache
 				this.authService.clearUserCache();
@@ -100,17 +100,17 @@ export class ProfileEdit implements OnInit {
 	loadOptions(): void {
 		this.userService.getGenders().subscribe({
 			next: (data: string[]) => this.genders.set(data),
-			error: (error: any) => console.error('Error loading genders:', error)
+			// error: (error: any) => console.error('Error loading genders:', error)
 		});
 
 		this.userService.getSexualPreferences().subscribe({
 			next: (data: string[]) => this.sexualPrefs.set(data),
-			error: (error: any) => console.error('Error loading sexual preferences:', error)
+			// error: (error: any) => console.error('Error loading sexual preferences:', error)
 		});
 
 		this.userService.getInterests().subscribe({
 			next: (data: string[]) => this.interests.set(data),
-			error: (error: any) => console.error('Error loading interests:', error)
+			// error: (error: any) => console.error('Error loading interests:', error)
 		});
 	}
 
@@ -144,7 +144,7 @@ export class ProfileEdit implements OnInit {
 				}
 			},
 			error: (error: any) => {
-				console.error('Error loading existing profile:', error);
+				// console.error('Error loading existing profile:', error);
 				// Don't show error to user - just use empty defaults
 			}
 		});
@@ -173,7 +173,7 @@ export class ProfileEdit implements OnInit {
 				console.log('Loading existing images as real files:', loadedPhotos);
 				this.selectedPhotos.set(loadedPhotos);
 			}).catch((error) => {
-				console.error('Failed to load existing images:', error);
+				// console.error('Failed to load existing images:', error);
 			});
 		}
 	}
@@ -186,7 +186,7 @@ export class ProfileEdit implements OnInit {
 			const file = new File([blob], filename, { type: blob.type });
 			return { file, preview: url };
 		} catch (error) {
-			console.error('Failed to convert URL to file:', url, error);
+			// console.error('Failed to convert URL to file:', url, error);
 			// Fallback to empty file
 			const emptyFile = new File([''], filename, { type: 'image/jpeg' });
 			return { file: emptyFile, preview: url };
@@ -287,7 +287,7 @@ export class ProfileEdit implements OnInit {
 				this.router.navigate(['/matching']);
 			},
 			error: (error: any) => {
-				console.error('Profile update error:', error);
+				// console.error('Profile update error:', error);
 				this.errorMessage.set('Profile update failed. Please try again.');
 				this.isLoading.set(false);
 			}
@@ -477,12 +477,12 @@ export class ProfileEdit implements OnInit {
 				console.log(`⚠️ Incomplete response from ${service.name}:`, response);
 
 			} catch (error) {
-				console.error(`❌ Request to ${service.name} failed:`, error);
+				// console.error(`❌ Request to ${service.name} failed:`, error);
 				// Continue to next service
 			}
 		}
 
-		console.error('❌ All IP geolocation services failed');
+		// console.error('❌ All IP geolocation services failed');
 		return null;
 	}
 
@@ -490,7 +490,7 @@ export class ProfileEdit implements OnInit {
 	private async sendLocationDataWithIP(): Promise<void> {
 		const username = this.currentUsername();
 		if (!username) {
-			console.error('❌ No username available');
+			// console.error('❌ No username available');
 			return;
 		}
 
@@ -515,7 +515,7 @@ export class ProfileEdit implements OnInit {
 				this.locationRequestCompleted.set(true);
 			},
 			error: (error: any) => {
-				console.error('❌ Location data transmission failed:', error);
+				// console.error('❌ Location data transmission failed:', error);
 				this.locationRequestInProgress.set(false);
 				this.locationRequestCompleted.set(true);
 			}
@@ -527,7 +527,7 @@ export class ProfileEdit implements OnInit {
 
 		const username = this.currentUsername();
 		if (!username) {
-			console.error('❌ No username available');
+			// console.error('❌ No username available');
 			return;
 		}
 
@@ -545,7 +545,7 @@ export class ProfileEdit implements OnInit {
 				this.locationRequestCompleted.set(true);
 			},
 			error: (error: any) => {
-				console.error('❌ Location data transmission failed:', error);
+				// console.error('❌ Location data transmission failed:', error);
 				this.locationRequestInProgress.set(false);
 				this.locationRequestCompleted.set(true);
 			}

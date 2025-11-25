@@ -171,7 +171,7 @@ export class Viewers implements OnInit {
 				this.currentImageIndexes.set(indexes);
 			}
 		} catch (error) {
-			console.error('Failed to load viewers:', error);
+			// console.error('Failed to load viewers:', error);
 		} finally {
 			this.isLoading.set(false);
 		}

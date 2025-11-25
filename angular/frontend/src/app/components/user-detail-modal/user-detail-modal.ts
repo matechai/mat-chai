@@ -90,7 +90,7 @@ export class UserDetailModal {
 				console.log('User detail loaded:', response.data.getUserByUsername);
 			}
 		} catch (error) {
-			console.error('Failed to load user detail:', error);
+			// console.error('Failed to load user detail:', error);
 		} finally {
 			this.loading.set(false);
 		}
@@ -259,7 +259,7 @@ export class UserDetailModal {
 				});
 			}
 		} catch (error) {
-			console.error('Failed to toggle like:', error);
+			// console.error('Failed to toggle like:', error);
 		} finally {
 			this.isLikeProcessing.set(false);
 		}
@@ -324,7 +324,7 @@ export class UserDetailModal {
 			this.showAlert('Report submitted successfully. Thank you for helping keep our community safe.', 'success');
 			this.closeReportModal();
 		} catch (error) {
-			console.error('Failed to submit report:', error);
+			// console.error('Failed to submit report:', error);
 			this.showAlert('Failed to submit report. Please try again.', 'error');
 		} finally {
 			this.isReportProcessing.set(false);
@@ -366,7 +366,7 @@ export class UserDetailModal {
 				this.closeModal();
 			}, 1500);
 		} catch (error) {
-			console.error('Failed to block user:', error);
+			// console.error('Failed to block user:', error);
 			this.showAlert('Failed to block user. Please try again.', 'error');
 		} finally {
 			this.isBlockProcessing.set(false);

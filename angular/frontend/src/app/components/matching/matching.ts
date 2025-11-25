@@ -138,7 +138,7 @@ export class Matching implements OnInit {
     // Load available interests from GraphQL
     this.userService.getInterests().subscribe({
       next: (data: string[]) => this.availableInterests.set(data),
-      error: (error: any) => console.error('Error loading interests:', error)
+      // error: (error: any) => console.error('Error loading interests:', error)
     });
 
     // 약간의 지연 후 로딩 시작 (컴포넌트 완전 초기화 대기)
@@ -232,12 +232,12 @@ export class Matching implements OnInit {
         this.noMoreProfiles.set(true);
       }
     } catch (error) {
-      console.error('Failed to load profile:', error);
-      console.error('Error details:', {
-        message: (error as any)?.message,
-        status: (error as any)?.status,
-        url: (error as any)?.url
-      });
+      // console.error('Failed to load profile:', error);
+      // console.error('Error details:', {
+      //   message: (error as any)?.message,
+      //   status: (error as any)?.status,
+      //   url: (error as any)?.url
+      // });
       this.noMoreProfiles.set(true);
     } finally {
       console.log('Loading complete, setting isLoading to false');
@@ -281,7 +281,7 @@ export class Matching implements OnInit {
       // Move to next profile
       await this.moveToNextProfile();
     } catch (error) {
-      console.error('Failed to send like:', error);
+      // console.error('Failed to send like:', error);
     }
   }
 
@@ -301,7 +301,7 @@ export class Matching implements OnInit {
       // Move to next profile
       await this.moveToNextProfile();
     } catch (error) {
-      console.error('Failed to send pass:', error);
+      // console.error('Failed to send pass:', error);
     }
   }
 

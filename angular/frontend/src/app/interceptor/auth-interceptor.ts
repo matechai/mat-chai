@@ -28,7 +28,6 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
   return next(cloneReq).pipe(
     catchError((err: any) => {
-      console.error('[Interceptor] Caught error:', err);
 
       // exclude auth endpoints and external geo services from refresh logic
       const isAuthEndpoint = req.url.includes('/login') ||
@@ -67,7 +66,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
             return next(retryRequest);
             }),
           catchError((refreshErr: any) => {
-            console.error('[Interceptor] ❌ Token refresh failed:', refreshErr);
+            // console.error('[Interceptor] ❌ Token refresh failed:', refreshErr);
             // if refresh expires/fails
             isRefreshing = false;
 
@@ -80,7 +79,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
                 window.location.href = '/login';
               },
               error: (logoutErr: any) => {
-                console.error('[Interceptor] Logout failed:', logoutErr);
+                // console.error('[Interceptor] Logout failed:', logoutErr);
                 // Even if logout fails, redirect to login page
                 window.location.href = '/login';
               }

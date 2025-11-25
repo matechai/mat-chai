@@ -107,7 +107,7 @@ export class LikedBy implements OnInit {
 				}
 			},
 			error: (error: any) => {
-				console.error('❌ Failed to load liked-by users:', error);
+				// console.error('❌ Failed to load liked-by users:', error);
 				this.error.set('Failed to load users who liked you');
 				this.isLoading.set(false);
 				this.isLoadingMore.set(false);

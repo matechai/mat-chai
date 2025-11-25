@@ -72,7 +72,7 @@ export class Login {
               },
               error: (err: any) => {
                 this.isLoading = false;
-                console.error('Failed to get user info:', err);
+                // console.error('Failed to get user info:', err);
                 // If unable to fetch user info, logout and redirect to login page
                 this.showAlert('❌ Failed to load user profile. Please try logging in again.', 'error');
                 this.authService.logout_request().subscribe({
@@ -81,7 +81,7 @@ export class Login {
                     this.router.navigate(['/login']);
                   },
                   error: (logoutErr: any) => {
-                    console.error('Logout failed:', logoutErr);
+                    // console.error('Logout failed:', logoutErr);
                     // Force navigation to login even if logout fails
                     this.router.navigate(['/login']);
                   }

@@ -77,7 +77,7 @@ ngOnInit(): void {
         }
       },
       error: (err: any) => {
-        console.error('❌ Error checking auth state:', err);
+        // console.error('❌ Error checking auth state:', err);
         this.isAuthenticated = false;
         this.websocketService.disconnect();
       }
@@ -97,7 +97,7 @@ ngOnInit(): void {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (count: number) => console.log('🔢 Current unread count:', count),
-        error: (err: any) => console.error('❌ Error reading unread count:', err)
+        // error: (err: any) => console.error('❌ Error reading unread count:', err)
       });
 
 
@@ -125,7 +125,7 @@ ngOnInit(): void {
         this.router.navigate(['/login']);
       },
       error: (err : any) => {
-        console.error('❌ Logout error:', err);
+        // console.error('❌ Logout error:', err);
         // Still disconnect and navigate even if server request fails
         this.websocketService.disconnect();
         this.isAuthenticated = false;
@@ -159,7 +159,7 @@ ngOnInit(): void {
         }
       },
       error: (err: any) => {
-        console.error('❌ Error checking auth state:', err);
+        // console.error('❌ Error checking auth state:', err);
         this.isAuthenticated = false;
         this.websocketService.disconnect();
       }

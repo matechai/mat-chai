@@ -67,7 +67,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => console.log(`Notification ${notification.id} marked as read`),
-          error: (err: any) => console.error('Error marking notification as read:', err)
+          // error: (err: any) => console.error('Error marking notification as read:', err)
         });
     }
   }
@@ -77,7 +77,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => console.log('All notifications marked as read'),
-        error: (err: any) => console.error('Error marking all as read:', err)
+        // error: (err: any) => console.error('Error marking all as read:', err)
       });
   }
 

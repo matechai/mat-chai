@@ -110,7 +110,7 @@ export class Setting implements OnInit, OnDestroy {
         this.isLoading.set(false);
       },
       error: (error) => {
-        console.error('Error fetching user details:', error);
+        // console.error('Error fetching user details:', error);
         this.errorMessage.set('Failed to load user details');
         this.isLoading.set(false);
       }
@@ -178,7 +178,7 @@ export class Setting implements OnInit, OnDestroy {
         }, 3000);
       },
       error: (error) => {
-        console.error('Error updating user info:', error);
+        // console.error('Error updating user info:', error);
         this.errorMessage.set('Failed to update user information. Please try again.');
         this.isLoading.set(false);
       }
@@ -227,7 +227,7 @@ export class Setting implements OnInit, OnDestroy {
         this.updateLocation(latitude, longitude);
       },
       (error) => {
-        console.error('Geolocation error:', error);
+        // console.error('Geolocation error:', error);
         this.isLocationLoading.set(false);
 
         switch (error.code) {
@@ -283,7 +283,7 @@ export class Setting implements OnInit, OnDestroy {
         }, 5000);
       },
       error: (error) => {
-        console.error('Error updating location:', error);
+        // console.error('Error updating location:', error);
         this.isLocationLoading.set(false);
         this.locationErrorMessage.set('Failed to update location. Please try again.');
       }

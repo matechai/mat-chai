@@ -241,7 +241,7 @@ export class Auth {
           observer.complete();
         },
         error: (error: any) => {
-          console.error('Error checking auth state:', error);
+          // console.error('Error checking auth state:', error);
           this.setCurrentUser(null);
           observer.next({ isAuthenticated: false });
           observer.complete();

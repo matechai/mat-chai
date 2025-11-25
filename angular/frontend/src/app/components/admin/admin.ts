@@ -55,7 +55,7 @@ export class Admin implements OnInit {
 					this.isLoading.set(false);
 				},
 				error: (err) => {
-					console.error('Failed to load reports:', err);
+					// console.error('Failed to load reports:', err);
 					this.showAlert('❌ Failed to load reports', 'error');
 					this.isLoading.set(false);
 				}
@@ -69,7 +69,7 @@ export class Admin implements OnInit {
 					this.bannedUsers.set(data);
 				},
 				error: (err) => {
-					console.error('Failed to load banned users:', err);
+					// console.error('Failed to load banned users:', err);
 					this.showAlert('❌ Failed to load banned users', 'error');
 				}
 			});
@@ -98,7 +98,7 @@ export class Admin implements OnInit {
 					this.loadBannedUsers();
 				},
 				error: (err) => {
-					console.error('Failed to ban user:', err);
+					// console.error('Failed to ban user:', err);
 					this.showAlert('❌ Failed to ban user', 'error');
 				}
 			});
@@ -125,7 +125,7 @@ export class Admin implements OnInit {
 					this.loadBannedUsers();
 				},
 				error: (err) => {
-					console.error('Failed to unban user:', err);
+					// console.error('Failed to unban user:', err);
 					this.showAlert('❌ Failed to unban user', 'error');
 				}
 			});
