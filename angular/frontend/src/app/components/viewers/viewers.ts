@@ -218,4 +218,11 @@ export class Viewers implements OnInit {
 	closeUserDetailModal() {
 		this.showUserDetail.set(false);
 	}
+
+	// Handle user blocked from modal
+	onUserBlocked(username: string) {
+		console.log('User blocked:', username);
+		// Refresh the entire list to remove the blocked user
+		this.refreshViewers();
+	}
 }

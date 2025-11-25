@@ -115,7 +115,8 @@
 
 <!-- User Detail Modal -->
 <app-user-detail-modal [show]="showUserDetail()" [mode]="'matching'" (close)="closeUserDetailModal()"
-  (like)="onModalLike($event)" (pass)="onModalPass($event)">
+  (like)="onModalLike($event)" (pass)="onModalPass($event)"
+  (userBlocked)="onUserBlocked($event)">
 </app-user-detail-modal>
 <!-- Filter Modal -->
 <div *ngIf="showFilterModal()"

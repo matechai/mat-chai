@@ -276,6 +276,13 @@ export class LikedBy implements OnInit {
 		);
 	}
 
+	// Handle user blocked from modal
+	onUserBlocked(username: string) {
+		console.log('User blocked:', username);
+		// Refresh the entire list to remove the blocked user
+		this.refresh();
+	}
+
 	refresh() {
 		// Reset pagination state
 		this.currentPage.set(0);

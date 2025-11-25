@@ -37,6 +37,7 @@ export class UserDetailModal {
 	@Output() like = new EventEmitter<string>(); // matching 모드에서 like 시 username 전달
 	@Output() pass = new EventEmitter<string>(); // matching 모드에서 pass 시 username 전달
 	@Output() likeStatusChanged = new EventEmitter<{ username: string; iLikeTarget: boolean; matched: boolean }>(); // view 모드에서 좋아요 상태 변경 시
+	@Output() userBlocked = new EventEmitter<string>(); // 유저 차단 시 username 전달
 
 	loading = signal<boolean>(false);
 	userDetail = signal<UserDetail | null>(null);
@@ -334,6 +335,10 @@ export class UserDetailModal {
 
 			console.log('User blocked successfully:', user.username);
 			alert(`You have blocked @${user.username}. You will no longer see their profile and they cannot contact you.`);
+
+			// Emit event to parent component to refresh the list
+			this.userBlocked.emit(user.username);
+
 			this.closeBlockModal();
 			this.closeModal(); // Close the detail modal after blocking
 		} catch (error) {

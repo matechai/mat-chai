@@ -349,6 +349,13 @@ export class Matching implements OnInit {
     await this.onPass(); // 기존 onPass 메서드 재사용
   }
 
+  // Handle user blocked from modal
+  onUserBlocked(username: string) {
+    console.log('User blocked:', username);
+    // Load next user as the current one has been blocked
+    this.loadNextProfile();
+  }
+
   // Filter functions
   toggleFilterModal() {
     console.log('toggleFilterModal called');
