@@ -1,0 +1,145 @@
+<!-- Toast Alert -->
+@if (alertMessage()) {
+<div class="alert-toast" [class.success]="alertType() === 'success'" [class.error]="alertType() === 'error'">
+	<span>{{ alertMessage() }}</span>
+	<button class="close-btn" (click)="closeAlert()">&times;</button>
+</div>
+}
+
+<div class="admin-container">
+	<!-- Header -->
+	<div class="admin-header">
+		<h1>Admin Dashboard</h1>
+		<p>Manage user reports and bans</p>
+	</div>
+
+	<!-- Tabs -->
+	<div class="tabs">
+		<button class="tab-btn" [class.active]="activeTab() === 'reports'" (click)="switchTab('reports')">
+			Reports
+			@if (reports().length > 0) {
+			<span class="badge">{{ reports().length }}</span>
+			}
+		</button>
+		<button class="tab-btn" [class.active]="activeTab() === 'banned'" (click)="switchTab('banned')">
+			Banned Users
+			@if (bannedUsers().length > 0) {
+			<span class="badge">{{ bannedUsers().length }}</span>
+			}
+		</button>
+	</div>
+
+	<!-- Reports Tab -->
+	@if (activeTab() === 'reports') {
+	<div class="content-section">
+		@if (isLoading()) {
+		<div class="loading">Loading reports...</div>
+		} @else if (reports().length === 0) {
+		<div class="empty-state">
+			<p>No reports found</p>
+		</div>
+		} @else {
+		<div class="reports-list">
+			@for (report of reports(); track report.username) {
+			<div class="report-card">
+				<div class="report-header">
+					<div class="user-info">
+						<h3>{{ report.username }}</h3>
+						<span class="report-count">{{ report.reportCount }} report(s)</span>
+					</div>
+					<button class="ban-btn" (click)="openBanModal(report.username, report.reasons)">
+						Ban User
+					</button>
+				</div>
+				<div class="reasons-section">
+					<h4>Report Reasons:</h4>
+					<ul class="reasons-list">
+						@for (reason of report.reasons; track reason) {
+						<li>{{ reason }}</li>
+						}
+					</ul>
+				</div>
+			</div>
+			}
+		</div>
+		}
+	</div>
+	}
+
+	<!-- Banned Users Tab -->
+	@if (activeTab() === 'banned') {
+	<div class="content-section">
+		@if (bannedUsers().length === 0) {
+		<div class="empty-state">
+			<p>No banned users</p>
+		</div>
+		} @else {
+		<div class="banned-list">
+			@for (user of bannedUsers(); track user.username) {
+			<div class="banned-card">
+				<div class="banned-info">
+					<h3>{{ user.username }}</h3>
+					<span class="status-badge banned">Banned</span>
+				</div>
+				<button class="unban-btn" (click)="openUnbanModal(user.username)">
+					Unban
+				</button>
+			</div>
+			}
+		</div>
+		}
+	</div>
+	}
+</div>
+
+<!-- Ban Confirmation Modal -->
+@if (showBanModal()) {
+<div class="modal-overlay" (click)="closeBanModal()">
+	<div class="modal-content" (click)="$event.stopPropagation()">
+		<div class="modal-header">
+			<h2>Confirm Ban</h2>
+			<button class="modal-close" (click)="closeBanModal()">&times;</button>
+		</div>
+		<div class="modal-body">
+			<p>Are you sure you want to ban user <strong>{{ selectedUsername() }}</strong>?</p>
+
+			@if (selectedReasons().length > 0) {
+			<div class="modal-reasons">
+				<h4>Reported for:</h4>
+				<ul>
+					@for (reason of selectedReasons(); track reason) {
+					<li>{{ reason }}</li>
+					}
+				</ul>
+			</div>
+			}
+
+			<p class="warning">This action will prevent the user from accessing the platform.</p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn-cancel" (click)="closeBanModal()">Cancel</button>
+			<button class="btn-confirm" (click)="confirmBan()">Ban User</button>
+		</div>
+	</div>
+</div>
+}
+
+<!-- Unban Confirmation Modal -->
+@if (showUnbanModal()) {
+<div class="modal-overlay" (click)="closeUnbanModal()">
+	<div class="modal-content" (click)="$event.stopPropagation()">
+		<div class="modal-header">
+			<h2>Confirm Unban</h2>
+			<button class="modal-close" (click)="closeUnbanModal()">&times;</button>
+		</div>
+		<div class="modal-body">
+			<p>Are you sure you want to unban user <strong>{{ selectedUsername() }}</strong>?</p>
+			<p class="info">This will restore the user's access to the platform.</p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn-cancel" (click)="closeUnbanModal()">Cancel</button>
+			<button class="btn-confirm" (click)="confirmUnban()">Unban User</button>
+		</div>
+	</div>
+</div>
+}

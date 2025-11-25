@@ -64,6 +64,11 @@ export const routes: Routes = [
 	loadComponent: () => import('./components/liked-by/liked-by').then(m => m.LikedBy),
 	canActivate: [AuthGuard]
   },
+	{
+		path: 'admin',
+		loadComponent: () => import('./components/admin/admin').then(m => m.Admin),
+		canActivate: [AuthGuard]
+	},
 
   {
 	path: '**',
