@@ -30,6 +30,13 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", e.getMessage()));
     }
 
+    @ExceptionHandler(AuthExceptions.BannedUserException.class)
+    public ResponseEntity<Map<String, String>> handleBannedUser(AuthExceptions.BannedUserException e) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", e.getMessage()));
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleEntityNotFound(EntityNotFoundException e) {
         return ResponseEntity

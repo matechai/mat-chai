@@ -17,4 +17,9 @@ public class AuthExceptions {
     public static class DuplicateUserException extends RuntimeException {
         public DuplicateUserException() { super("Duplicate Username or Email "); }
     }
+
+    public static class BannedUserException extends RuntimeException {
+        public BannedUserException() { super("User is banned"); }
+        public BannedUserException(String message) { super(message); }
+    }
 }
