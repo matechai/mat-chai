@@ -52,10 +52,7 @@ public class AuthController {
 
         authService.logIn(dto, response);
 
-        if (response != null)
-            return ResponseEntity.noContent().build();
-        else
-            return ResponseEntity.status(401).build();
+        return  ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/logout")

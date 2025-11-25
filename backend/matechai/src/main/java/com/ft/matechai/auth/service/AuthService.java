@@ -12,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +71,9 @@ public class AuthService {
 
             if (!user.isEnabled())
                 throw new AuthExceptions.EmailNotVerifiedException();
+
+            if (user.isBanned())
+                throw new AuthExceptions.BannedUserException();
 
             String accessToken = jwtUtil.generateToken(user.getUsername(), accessTokenExpirationMs);
             String refreshToken = jwtUtil.generateToken(user.getUsername(), refreshTokenExpirationMs);
