@@ -61,7 +61,7 @@ public class AuthService {
 
 
     // Log In
-    public LoginResponseDTO logIn(LoginRequestDTO dto, HttpServletResponse response) {
+    public void logIn(LoginRequestDTO dto, HttpServletResponse response) {
 
         User user = userRepository.findByUsernameOrThrow(dto.getUsername());
 
@@ -82,11 +82,6 @@ public class AuthService {
 
             response.addCookie(accessCookie);
             response.addCookie(refreshCookie);
-
-            return LoginResponseDTO.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
 
         } else {        // fail
             throw new AuthExceptions.UnauthorizedException("Invalid username or password");

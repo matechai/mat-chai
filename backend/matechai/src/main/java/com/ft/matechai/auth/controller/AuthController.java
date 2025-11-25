@@ -50,10 +50,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto, HttpServletResponse response) {
 
-        LoginResponseDTO loginResponse = authService.logIn(dto, response);
+        authService.logIn(dto, response);
 
         if (response != null)
-            return ResponseEntity.ok(loginResponse);
+            return ResponseEntity.noContent().build();
         else
             return ResponseEntity.status(401).build();
     }
