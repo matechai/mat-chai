@@ -19,5 +19,7 @@ public class UserBasicProfileDTO {
     private LocalDate dateOfBirth;
     private String profileImage;
     private List<String> imageUrls;
+    private Boolean targetLikesMe;
+    private Boolean matched;
 
 }

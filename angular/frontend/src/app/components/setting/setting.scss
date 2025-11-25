@@ -233,6 +233,109 @@ h3 {
 	}
 }
 
+/* Location Section Styles */
+.location-section {
+	margin-top: 32px;
+	padding-top: 32px;
+	border-top: 1px solid #ecf0f1;
+
+	h3 {
+		color: #2c3e50;
+		font-size: 20px;
+		margin-bottom: 20px;
+		border-bottom: 2px solid #27ae60;
+	}
+
+	.current-location-display {
+		background: #e8f5e9;
+		border: 1px solid #c8e6c9;
+		border-radius: 8px;
+		padding: 16px;
+		margin-bottom: 20px;
+
+		p {
+			margin: 8px 0;
+			color: #2e7d32;
+			font-size: 14px;
+
+			&:first-child {
+				font-weight: 600;
+				font-size: 15px;
+				margin-bottom: 12px;
+			}
+		}
+	}
+
+	.location-actions {
+		display: flex;
+		gap: 12px;
+		margin-bottom: 16px;
+		flex-wrap: wrap;
+
+		.btn-location,
+		.btn-location-manual {
+			flex: 1;
+			min-width: 200px;
+			padding: 12px 20px;
+			font-size: 15px;
+			font-weight: 600;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+			&:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
+		}
+
+		.btn-location {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+
+			&:hover:not(:disabled) {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+			}
+
+			&:active:not(:disabled) {
+				transform: translateY(0);
+			}
+		}
+
+		.btn-location-manual {
+			background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+			color: white;
+
+			&:hover:not(:disabled) {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+			}
+
+			&:active:not(:disabled) {
+				transform: translateY(0);
+			}
+		}
+	}
+
+	.location-help-text {
+		color: #7f8c8d;
+		font-size: 13px;
+		margin: 0;
+		line-height: 1.5;
+	}
+}
+
+/* Map Styles */
+#location-map {
+	z-index: 1;
+
+	.leaflet-container {
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	}
+}
 /* Responsive Design */
 @media (max-width: 768px) {
 	.setting-container {
@@ -278,4 +381,13 @@ h3 {
 			width: 100%;
 		}
 	}
+.location-section .location-actions {
+	flex-direction: column;
+
+	.btn-location,
+	.btn-location-manual {
+		width: 100%;
+		min-width: unset;
+	}
+}
 }

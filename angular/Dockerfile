@@ -5,11 +5,7 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 
 RUN npm install -g @angular/cli \
-	&& npm install \
-	&& npm install @stomp/stompjs sockjs-client \
-	&& npm install --save-dev @types/sockjs-client
-
-COPY frontend/ .
+	&& npm install
 
 # ---- DEV Mode (hot reload) ----
 CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000", "--proxy-config", "proxy.conf.json"]

@@ -35,10 +35,10 @@ public class RecommendationService {
      * 2. Filter by gender and sexual preference.
      * 3. Sort by fame score in descending order.
      */
-    public PaginatedUserDTO getRecommendedUsers(User user, int page, String sortBy, String order, int minAge, int maxAge, int minFame, int maxFame, double distance, List<String> interests) {
+    public PaginatedUserDTO getRecommendedUsers(User me, int page, String sortBy, String order, int minAge, int maxAge, int minFame, int maxFame, double distance, List<String> interests) {
 
         Pageable pageable = PageRequest.of(page, 1);
-        Page<User> usersPage = userRepository.getUsersForMatching(user.getUsername(), minAge, maxAge, minFame, maxFame, distance, interests, pageable);
+        Page<User> usersPage = userRepository.getUsersForMatching(me.getUsername(), minAge, maxAge, minFame, maxFame, distance, interests, pageable);
 
         if (!usersPage.hasContent())
             return null;
@@ -47,8 +47,8 @@ public class RecommendationService {
 
         Comparator<User> comparator = switch (sortBy) {
             case "age" -> Comparator.comparing(User::getDateOfBirth);
-            case "distance" -> Comparator.comparing(u -> distance(user.getLatitude(), user.getLongitude(), u.getLatitude(), u.getLongitude()));
-            case "interest" -> Comparator.comparing(u -> calculateCommonTagsScore(user, u));
+            case "distance" -> Comparator.comparing(u -> distance(me.getLatitude(), me.getLongitude(), u.getLatitude(), u.getLongitude()));
+            case "interest" -> Comparator.comparing(u -> calculateCommonTagsScore(me, u));
             default -> Comparator.comparing(User::getFame);
         };
 
@@ -63,6 +63,8 @@ public class RecommendationService {
                 .profileImage(targetUser.getProfileImageUrl())
                 .imageUrls(targetUser.getImageUrls())
                 .dateOfBirth(targetUser.getDateOfBirth())
+                .targetLikesMe(userRepository.targetLikesMe(me.getUsername(), targetUser.getUsername()))
+                .matched(userRepository.isMatched(me.getUsername(), targetUser.getUsername()))
                 .build();
 
         return PaginatedUserDTO.builder()

@@ -90,6 +90,9 @@ public class MatchService {
 
         userRepository.block(username, targetUsername);
         userRepository.deleteLike(username, targetUsername);
+        userRepository.deleteLike(targetUsername, username);
+        userRepository.deleteViewed(username, targetUsername);
+        userRepository.deleteViewed(targetUsername, username);
 
         if (userRepository.isMatchBetween(username, targetUsername)) {
 

@@ -50,11 +50,11 @@ public class ProfileController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/report")
-    public ResponseEntity<?> report(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    @PostMapping("/reports")
+    public ResponseEntity<?> reports(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                     @RequestBody ReportRequestDTO dto) {
 
-        profileService.report(principalDetails.getUser(), dto);
+        profileService.reports(principalDetails.getUser(), dto);
 
         return ResponseEntity.noContent().build();
     }

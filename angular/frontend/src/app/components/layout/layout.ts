@@ -152,7 +152,7 @@ export class LayoutComponent implements OnInit {
 	}
 
 	navigateToSettings() {
-		this.navigateWithAuthCheck(['/setting']);
+		this.navigateWithAuthCheck(['/settings']);
 	}
 
 	navigateToViewers() {
@@ -164,7 +164,7 @@ export class LayoutComponent implements OnInit {
 	}
 
 	navigateToUpdateProfile() {
-		this.navigateWithAuthCheck(['/updateprofile']);
+		this.navigateWithAuthCheck(['/profile/edit']);
 	}
 
 	logout() {

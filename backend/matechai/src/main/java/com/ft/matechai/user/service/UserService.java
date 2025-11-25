@@ -95,10 +95,16 @@ public class UserService {
         return interestRepository.findByUsername(username);
     }
 
-    public Boolean getLiked(String targetUsername) {
+    public Boolean getTargetLikesMe(String targetUsername) {
 
         User me = ((PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
-        return userRepository.isLiked(me.getUsername(), targetUsername);
+        return userRepository.targetLikesMe(me.getUsername(), targetUsername);
+    }
+
+    public Boolean getILikeTarget(String targetUsername) {
+
+        User me = ((PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        return userRepository.iLikeTarget(me.getUsername(), targetUsername);
     }
 
     public Boolean getMatched(String targetUsername) {

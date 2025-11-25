@@ -26,21 +26,30 @@
 <div *ngIf="viewers().length > 0" style="max-width:800px; margin:2rem auto; padding:0 1rem;">
 	<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1.5rem;">
 
-		<!-- Viewer Card -->
-		<div *ngFor="let viewer of viewers()" (click)="showUserDetailModal(viewer.username)"
-			style="background:white; border:1px solid #ddd; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:transform 0.2s, box-shadow 0.2s; cursor:pointer;"
-			onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)'"
-			onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
-			title="Click to view profile details">
+	<!-- Viewer Card -->
+	<div *ngFor="let viewer of viewers()" (click)="showUserDetailModal(viewer.username)"
+		style="background:white; border:1px solid #ddd; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:transform 0.2s, box-shadow 0.2s; cursor:pointer; position:relative;"
+		onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)'"
+		onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+		title="Click to view profile details">
 
-			<!-- Image Carousel -->
-			<div style="position:relative; height:300px; overflow:hidden;">
-				<!-- Main Image -->
-				<img [src]="getUserImages(viewer)[getCurrentImageIndex(viewer.username)]"
-					[alt]="viewer.username + ' photo'" style="width:100%; height:100%; object-fit:cover;"
-					onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+	<!-- Status Badge -->
+	<div *ngIf="viewer.matched"
+		style="position:absolute; top:10px; right:10px; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:6px 12px; border-radius:20px; font-size:14px; font-weight:600; z-index:10; backdrop-filter:blur(5px); box-shadow:0 4px 12px rgba(102,126,234,0.4);">
+		💑 MATCHED
+	</div>
+	<div *ngIf="!viewer.matched && viewer.targetLikesMe"
+		style="position:absolute; top:10px; right:10px; background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color:white; padding:6px 12px; border-radius:20px; font-size:14px; font-weight:600; z-index:10; backdrop-filter:blur(5px); box-shadow:0 4px 12px rgba(240,147,251,0.4);">
+		💝 LIKES YOU
+	</div>
 
-				<!-- Navigation Arrows (only show if multiple images) -->
+	<!-- Image Carousel -->
+	<div style="position:relative; height:300px; overflow:hidden;">
+		<!-- Main Image -->
+		<img [src]="getUserImages(viewer)[getCurrentImageIndex(viewer.username)]" [alt]="viewer.username + ' photo'"
+			style="width:100%; height:100%; object-fit:cover;"
+			onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+		<!-- Navigation Arrows (only show if multiple images) -->
 				<div *ngIf="getUserImages(viewer).length > 1">
 					<!-- Left Arrow -->
 					<button (click)="previousImage(viewer); $event.stopPropagation()"
@@ -103,103 +112,5 @@
 	</button>
 </div>
 <!-- User Detail Modal -->
-<div *ngIf="showUserDetail()"
-	style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px;"
-	(click)="closeUserDetailModal()">
-
-	<div style="background:white; border-radius:16px; max-width:500px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 8px 32px rgba(0,0,0,0.2);"
-		(click)="$event.stopPropagation()">
-
-		<!-- Modal Header -->
-		<div
-			style="padding:1.5rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-			<h3 style="margin:0; color:#333; font-size:20px; font-weight:600;">Profile Details</h3>
-			<button (click)="closeUserDetailModal()"
-				style="background:none; border:none; font-size:24px; color:#666; cursor:pointer; padding:0; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background-color 0.2s;"
-				onmouseover="this.style.backgroundColor='#f5f5f5'"
-				onmouseout="this.style.backgroundColor='transparent'">
-				×
-			</button>
-		</div>
-
-		<!-- Loading State -->
-		<div *ngIf="loadingUserDetail()" style="padding:2rem; text-align:center; color:#666;">
-			Loading user details...
-		</div>
-
-		<!-- User Detail Content -->
-		<div *ngIf="!loadingUserDetail() && userDetail()" style="padding:1.5rem;">
-
-			<!-- Profile Image -->
-			<div style="text-align:center; margin-bottom:1.5rem;">
-				<img [src]="convertImagePath(userDetail()?.profileImageUrl || '')"
-					[alt]="userDetail()?.username + ' profile'"
-					style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid #ddd;"
-					onerror="this.src='https://via.placeholder.com/120x120?text=No+Image'">
-			</div>
-
-			<!-- Basic Info -->
-			<div style="text-align:center; margin-bottom:1.5rem;">
-				<h4 style="margin:0 0 0.5rem 0; color:#333; font-size:24px; font-weight:600;">
-					{{ userDetail()?.firstName }} {{ userDetail()?.lastName }}
-				</h4>
-				<p style="margin:0; color:#666; font-size:16px;">
-					@{{ userDetail()?.username }} • {{ calculateAge(userDetail()?.dateOfBirth || '') }} years old
-				</p>
-			</div>
-
-			<!-- Fame Score -->
-			<div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center;">
-				<div style="color:#333; font-weight:600; margin-bottom:0.5rem;">Fame Level</div>
-				<div style="font-size:18px;">{{ getFameLevel(userDetail()?.fame || 0) }}</div>
-				<div style="color:#666; font-size:14px; margin-top:0.5rem;">Fame Score: {{ getFamePercentage(userDetail()?.fame || 0)
-					}}/100</div>
-			</div>
-
-			<!-- Distance -->
-			<div style="background:#e8f5e8; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center;">
-				<div style="color:#333; font-weight:600; margin-bottom:0.5rem;">📍 Distance</div>
-				<div style="font-size:18px; color:#4caf50;">{{ formatDistance(userDetail()?.distance || 0) }}</div>
-			</div>
-
-			<!-- Last Online -->
-			<div style="margin-bottom:1.5rem;">
-				<strong style="color:#333;">Last Online:</strong>
-				<span style="color:#666; margin-left:0.5rem;">{{ formatLastOnline(userDetail()?.lastOnline || '')
-					}}</span>
-			</div>
-
-			<!-- Biography -->
-			<div *ngIf="userDetail()?.biography" style="margin-bottom:1.5rem;">
-				<strong style="color:#333; display:block; margin-bottom:0.5rem;">About Me:</strong>
-				<p style="color:#666; line-height:1.5; margin:0; padding:1rem; background:#f8f9fa; border-radius:8px;">
-					{{ userDetail()?.biography }}
-				</p>
-			</div>
-
-			<!-- Interests -->
-			<div *ngIf="userDetail()?.interests && (userDetail()?.interests?.length || 0) > 0"
-				style="margin-bottom:1.5rem;">
-				<strong style="color:#333; display:block; margin-bottom:0.5rem;">Interests:</strong>
-				<div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-					<span *ngFor="let interest of (userDetail()?.interests || [])"
-						style="background:#e3f2fd; color:#1976d2; padding:0.25rem 0.75rem; border-radius:16px; font-size:14px; border:1px solid #bbdefb;">
-						{{ interest }}
-					</span>
-				</div>
-			</div>
-
-			<!-- Image Gallery -->
-			<div *ngIf="userDetail()?.imageUrls && (userDetail()?.imageUrls?.length || 0) > 0"
-				style="margin-bottom:1.5rem;">
-				<strong style="color:#333; display:block; margin-bottom:0.5rem;">Photos:</strong>
-				<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:0.5rem;">
-					<img *ngFor="let imageUrl of (userDetail()?.imageUrls || [])" [src]="convertImagePath(imageUrl)"
-						style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #ddd;"
-						onerror="this.style.display='none'">
-			</div>
-			</div>
-
-		</div>
-	</div>
-</div>
+<app-user-detail-modal [show]="showUserDetail()" (close)="closeUserDetailModal()" (userBlocked)="onUserBlocked($event)">
+</app-user-detail-modal>

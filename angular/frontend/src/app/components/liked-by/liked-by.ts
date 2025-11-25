@@ -1,27 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { UserDetailModal } from '../user-detail-modal/user-detail-modal';
 
 interface LikedByUser {
 	username: string;
 	dateOfBirth: string;
 	profileImage?: string;
 	imageUrls?: string[];
-}
-
-interface UserDetail {
-	username: string;
-	dateOfBirth: string;
-	firstName: string;
-	lastName: string;
-	biography: string;
-	interests: string[];
-	profileImageUrl: string;
-	imageUrls: string[];
-	fame: number;
-	lastOnline: string;
-	distance: number;
+	matched?: boolean;
 }
 
 interface LikedByResponse {
@@ -46,13 +34,15 @@ interface LikedByResponse {
 @Component({
 	selector: 'app-liked-by',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule, UserDetailModal],
 	templateUrl: './liked-by.html',
 	styleUrl: './liked-by.scss'
 })
 export class LikedBy implements OnInit {
 	private http = inject(HttpClient);
 	private router = inject(Router);
+
+	@ViewChild(UserDetailModal) userDetailModal?: UserDetailModal;
 
 	likedByUsers = signal<LikedByUser[]>([]);
 	isLoading = signal<boolean>(true);
@@ -69,8 +59,6 @@ export class LikedBy implements OnInit {
 
 	// User detail modal state
 	showUserDetail = signal<boolean>(false);
-	userDetail = signal<UserDetail | null>(null);
-	loadingUserDetail = signal<boolean>(false);
 
 	ngOnInit() {
 		console.log('LikedBy component initialized');
@@ -263,100 +251,36 @@ export class LikedBy implements OnInit {
 
 	// Show user detail modal
 	async showUserDetailModal(username: string) {
-		console.log('Opening user detail for:', username);
 		this.showUserDetail.set(true);
-		this.loadingUserDetail.set(true);
-
-		try {
-			// GraphQL query to get detailed user information
-			const query = {
-				query: `query {getUserByUsername(username: "${username}") { username dateOfBirth firstName lastName biography interests profileImageUrl imageUrls fame lastOnline distance } }`
-			};
-
-			const response = await this.http.post<{ data: { getUserByUsername: UserDetail } }>('/api/graphql', query, {
-				withCredentials: true,
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			}).toPromise();
-
-			if (response?.data?.getUserByUsername) {
-				this.userDetail.set(response.data.getUserByUsername);
-				console.log('User detail loaded:', response.data.getUserByUsername);
-			}
-		} catch (error) {
-			console.error('Failed to load user detail:', error);
-		} finally {
-			this.loadingUserDetail.set(false);
+		if (this.userDetailModal) {
+			await this.userDetailModal.loadUserDetail(username);
 		}
 	}
 
 	// Close user detail modal
 	closeUserDetailModal() {
 		this.showUserDetail.set(false);
-		this.userDetail.set(null);
 	}
 
-	// Format last online time
-	formatLastOnline(lastOnline: string): string {
-		if (!lastOnline) return 'Unknown';
+	// Handle like status changed from modal
+	onLikeStatusChanged(event: { username: string; iLikeTarget: boolean; matched: boolean }) {
+		console.log('Like status changed:', event);
 
-		const lastOnlineDate = new Date(lastOnline);
-		const now = new Date();
-		const diffInMs = now.getTime() - lastOnlineDate.getTime();
-		const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-		const diffInHours = Math.floor(diffInMinutes / 60);
-		const diffInDays = Math.floor(diffInHours / 24);
-
-		if (diffInMinutes < 1) {
-			return 'Just now';
-		} else if (diffInMinutes < 60) {
-			return `${diffInMinutes} min${diffInMinutes > 1 ? 's' : ''} ago`;
-		} else if (diffInHours < 24) {
-			return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
-		} else if (diffInDays < 7) {
-			return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
-		} else {
-			return lastOnlineDate.toLocaleDateString();
-		}
+		// Update the user in the list
+		this.likedByUsers.update(users =>
+			users.map(user =>
+				user.username === event.username
+					? { ...user, matched: event.matched }
+					: user
+			)
+		);
 	}
 
-	// Get fame level description
-	getFameLevel(fame: number): string {
-		// Convert 0-15 scale to 0-100 scale for display
-		const famePercent = Math.round((fame / 15) * 100);
-
-		if (famePercent >= 80) return '⭐⭐⭐⭐⭐ Celebrity';
-		if (famePercent >= 60) return '⭐⭐⭐⭐ Popular';
-		if (famePercent >= 40) return '⭐⭐⭐ Well-known';
-		if (famePercent >= 20) return '⭐⭐ Rising';
-		return '⭐ Newcomer';
-	}
-
-
-	// Get fame percentage
-	getFamePercentage(fame: number): number {
-		return Math.round((fame / 15) * 100);
-	}
-
-	// Format distance
-	formatDistance(distance: number): string {
-		if (!distance && distance !== 0) return 'Distance unknown';
-
-		if (distance < 0.1) {
-			// Show "Nearby" for distances less than 100m
-			return 'Nearby';
-		} else if (distance < 1) {
-			// Show meters for distances less than 1km but more than 100m
-			const meters = Math.round(distance * 1000);
-			return `${meters}m away`;
-		} else if (distance < 10) {
-			// Show one decimal place for distances less than 10km
-			return `${distance.toFixed(1)} km away`;
-		} else {
-			// Show whole numbers for distances 10km and above
-			return `${Math.round(distance)} km away`;
-		}
+	// Handle user blocked from modal
+	onUserBlocked(username: string) {
+		console.log('User blocked:', username);
+		// Refresh the entire list to remove the blocked user
+		this.refresh();
 	}
 
 	refresh() {

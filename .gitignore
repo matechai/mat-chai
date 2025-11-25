@@ -217,7 +217,8 @@ e2e/*.map
 .env.local
 .env.staging
 
-
+# neo4j
+neo4j_logs/
 
 ## Backend ##
 uploads/
