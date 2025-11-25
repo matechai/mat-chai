@@ -185,6 +185,14 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
 
     @Query ("""
+                MATCH (a:User {username:$targetUsername})-[r:VIEWED]->(b:User {username:$username})
+                DELETE r
+            """)
+    void deleteViewed(@Param("username") String username,
+                    @Param("targetUsername") String targetUsername);
+
+
+    @Query ("""
                 MATCH (a:User {username: $username})
                 MATCH (b:User {username: $targetUsername})
                 MERGE (a)-[:BLOCKED]->(b)
