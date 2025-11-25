@@ -1,3 +1,11 @@
+<!-- Toast Alert -->
+@if (alertMessage) {
+<div class="alert-toast" [class.success]="alertType === 'success'" [class.error]="alertType === 'error'">
+  <span>{{ alertMessage }}</span>
+  <button class="close-btn" (click)="closeAlert()">&times;</button>
+</div>
+}
+
 <div style="max-width:400px; margin:4rem auto; padding:2rem; border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Arial, sans-serif; background:white;">
   
   <!-- Header -->

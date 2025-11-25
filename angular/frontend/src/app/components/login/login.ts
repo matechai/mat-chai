@@ -16,12 +16,31 @@ export class Login {
   private authService = inject(Auth);
   private router = inject(Router);
   isLoading = false;
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | '' = '';
 
   constructor(private form: FormBuilder) {
     this.loginForm = this.form.group({
       userName: ['', Validators.required],
       password: ['', Validators.required]
     });
+  }
+
+  showAlert(message: string, type: 'success' | 'error') {
+    this.alertMessage = message;
+    this.alertType = type;
+
+    // Auto-hide after 5 seconds for success, 7 seconds for error
+    const duration = type === 'success' ? 5000 : 7000;
+    setTimeout(() => {
+      this.alertMessage = '';
+      this.alertType = '';
+    }, duration);
+  }
+
+  closeAlert() {
+    this.alertMessage = '';
+    this.alertType = '';
   }
 
   onSubmit() {
@@ -45,11 +64,9 @@ export class Login {
 
                 if (user?.gender === null || user?.gender === undefined) {
                   // If gender is null, redirect to profile edit page
-                  alert('✅ Login successful! Please complete your profile.');
                   this.router.navigate(['/profile/edit']);
                 } else {
                   // If gender is set, redirect to matching page
-                  alert('✅ Login successful!');
                   this.router.navigate(['/matching']);
                 }
               },
@@ -57,7 +74,7 @@ export class Login {
                 this.isLoading = false;
                 console.error('Failed to get user info:', err);
                 // If unable to fetch user info, logout and redirect to login page
-                alert('❌ Failed to load user profile. Please try logging in again.');
+                this.showAlert('❌ Failed to load user profile. Please try logging in again.', 'error');
                 this.authService.logout_request().subscribe({
                   next: () => {
                     console.log('Logged out successfully');
@@ -76,16 +93,16 @@ export class Login {
             this.isLoading = false;
             console.log('Login failed:', err);
             if (err.status === 403) {
-              alert('❌ Email verification required.\nPlease check your email and verify your account before logging in.');
+              this.showAlert('❌ Email verification required. Please check your email and verify your account before logging in.', 'error');
             } else if (err.status === 401) {
-              alert('❌ Login failed.\nInvalid username or password. Please try again.');
+              this.showAlert('❌ Login failed. Invalid username or password. Please try again.', 'error');
             } else {
-              alert('❌ Login failed.\nPlease try again later.');
+              this.showAlert('❌ Login failed. Please try again later.', 'error');
             }
           }
         })
     } else {
-      alert('❌ Please fill in all required fields.');
+      this.showAlert('❌ Please fill in all required fields.', 'error');
     }
   }
 }

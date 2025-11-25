@@ -20,6 +20,8 @@ export class Signup {
   passwordStrength: String = '';
   passwordFeedback: string = '';
   isLoading = false;
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | '' = '';
 
   constructor(private fb: FormBuilder) {
     this.signupForm = this.fb.group({
@@ -86,6 +88,23 @@ export class Signup {
     return this.passwordStrength !== 'Weak';
   }
 
+  showAlert(message: string, type: 'success' | 'error') {
+    this.alertMessage = message;
+    this.alertType = type;
+
+    // Auto-hide after 5 seconds for success, 7 seconds for error
+    const duration = type === 'success' ? 5000 : 7000;
+    setTimeout(() => {
+      this.alertMessage = '';
+      this.alertType = '';
+    }, duration);
+  }
+
+  closeAlert() {
+    this.alertMessage = '';
+    this.alertType = '';
+  }
+
   onSubmit() {
     if (this.signupForm.valid && this.isPasswordValid()) {
       this.isLoading = true;
@@ -103,25 +122,28 @@ export class Signup {
           next: (response: any) => {
             this.isLoading = false;
             console.log('Signup successful:', response);
-            alert('✅ Registration completed successfully.\nPlease complete email verification and then proceed to login.');
-            // successful signup, navigate to login page
-            this.router.navigate(['/login']);
+            this.showAlert('✅ Registration completed successfully! Please complete email verification and then proceed to login.', 'success');
+
+            // Navigate to login after showing message
+            setTimeout(() => {
+              this.router.navigate(['/login']);
+            }, 2000);
           },
           error: (err: any) => {
             this.isLoading = false;
             console.log('Signup failed:', err);
             if (err.status === 409) {
-              alert('❌ Username or email already exists.');
+              this.showAlert('❌ Username or email already exists.', 'error');
             } else if (err.status === 400) {
-              alert('❌ Invalid input. Please check your information.');
+              this.showAlert('❌ Invalid input. Please check your information.', 'error');
             } else {
-              alert('❌ Signup failed. Please try again.');
+              this.showAlert('❌ Signup failed. Please try again.', 'error');
             }
           }
         })
     }
     else {
-      alert('❌ Please fix the form errors.');
+      this.showAlert('❌ Please fix the form errors.', 'error');
     }
 
   }
