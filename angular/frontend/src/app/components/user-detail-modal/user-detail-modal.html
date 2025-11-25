@@ -131,13 +131,19 @@
 				</button>
 			</div>
 			
-		<!-- Report Button -->
-		<div style="text-align:center;">
+		<!-- Report & Block Buttons -->
+		<div style="display:flex; gap:0.75rem; justify-content:center;">
 			<button (click)="openReportModal()"
-				style="background:#ff5252; color:white; border:none; border-radius:20px; padding:0.5rem 1.5rem; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(255,82,82,0.3);"
+				style="background:#ff5252; color:white; border:none; border-radius:20px; padding:0.5rem 1.5rem; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(255,82,82,0.3); flex:1; max-width:150px;"
 				onmouseover="this.style.background='#ff1744'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(255,82,82,0.4)'"
 				onmouseout="this.style.background='#ff5252'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(255,82,82,0.3)'">
-				🚫 Report User
+				🚫 Report
+			</button>
+			<button (click)="openBlockModal()"
+				style="background:#9e9e9e; color:white; border:none; border-radius:20px; padding:0.5rem 1.5rem; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(158,158,158,0.3); flex:1; max-width:150px;"
+				onmouseover="this.style.background='#757575'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(117,117,117,0.4)'"
+				onmouseout="this.style.background='#9e9e9e'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(158,158,158,0.3)'">
+				🚷 Block
 			</button>
 		</div>
 		</div>
@@ -157,13 +163,19 @@
 				❤️ Like
 			</button>
 		</div>
-		<!-- Report Button for Matching Mode -->
-		<div style="text-align:center;">
+		<!-- Report & Block Buttons for Matching Mode -->
+		<div style="display:flex; gap:0.75rem; justify-content:center;">
 			<button (click)="openReportModal()"
-				style="background:#ff5252; color:white; border:none; border-radius:20px; padding:0.5rem 1.5rem; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(255,82,82,0.3);"
+				style="background:#ff5252; color:white; border:none; border-radius:20px; padding:0.5rem 1.5rem; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(255,82,82,0.3); flex:1; max-width:150px;"
 				onmouseover="this.style.background='#ff1744'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(255,82,82,0.4)'"
 				onmouseout="this.style.background='#ff5252'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(255,82,82,0.3)'">
-				🚫 Report User
+				🚫 Report
+			</button>
+			<button (click)="openBlockModal()"
+				style="background:#9e9e9e; color:white; border:none; border-radius:20px; padding:0.5rem 1.5rem; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(158,158,158,0.3); flex:1; max-width:150px;"
+				onmouseover="this.style.background='#757575'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(117,117,117,0.4)'"
+				onmouseout="this.style.background='#9e9e9e'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(158,158,158,0.3)'">
+				🚷 Block
 			</button>
 		</div>
 		</div>
@@ -227,6 +239,63 @@
 						<span *ngIf="!isReportProcessing()">Submit Report</span>
 						<span *ngIf="isReportProcessing()">Submitting...</span>
 					</button>
+		</div>
+	</div>
+</div>
+
+<!-- Block Confirmation Modal -->
+<div *ngIf="showBlockModal()"
+	style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1002; display:flex; align-items:center; justify-content:center; padding:20px;"
+	(click)="closeBlockModal()">
+
+	<div style="background:white; border-radius:16px; max-width:450px; width:100%; padding:2rem; box-shadow:0 8px 32px rgba(0,0,0,0.3);"
+		(click)="$event.stopPropagation()">
+
+		<!-- Block Modal Header -->
+		<div style="text-align:center; margin-bottom:1.5rem;">
+			<div style="font-size:48px; margin-bottom:0.5rem;">🚷</div>
+			<h3 style="margin:0 0 0.5rem 0; color:#333; font-size:22px; font-weight:600;">Block User</h3>
+			<p style="margin:0; color:#666; font-size:14px; line-height:1.5;">Are you sure you want to block this user?</p>
+		</div>
+
+		<!-- User Info -->
+		<div *ngIf="userDetail()"
+			style="background:#fff3e0; padding:1rem; border-radius:8px; margin-bottom:1.5rem; border-left:4px solid #ff9800;">
+			<div style="font-weight:600; color:#333; margin-bottom:0.25rem;">Blocking:</div>
+			<div style="color:#666; font-size:14px;">@{{ userDetail()?.username }} ({{ userDetail()?.firstName }} {{
+				userDetail()?.lastName }})</div>
+		</div>
+
+		<!-- Warning Message -->
+		<div style="background:#ffebee; padding:1rem; border-radius:8px; margin-bottom:1.5rem; border-left:4px solid #f44336;">
+			<div style="font-weight:600; color:#d32f2f; margin-bottom:0.5rem; font-size:14px;">⚠️ Important:</div>
+			<ul style="margin:0; padding-left:1.25rem; color:#666; font-size:13px; line-height:1.6;">
+				<li>You will no longer see their profile</li>
+				<li>They cannot send you messages</li>
+				<li>They cannot like or match with you</li>
+				<li>All existing matches will be removed</li>
+			</ul>
+		</div>
+
+		<!-- Action Buttons -->
+		<div style="display:flex; gap:1rem; justify-content:flex-end;">
+			<button (click)="closeBlockModal()" [disabled]="isBlockProcessing()"
+				style="background:#e0e0e0; color:#333; border:none; border-radius:8px; padding:0.75rem 1.5rem; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s;"
+				[style.opacity]="isBlockProcessing() ? '0.5' : '1'"
+				[style.cursor]="isBlockProcessing() ? 'not-allowed' : 'pointer'"
+				onmouseover="if(!this.disabled) this.style.background='#d5d5d5'"
+				onmouseout="this.style.background='#e0e0e0'">
+				Cancel
+			</button>
+			<button (click)="blockUser()" [disabled]="isBlockProcessing()"
+				[style.opacity]="isBlockProcessing() ? '0.5' : '1'"
+				[style.cursor]="isBlockProcessing() ? 'not-allowed' : 'pointer'"
+				style="background:#f44336; color:white; border:none; border-radius:8px; padding:0.75rem 1.5rem; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(244,67,54,0.3);"
+				onmouseover="if(!this.disabled) this.style.background='#d32f2f'; if(!this.disabled) this.style.boxShadow='0 4px 12px rgba(211,47,47,0.4)'"
+				onmouseout="this.style.background='#f44336'; this.style.boxShadow='0 2px 8px rgba(244,67,54,0.3)'">
+				<span *ngIf="!isBlockProcessing()">🚷 Block User</span>
+				<span *ngIf="isBlockProcessing()">Blocking...</span>
+			</button>
 		</div>
 	</div>
 </div>

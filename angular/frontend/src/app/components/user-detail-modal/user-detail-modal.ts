@@ -44,6 +44,8 @@ export class UserDetailModal {
 	showReportModal = signal<boolean>(false);
 	reportReason = signal<string>('');
 	isReportProcessing = signal<boolean>(false);
+	showBlockModal = signal<boolean>(false);
+	isBlockProcessing = signal<boolean>(false);
 
 	// Load user detail by username
 	async loadUserDetail(username: string) {
@@ -305,6 +307,40 @@ export class UserDetailModal {
 			alert('Failed to submit report. Please try again.');
 		} finally {
 			this.isReportProcessing.set(false);
+		}
+	}
+
+	// Open block modal
+	openBlockModal() {
+		this.showBlockModal.set(true);
+	}
+
+	// Close block modal
+	closeBlockModal() {
+		this.showBlockModal.set(false);
+	}
+
+	// Block user
+	async blockUser() {
+		const user = this.userDetail();
+		if (!user || this.isBlockProcessing()) return;
+
+		this.isBlockProcessing.set(true);
+
+		try {
+			await this.http.post(`/api/users/${user.username}/block`, {}, {
+				withCredentials: true
+			}).toPromise();
+
+			console.log('User blocked successfully:', user.username);
+			alert(`You have blocked @${user.username}. You will no longer see their profile and they cannot contact you.`);
+			this.closeBlockModal();
+			this.closeModal(); // Close the detail modal after blocking
+		} catch (error) {
+			console.error('Failed to block user:', error);
+			alert('Failed to block user. Please try again.');
+		} finally {
+			this.isBlockProcessing.set(false);
 		}
 	}
 }
