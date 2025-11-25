@@ -1,3 +1,10 @@
+<!-- Toast Alert -->
+<div *ngIf="alertMessage()" class="alert-toast" [class.success]="alertType() === 'success'"
+	[class.error]="alertType() === 'error'">
+	<span>{{ alertMessage() }}</span>
+	<button class="close-btn" (click)="closeAlert()">&times;</button>
+</div>
+
 <!-- User Detail Modal -->
 <div *ngIf="show"
 	style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px;"

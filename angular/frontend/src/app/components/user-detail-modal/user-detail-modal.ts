@@ -47,6 +47,8 @@ export class UserDetailModal {
 	isReportProcessing = signal<boolean>(false);
 	showBlockModal = signal<boolean>(false);
 	isBlockProcessing = signal<boolean>(false);
+	alertMessage = signal<string>('');
+	alertType = signal<'success' | 'error' | ''>('');
 
 	// Load user detail by username
 	async loadUserDetail(username: string) {
@@ -100,6 +102,24 @@ export class UserDetailModal {
 		this.showChange.emit(false);
 		this.close.emit();
 		this.userDetail.set(null);
+	}
+
+	// Show alert
+	showAlert(message: string, type: 'success' | 'error') {
+		this.alertMessage.set(message);
+		this.alertType.set(type);
+
+		const duration = type === 'success' ? 5000 : 7000;
+		setTimeout(() => {
+			this.alertMessage.set('');
+			this.alertType.set('');
+		}, duration);
+	}
+
+	// Close alert
+	closeAlert() {
+		this.alertMessage.set('');
+		this.alertType.set('');
 	}
 
 	// Calculate age from date of birth
@@ -281,7 +301,7 @@ export class UserDetailModal {
 		const reason = this.reportReason().trim();
 
 		if (!user || !reason) {
-			alert('Please enter a reason for reporting.');
+			this.showAlert('Please enter a reason for reporting.', 'error');
 			return;
 		}
 
@@ -301,11 +321,11 @@ export class UserDetailModal {
 			}).toPromise();
 
 			console.log('Report submitted successfully for:', user.username);
-			alert('Report submitted successfully. Thank you for helping keep our community safe.');
+			this.showAlert('Report submitted successfully. Thank you for helping keep our community safe.', 'success');
 			this.closeReportModal();
 		} catch (error) {
 			console.error('Failed to submit report:', error);
-			alert('Failed to submit report. Please try again.');
+			this.showAlert('Failed to submit report. Please try again.', 'error');
 		} finally {
 			this.isReportProcessing.set(false);
 		}
@@ -334,16 +354,20 @@ export class UserDetailModal {
 			}).toPromise();
 
 			console.log('User blocked successfully:', user.username);
-			alert(`You have blocked @${user.username}. You will no longer see their profile and they cannot contact you.`);
+			this.showAlert(`You have blocked @${user.username}. You will no longer see their profile and they cannot contact you.`, 'success');
 
 			// Emit event to parent component to refresh the list
 			this.userBlocked.emit(user.username);
 
 			this.closeBlockModal();
-			this.closeModal(); // Close the detail modal after blocking
+
+			// Close the detail modal after a short delay to show the success message
+			setTimeout(() => {
+				this.closeModal();
+			}, 1500);
 		} catch (error) {
 			console.error('Failed to block user:', error);
-			alert('Failed to block user. Please try again.');
+			this.showAlert('Failed to block user. Please try again.', 'error');
 		} finally {
 			this.isBlockProcessing.set(false);
 		}
