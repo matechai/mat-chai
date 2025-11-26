@@ -1,9 +1,10 @@
-﻿import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { NotificationService } from '../../services/notification.service';
 import { WebSocketService } from '../../services/websocket.service';
+import { Auth } from '../../services/auth';
 import { Notification, NotificationType } from '../../interfaces/notification.model';
 
 @Component({
@@ -16,17 +17,28 @@ import { Notification, NotificationType } from '../../interfaces/notification.mo
 export class NotificationsComponent implements OnInit, OnDestroy {
   private notificationService = inject(NotificationService);
   private websocketService = inject(WebSocketService);
+  private authService = inject(Auth);
   private destroy$ = new Subject<void>();
 
   notifications: Notification[] = []; 
   unreadCount: number = 0;
   isDropdownOpen: boolean = false;
+  isAuthenticated = signal<boolean>(false);
 
   ngOnInit() {
-    // Load existing notifications from backend
-    this.notificationService.loadNotifications();
+    // Watch authentication state
+    this.authService.authState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(authState => {
+        this.isAuthenticated.set(authState.isAuthenticated);
+        
+        // Load notifications when authenticated (layout handles WebSocket connection)
+        if (authState.isAuthenticated) {
+          this.loadNotifications();
+        }
+      });
 
-    // Subscribe to reactive notifications list
+    // Subscribe to reactive notifications list to update component
     this.notificationService.notifications$
       .pipe(takeUntil(this.destroy$))
       .subscribe((notifs: Notification[]) => {
@@ -40,7 +52,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         this.unreadCount = count;
       });
 
-    // Subscribe once to WebSocket notifications
+    // Subscribe to WebSocket notifications
     this.websocketService.notifications$
       .pipe(takeUntil(this.destroy$))
       .subscribe((notification: Notification | null) => {
@@ -48,9 +60,11 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           this.notificationService.addNotification(notification);
         }
       });
+  }
 
-    // Connect WebSocket if not already
-    this.websocketService.connectIfNeeded();
+  private loadNotifications(): void {
+    // Load existing notifications from backend
+    this.notificationService.loadNotifications();
   }
 
   toggleDropdown(): void {

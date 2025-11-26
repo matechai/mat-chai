@@ -2,17 +2,20 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth';
+import { WebSocketService } from '../../services/websocket.service';
+import { NotificationsComponent } from '../notifications/notifications';
 
 @Component({
 	selector: 'app-layout',
 	standalone: true,
-	imports: [CommonModule, RouterModule],
+	imports: [CommonModule, RouterModule, NotificationsComponent],
 	templateUrl: './layout.html',
 	styleUrl: './layout.scss'
 })
 export class LayoutComponent implements OnInit {
 	private router = inject(Router);
 	private authService = inject(Auth);
+	private websocketService = inject(WebSocketService);
 
 	isAuthenticated = signal<boolean>(false);
 	currentUser = signal<any>(null);
@@ -22,6 +25,12 @@ export class LayoutComponent implements OnInit {
 		this.authService.authState$.subscribe(authState => {
 			this.isAuthenticated.set(authState.isAuthenticated);
 			this.currentUser.set(authState.user);
+
+			// ✅ Connect WebSocket immediately when user becomes authenticated
+			if (authState.isAuthenticated) {
+				console.log('🔌 Auth state changed to authenticated, connecting WebSocket');
+				this.websocketService.connectIfNeeded();
+			}
 		});
 
 		// Check initial authentication status
