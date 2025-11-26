@@ -65,7 +65,7 @@ export class ForgotPassword {
 				this.isLoading.set(false);
 			},
 			error: (error) => {
-				console.error('Forgot password error:', error);
+				// console.error('Forgot password error:', error);
 				if (error.status === 404) {
 					this.errorMessage.set('No account found with this email address');
 				} else if (error.status === 429) {

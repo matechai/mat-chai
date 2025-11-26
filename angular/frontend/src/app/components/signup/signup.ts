@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { SignupInterface } from '../../interfaces/signup-interface';
 import { Auth } from '../../services/auth';
+import zxcvbn from 'zxcvbn';
 
 @Component({
   selector: 'app-signup',
@@ -17,109 +18,132 @@ export class Signup {
   private router = inject(Router);
   signupForm!: FormGroup;
   passwordStrength: String = '';
+  passwordFeedback: string = '';
   isLoading = false;
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | '' = '';
 
-  constructor(private fb: FormBuilder)
-  {
+  constructor(private fb: FormBuilder) {
     this.signupForm = this.fb.group({
-      firstName : ['', [Validators.required]],
-      lastName : ['', [Validators.required]],
-      userName : ['', [Validators.required]],
-      email : ['', [Validators.required, Validators.email]],
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
+      userName: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       dateOfBirth: ['', [Validators.required]],
-      password : ['', [Validators.required]],
-      confirmPassword : ['', [Validators.required]],
+      password: ['', [Validators.required]],
+      confirmPassword: ['', [Validators.required]],
     });
   }
 
-  checkPasswordStrength(password: string) : string
-  {
-    let strength = 0;
-    if (password.length >= 8 )
-      strength++;
-    if (/[A-Z]/.test(password))
-      strength++;
-    if (/[a-z]/.test(password))
-      strength++;
-    if (/[0-9]/.test(password))
-      strength++;
-    if (/[A-Za-z0-9]/.test(password))
-      strength++;
-    if (strength <= 2)
-      return 'Weak';
-    if (strength === 3 || strength === 4)
-      return 'Medium';
-    return 'Strong';
+  checkPasswordStrength(password: string): string {
+    if (!password) return 'Weak';
+
+    // User input for personalized dictionary
+    const userInputs = [
+      this.signupForm.get('firstName')?.value || '',
+      this.signupForm.get('lastName')?.value || '',
+      this.signupForm.get('userName')?.value || '',
+      this.signupForm.get('email')?.value || ''
+    ];
+
+    // Use zxcvbn to analyze password
+    const result = zxcvbn(password, userInputs);
+
+    // Store feedback for display
+    this.passwordFeedback = result.feedback.warning ||
+      result.feedback.suggestions.join(' ') || '';
+
+    // Map zxcvbn score (0-4) to our strength labels
+    switch (result.score) {
+      case 0:
+      case 1:
+        return 'Weak';
+      case 2:
+      case 3:
+        return 'Medium';
+      case 4:
+        return 'Strong';
+      default:
+        return 'Weak';
+    }
   }
 
-  onPasswordInput()
-  {
+  onPasswordInput() {
     const password = this.signupForm.get('password')?.value || '';
     this.passwordStrength = this.checkPasswordStrength(password);
   }
 
-  isPasswordValid() : boolean
-  {
-    const firstName = this.signupForm.get('firstName')?.value?.toLowerCase() || '';
-    const lastName = this.signupForm.get('lastName')?.value?.toLowerCase() || '';
-    const userName = this.signupForm.get('userName')?.value?.toLowerCase() || '';
-    const email = this.signupForm.get('email')?.value?.toLowerCase() || '';
-    const password = this.signupForm.get('password')?.value?.toLowerCase() || '';
+  isPasswordValid(): boolean {
+    const password = this.signupForm.get('password')?.value || '';
     const confirmPassword = this.signupForm.get('confirmPassword')?.value || '';
 
     if (!password)
       return false;
 
-    if (password !== confirmPassword.toLowerCase())
+    if (password !== confirmPassword)
       return false;
 
-    if (password.includes(firstName) || password.includes(lastName) || password.includes(email) || password.includes(userName))
-      return false;
-
-    return this.passwordStrength !== 'weak';
+    // zxcvbn already checks for common words and patterns
+    // Just check if strength is acceptable (not Weak)
+    return this.passwordStrength !== 'Weak';
   }
 
-  onSubmit()
-  {
-    if (this.signupForm.valid && this.isPasswordValid()) 
-    {
+  showAlert(message: string, type: 'success' | 'error') {
+    this.alertMessage = message;
+    this.alertType = type;
+
+    // Auto-hide after 5 seconds for success, 7 seconds for error
+    const duration = type === 'success' ? 5000 : 7000;
+    setTimeout(() => {
+      this.alertMessage = '';
+      this.alertType = '';
+    }, duration);
+  }
+
+  closeAlert() {
+    this.alertMessage = '';
+    this.alertType = '';
+  }
+
+  onSubmit() {
+    if (this.signupForm.valid && this.isPasswordValid()) {
       this.isLoading = true;
       const request: SignupInterface =
       {
-        firstName : this.signupForm.value.firstName,
-        lastName : this.signupForm.value.lastName,
-        username : this.signupForm.value.userName,
-        email : this.signupForm.value.email,
+        firstName: this.signupForm.value.firstName,
+        lastName: this.signupForm.value.lastName,
+        username: this.signupForm.value.userName,
+        email: this.signupForm.value.email,
         dateOfBirth: this.signupForm.value.dateOfBirth,
-        password : this.signupForm.value.password
+        password: this.signupForm.value.password
       }
       this.authService.signup_request(request)
-      .subscribe({
-        next: (response: any) =>
-        {
-          this.isLoading = false;
-          console.log('Signup successful:', response);
-          alert('✅ Registration completed successfully.\nPlease complete email verification and then proceed to login.');
-          // successful signup, navigate to login page
-          this.router.navigate(['/login']);
-        },
-        error: (err: any) =>
-        {
-          this.isLoading = false;
-          console.log('Signup failed:', err);
-          if (err.status === 409) {
-            alert('❌ Username or email already exists.');
-          } else if (err.status === 400) {
-            alert('❌ Invalid input. Please check your information.');
-          } else {
-            alert('❌ Signup failed. Please try again.');
+        .subscribe({
+          next: (response: any) => {
+            this.isLoading = false;
+            console.log('Signup successful:', response);
+            this.showAlert('✅ Registration completed successfully! Please complete email verification and then proceed to login.', 'success');
+
+            // Navigate to login after showing message
+            setTimeout(() => {
+              this.router.navigate(['/login']);
+            }, 2000);
+          },
+          error: (err: any) => {
+            this.isLoading = false;
+            console.log('Signup failed:', err);
+            if (err.status === 409) {
+              this.showAlert('❌ Username or email already exists.', 'error');
+            } else if (err.status === 400) {
+              this.showAlert('❌ Invalid input. Please check your information.', 'error');
+            } else {
+              this.showAlert('❌ Signup failed. Please try again.', 'error');
+            }
           }
-        }
-      })
+        })
     }
-    else 
-    {
-      alert('❌ Please fix the form errors.');
+    else {
+      this.showAlert('❌ Please fix the form errors.', 'error');
     }
 
   }

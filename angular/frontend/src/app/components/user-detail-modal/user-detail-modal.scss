@@ -1,1 +1,58 @@
 /* User Detail Modal Styles */
+// Toast Alert Animation
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.alert-toast {
+	position: fixed;
+	top: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 1rem 2rem;
+	border-radius: 8px;
+	color: white;
+	font-size: 16px;
+	font-weight: 500;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	z-index: 9999;
+	animation: slideDown 0.3s ease-out;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	min-width: 300px;
+	max-width: 500px;
+
+	&.success {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	}
+
+	&.error {
+		background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+	}
+
+	.close-btn {
+		background: none;
+		border: none;
+		color: white;
+		font-size: 24px;
+		cursor: pointer;
+		padding: 0;
+		width: auto;
+		line-height: 1;
+		opacity: 0.8;
+		transition: opacity 0.2s;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+}

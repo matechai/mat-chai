@@ -180,7 +180,7 @@ export class LayoutComponent implements OnInit {
 				this.router.navigate(['/login']);
 			},
 			error: (error: any) => {
-				console.error('❌ Logout failed:', error);
+				// console.error('❌ Logout failed:', error);
 				// Even if server logout fails, client is already cleaned up
 				this.router.navigate(['/login']);
 			}

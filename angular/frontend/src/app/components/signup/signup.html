@@ -1,3 +1,22 @@
+<!-- Alert Message (Toast) -->
+@if (alertMessage) {
+<div
+  [style.background]="alertType === 'success' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'"
+  style="position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; min-width:300px; max-width:500px; padding:1rem 1.5rem; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.3); color:white; font-family:Arial, sans-serif; animation:slideDown 0.3s ease-out;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+    <div style="flex:1; font-size:15px; line-height:1.5; font-weight:500;">
+      {{ alertMessage }}
+    </div>
+    <button (click)="closeAlert()"
+      style="background:rgba(255,255,255,0.2); border:none; color:white; width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; transition:background 0.2s;"
+      onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+      onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+      ×
+    </button>
+  </div>
+</div>
+}
+
 <div style="max-width:500px; margin:2rem auto; padding:2rem; border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Arial, sans-serif; background:white;">
   
   <!-- Header -->
@@ -74,6 +93,12 @@
           {{ passwordStrength }}
         </span>
       </div>
+      @if (passwordFeedback) {
+      <div
+        style="margin-top:0.5rem; padding:0.5rem; background:#fff3cd; border:1px solid #ffc107; border-radius:6px; color:#856404; font-size:13px;">
+        <span style="font-weight:600;">💡 Tip:</span> {{ passwordFeedback }}
+      </div>
+      }
       }
     </div>
 

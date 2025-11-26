@@ -12,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,7 @@ public class AuthService {
 
 
     // Log In
-    public LoginResponseDTO logIn(LoginRequestDTO dto, HttpServletResponse response) {
+    public void logIn(LoginRequestDTO dto, HttpServletResponse response) {
 
         User user = userRepository.findByUsernameOrThrow(dto.getUsername());
 
@@ -70,6 +71,9 @@ public class AuthService {
 
             if (!user.isEnabled())
                 throw new AuthExceptions.EmailNotVerifiedException();
+
+            if (user.isBanned())
+                throw new AuthExceptions.BannedUserException();
 
             String accessToken = jwtUtil.generateToken(user.getUsername(), accessTokenExpirationMs);
             String refreshToken = jwtUtil.generateToken(user.getUsername(), refreshTokenExpirationMs);
@@ -82,11 +86,6 @@ public class AuthService {
 
             response.addCookie(accessCookie);
             response.addCookie(refreshCookie);
-
-            return LoginResponseDTO.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
 
         } else {        // fail
             throw new AuthExceptions.UnauthorizedException("Invalid username or password");

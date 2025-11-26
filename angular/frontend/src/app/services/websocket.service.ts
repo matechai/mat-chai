@@ -83,7 +83,7 @@ export class WebSocketService {
     },
 
     onWebSocketError: (error: any) => {
-      console.error('❌ WebSocket error:', error);
+      // console.error('❌ WebSocket error:', error);
       this.isConnectedValue = false;
       this.connected.next(false);
     },
@@ -137,7 +137,7 @@ export class WebSocketService {
       });
       console.log('✉️ Message sent to:', receiver);
     } else {
-      console.error('❌ WebSocket not connected. Cannot send message.');
+      // console.error('❌ WebSocket not connected. Cannot send message.');
     }
   }
 

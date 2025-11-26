@@ -40,7 +40,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.currentUsername = user.username;
           this.setupMessageSubscription();
         },
-        error: (err: any) => console.error('Error getting current user:', err)
+        // error: (err: any) => console.error('Error getting current user:', err)
       });
     }
 
@@ -111,7 +111,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           }));
           console.log('📋 Chat partners loaded:', this.chatPartners.length);
         },
-        error: (err: any) => console.error('❌ Error loading chat partners:', err)
+        // error: (err: any) => console.error('❌ Error loading chat partners:', err)
       });
   }
 
@@ -127,7 +127,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         const partner = this.chatPartners.find(p => p.username === username);
         if (partner) partner.unread = false;
       },
-      error: (err: any) => console.error('❌ Error marking messages as read:', err)
+      // error: (err: any) => console.error('❌ Error marking messages as read:', err)
     });
   }
 
@@ -140,7 +140,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           console.log('💬 Chat history loaded:', messages.length, 'messages');
           this.scrollToBottom();
         },
-        error: (err: any) => console.error('❌ Error loading chat history:', err)
+        // error: (err: any) => console.error('❌ Error loading chat history:', err)
       });
   }
 

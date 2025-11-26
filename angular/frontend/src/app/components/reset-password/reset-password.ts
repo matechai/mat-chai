@@ -60,7 +60,7 @@ export class ResetPassword implements OnInit {
 				this.isValidatingToken.set(false);
 			},
 			error: (error) => {
-				console.error('Token validation error:', error);
+				// console.error('Token validation error:', error);
 				this.isValidatingToken.set(false);
 
 				if (error.status === 400) {
@@ -115,7 +115,7 @@ export class ResetPassword implements OnInit {
 				this.isLoading.set(false);
 			},
 			error: (error) => {
-				console.error('Password reset error:', error);
+				// console.error('Password reset error:', error);
 				if (error.status === 400) {
 					this.errorMessage.set('Invalid or expired reset token. Please request a new password reset.');
 				} else if (error.status === 422) {
