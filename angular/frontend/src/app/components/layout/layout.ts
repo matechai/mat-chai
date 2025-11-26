@@ -1,200 +1,92 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
-import { Auth } from '../../services/auth';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+import { WebsocketService } from '../../services/websocket.service';
+import { NavigationService } from '../../services/navigation.service';
+import { Router } from '@angular/router';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
+import { AppProvider } from '../../services/app.service';
+import { UsersService } from '../../services/users.service';
 
 @Component({
 	selector: 'app-layout',
-	standalone: true,
-	imports: [CommonModule, RouterModule],
-	templateUrl: './layout.html',
-	styleUrl: './layout.scss'
+	templateUrl: './layout.component.html',
+	styleUrls: ['./layout.component.scss'],
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent implements OnInit, OnDestroy {
+	private destroy$ = new ReplaySubject<boolean>(1);
+
+	private websocketService = inject(WebsocketService);
+	private navigationService = inject(NavigationService);
 	private router = inject(Router);
-	private authService = inject(Auth);
+	private authService = inject(AuthService);
+	private appProvider = inject(AppProvider);
+	private usersService = inject(UsersService);
 
-	isAuthenticated = signal<boolean>(false);
-	currentUser = signal<any>(null);
+	isSidebarOpen = true;
+	items$ = new BehaviorSubject<any[]>([]);
+	tenant: any = null;
+	user: any = null;
 
-	ngOnInit() {
-		// Subscribe to auth state changes for real-time updates
-		this.authService.authState$.subscribe(authState => {
-			this.isAuthenticated.set(authState.isAuthenticated);
-			this.currentUser.set(authState.user);
-		});
+	constructor() {
+		// UI theme can stay
+		this.themeMode = this.appProvider.getConfig().theme.mode;
+	}
 
-		// Check initial authentication status
-		this.checkAuthStatus();
+	themeMode;
+	sidebarCollapsed = false;
 
-		// Listen to router events, but prevent unnecessary API calls
-		this.router.events.subscribe((event: any) => {
-			// Only check on NavigationEnd events (when page loading is complete)
-			if (event.constructor.name === 'NavigationEnd') {
-				this.checkAuthStatusFromCache();
+	ngOnInit(): void {
+		this.initializeLayout();
+	}
+
+	ngOnDestroy(): void {
+		this.destroy$.next(true);
+		this.destroy$.complete();
+	}
+
+	// ------------------------------------------
+	// INIT FLOW
+	// ------------------------------------------
+
+	private initializeLayout(): void {
+		this.authService.authState$.subscribe((authState) => {
+			if (authState?.tenant) {
+				this.tenant = authState.tenant;
 			}
-		});
-
-		// Periodic token verification removed - HTTP interceptor handles automatically
-	}
-
-	private checkAuthStatus() {
-		// Check cached user information first
-		const cachedUsername = sessionStorage.getItem('username');
-
-		if (cachedUsername) {
-			// If cache exists, update auth service state immediately for fast UI update
-			this.authService.setAuthenticatedState({ username: cachedUsername });
-
-			// Verify token validity in background
-			this.verifyTokensInBackground();
-		} else {
-			// If no cache, check with server (including token status)
-			this.verifyAuthWithServer();
-		}
-	}
-
-	private verifyTokensInBackground() {
-		// Verify token validity in background
-		this.authService.hasValidTokens().subscribe({
-			next: (hasTokens: boolean | null) => {
-				if (hasTokens === false) {
-					console.log('❌ No valid tokens found, clearing auth state');
-					this.clearAuthState();
-				} else if (hasTokens === true) {
-					console.log('✅ Valid tokens confirmed');
-					// Do nothing if tokens are valid
-				} else {
-					console.log('⚠️ Token status uncertain (network issue)');
-					// Keep cache state in case of uncertainty due to network issues
-				}
-			},
-			error: (error: any) => {
-				console.log('❌ Token verification failed:', error);
-				// Safely clear state on error
-				this.clearAuthState();
+			if (authState?.user) {
+				this.user = authState.user;
+				this.handleAuthenticatedUser(authState.user);
 			}
 		});
 	}
 
-	// Force token check method (call when needed)
-	public forceTokenCheck(): void {
-		console.log('🔍 Force checking token status...');
-		this.verifyTokensInBackground();
+	/**
+	 * Called only when user is logged in
+	 */
+	private handleAuthenticatedUser(user: any): void {
+		// 👉 Single responsibility: Attach websocket
+		this.websocketService.connectIfNeeded();
 	}
 
-	// Log token information (for development - HttpOnly cookies are not visible but status can be checked)
-	public logAuthInfo(): void {
-		console.log('📊 Current Auth State:');
-		console.log('- isAuthenticated:', this.isAuthenticated());
-		console.log('- currentUser:', this.currentUser());
-		console.log('- cachedUsername:', sessionStorage.getItem('username'));
-
-		// Check cookies included in current request (HttpOnly not visible but other cookies are)
-		console.log('- document.cookie:', document.cookie);
-
-		// Check token status with server
-		this.authService.hasValidTokens().subscribe({
-			next: (hasTokens: boolean | null) => {
-				console.log('- serverTokenStatus:', hasTokens ? 'VALID' : hasTokens === false ? 'INVALID' : 'UNKNOWN');
-			}
-		});
+	/**
+	 * Called when logout or token expired
+	 */
+	private handleLogoutState(): void {
+		// 👉 Clean resources
+		this.websocketService.disconnect();
 	}
 
-	private checkAuthStatusFromCache() {
-		// Only check cache for router events (no API calls)
-		const cachedUsername = sessionStorage.getItem('username');
-		this.isAuthenticated.set(!!cachedUsername);
-		this.currentUser.set(cachedUsername ? { username: cachedUsername } : null);
+	// ------------------------------------------
+	// LAYOUT UI CONTROLS
+	// ------------------------------------------
+
+	toggleSidebar(): void {
+		this.sidebarCollapsed = !this.sidebarCollapsed;
 	}
 
-	private verifyAuthWithServer() {
-		// Check actual authentication status with server
-		this.authService.getCurrentUser().subscribe({
-			next: (user: any) => {
-				if (user && user.username) {
-					// Update auth service state (will automatically update component signals)
-					this.authService.setAuthenticatedState(user);
-				} else {
-					this.clearAuthState();
-				}
-			},
-			error: (error: any) => {
-				console.log('Authentication check failed:', error);
-				this.clearAuthState();
-			}
-		});
-	}
-
-	private clearAuthState() {
-		// Use auth service to clear state (will automatically update all subscribers)
-		this.authService.clearUserCache();
-	}
-
-	navigateToHome() {
-		this.router.navigate(['/']);
-	}
-
-	// navigateToLogin() {
-	// 	this.router.navigate(['/login']);
-	// }
-
-	// navigateToSignup() {
-	// 	this.router.navigate(['/signup']);
-	// }
-
-	navigateToMatching() {
-		this.navigateWithAuthCheck(['/matching']);
-	}
-
-	navigateToChat() {
-		this.navigateWithAuthCheck(['/chat']);
-	}
-
-	navigateToSettings() {
-		this.navigateWithAuthCheck(['/setting']);
-	}
-
-	navigateToViewers() {
-		this.navigateWithAuthCheck(['/viewers']);
-	}
-
-	navigateToLikedBy() {
-		this.navigateWithAuthCheck(['/liked-by']);
-	}
-
-	navigateToUpdateProfile() {
-		this.navigateWithAuthCheck(['/updateprofile']);
-	}
-
-	logout() {
-		console.log('🚪 Logout button clicked');
-
-		// Immediately change UI state (improve user experience)
-		this.clearAuthState();
-
-		// Send logout request to server
-		this.authService.logout_request().subscribe({
-			next: (response: any) => {
-				console.log('✅ Logout successful:', response);
-				this.router.navigate(['/login']);
-			},
-			error: (error: any) => {
-				console.error('❌ Logout failed:', error);
-				// Even if server logout fails, client is already cleaned up
-				this.router.navigate(['/login']);
-			}
-		});
-	}
-
-	// Simple check when navigating to pages requiring authentication
-	private navigateWithAuthCheck(route: string[]) {
-		if (!this.isAuthenticated()) {
-			// If not authenticated, go to login page
-			this.router.navigate(['/login']);
-		} else {
-			// If authenticated, navigate (interceptor handles token expiration)
-			this.router.navigate(route);
-		}
+	logout(): void {
+		this.authService.logout();
+		this.handleLogoutState();
+		this.router.navigate(['/auth/login']);
 	}
 }

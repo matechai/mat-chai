@@ -1,6 +1,18 @@
-﻿.notification-container {
-  position: relative;
+﻿// .notification-container {
+//   position: relative;
+// }
+
+.notification-container {
+  display: inline-flex;
+  align-items: center;
 }
+
+.notification-bell svg,
+.notification-bell path {
+  fill: #fff !important;
+  color: #fff !important;
+}
+
 
 .notification-bell {
   position: relative;
@@ -9,13 +21,16 @@
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
-  color: #333;
+  color: white;
   transition: background-color 0.2s;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);
   }
 }
+
+
+
 
 .badge {
   position: absolute;
