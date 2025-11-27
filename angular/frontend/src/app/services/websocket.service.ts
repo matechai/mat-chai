@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+﻿import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { ChatMessage } from '../interfaces/chat-message.model';
 import { Notification, NotificationType } from '../interfaces/notification.model';
@@ -12,6 +12,9 @@ interface StompClient {
   subscribe: (destination: string, callback: (message: any) => void) => any;
   publish: (params: { destination: string; body?: string; headers?: any }) => void;
   onConnect?: (frame: any) => void;
+  onDisconnect?: (frame: any) => void;
+  onWebSocketClose?: () => void;
+  onWebSocketError?: (error: any) => void;
 }
 
 interface StompMessage {
@@ -29,15 +32,15 @@ declare const StompJs: any;
 })
 export class WebSocketService {
   private stompClient: StompClient | null = null;
-  private connected = new ReplaySubject<boolean>(1);
+  private connected = new BehaviorSubject<boolean>(false);
   private ready = new BehaviorSubject<boolean>(false);
   private isConnectedValue = false;
   private channelsSubscribed = false; 
 
   
   
-  private messagesSubject = new BehaviorSubject<ChatMessage | null>(null);
-  private notificationsSubject = new BehaviorSubject<Notification | null>(null);
+  private messagesSubject = new ReplaySubject<ChatMessage | null>(1);
+  private notificationsSubject = new ReplaySubject<Notification | null>(1);
   public messages$ = this.messagesSubject.asObservable().pipe(shareReplay(1));
   public notifications$ = this.notificationsSubject.asObservable().pipe(shareReplay(1));
 
@@ -48,58 +51,61 @@ export class WebSocketService {
   filter((status: any) => status === true)
 );
 
+  constructor(private ngZone: NgZone) {}
+
   public connect(): void {
-  if (this.stompClient?.connected) {
-    console.log('WebSocket already connected');
-    return;
-  }
+    if (this.stompClient?.connected) {
+      console.log('🔌 WebSocket already connected');
+      return;
+    }
 
     this.stompClient = new StompJs.Client({
-    webSocketFactory: () => new SockJS('http://localhost:8080/ws-chat'),
-    connectHeaders: {},
-    debug: (str: string) => console.log('STOMP: ' + str),
-    reconnectDelay: 5000, // Handles reconnects automatically
-    heartbeatIncoming: 4000,
-    heartbeatOutgoing: 4000,
+      webSocketFactory: () => new SockJS('http://localhost:8080/ws-chat'),
+      connectHeaders: {},
+      debug: (str: string) => console.log('STOMP: ' + str),
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    });
 
-    onConnect: () => {
-      console.log('✅ WebSocket Connected');
+    if (!this.stompClient) {
+      console.error('❌ Failed to create STOMP client');
+      return;
+    }
+
+    this.stompClient.onConnect = (frame: any) => {
+      console.log('✅ Connected to WebSocket:', frame.headers);
       this.isConnectedValue = true;
       this.connected.next(true);
       this.ready.next(true);
-      // ❌ Do NOT resubscribe here
-    },
+      
+      // Subscribe to channels IMMEDIATELY after connection
+      if (!this.channelsSubscribed) {
+        this.subscribeToChannels();
+        this.channelsSubscribed = true;
+      }
+    };
 
-    onDisconnect: () => {
+    this.stompClient.onDisconnect = (frame: any) => {
       console.log('🔌 WebSocket disconnected');
       this.isConnectedValue = false;
       this.connected.next(false);
-    },
+    };
 
-    onWebSocketClose: () => {
+    this.stompClient.onWebSocketClose = () => {
       console.log('🔌 WebSocket closed');
       this.isConnectedValue = false;
       this.connected.next(false);
-    },
+    };
 
-    onWebSocketError: (error: any) => {
-      // console.error('❌ WebSocket error:', error);
+    this.stompClient.onWebSocketError = (error: any) => {
+      console.error('❌ WebSocket error:', error);
       this.isConnectedValue = false;
       this.connected.next(false);
-    },
-  });
+    };
 
-    this.stompClient!.onConnect = (frame: any) => {
-    console.log('✅ Connected to WebSocket:', frame.headers);
-    // Subscribe just once
-    if (!this.channelsSubscribed) {
-      this.subscribeToChannels();
-      this.channelsSubscribed = true;
-    }
-  };
-
-    this.stompClient!.activate();
-}
+    this.stompClient.activate();
+  }
 
 
   public connectIfNeeded(): void {
@@ -111,21 +117,35 @@ export class WebSocketService {
   }
 
   private subscribeToChannels(): void {
-  if (!this.stompClient) return;
-  console.log('🔔 Subscribing to STOMP channels');
+    if (!this.stompClient) return;
+    console.log('🔔 Subscribing to STOMP channels');
 
     this.stompClient.subscribe('/user/queue/messages', (message: any) => {
-    console.log('📨 Message received:', message.body);
-    const chatMessage: ChatMessage = JSON.parse(message.body);
-    this.messagesSubject.next(chatMessage);
-  });
+      console.log('📨 Message received:', message.body);
+      try {
+        const chatMessage: ChatMessage = JSON.parse(message.body);
+        // ✅ Wrap in NgZone to trigger Angular change detection
+        this.ngZone.run(() => {
+          this.messagesSubject.next(chatMessage);
+        });
+      } catch (e) {
+        console.error('❌ Error parsing chat message:', e);
+      }
+    });
 
     this.stompClient.subscribe('/user/queue/notifications', (message: any) => {
-    console.log('🔔 Notification received:', message.body);
-    const notification: Notification = JSON.parse(message.body);
-    this.notificationsSubject.next(notification);
-  });
-}
+      console.log('🔔 Notification received:', message.body);
+      try {
+        const notification: Notification = JSON.parse(message.body);
+        // ✅ Wrap in NgZone to trigger Angular change detection
+        this.ngZone.run(() => {
+          this.notificationsSubject.next(notification);
+        });
+      } catch (e) {
+        console.error('❌ Error parsing notification:', e);
+      }
+    });
+  }
 
 
   

@@ -1,28 +1,2 @@
-<nav style="background:#333; padding:1rem; display:flex; gap:1rem; align-items:center;">
-  
-  <!-- Show Login/Signup only if NOT logged in -->
-  <ng-container *ngIf="!isAuthenticated">
-    <a routerLink="/login" routerLinkActive="active" style="color:white; text-decoration:none;">Login</a>
-    <a routerLink="/signup" routerLinkActive="active" style="color:white; text-decoration:none;">Signup</a>
-  </ng-container>
-  
-  <!-- Show protected links if logged in -->
-  <ng-container *ngIf="isAuthenticated">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-       style="color:white; text-decoration:none;">Home</a>
-    <a routerLink="/matching/1" routerLinkActive="active" style="color:white; text-decoration:none;">Matching</a>
-    <a routerLink="/chat" routerLinkActive="active" style="color:white; text-decoration:none;">Chat</a>
-    <a routerLink="/setting" routerLinkActive="active" style="color:white; text-decoration:none;">Settings</a>
-    <a routerLink="/profile/edit" routerLinkActive="active" style="color:white; text-decoration:none;">Update Profile</a>
-    <app-notifications style="margin-left:auto;"></app-notifications>
-    
-    <button (click)="logout()"
-      style="background:#dc3545; color:white; border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer; margin-left:auto;">
-      🚪 Logout
-    </button>
-  </ng-container>
 
-</nav>
-
-<!-- <router-outlet></router-outlet> -->
 <app-layout></app-layout>

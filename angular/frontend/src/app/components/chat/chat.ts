@@ -30,6 +30,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   currentUsername: string = '';
 
   ngOnInit(): void {
+    // ✅ Ensure WebSocket is connected when chat component initializes
+    this.websocketService.connectIfNeeded();
+
     const cachedUsername = this.authService.getCachedUsername();
     if (cachedUsername) {
       this.currentUsername = cachedUsername;

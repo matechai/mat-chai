@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
+import { WebSocketService } from '../../services/websocket.service';
 import { UserDetailModal } from '../user-detail-modal/user-detail-modal';
 
 interface User {
@@ -30,6 +31,7 @@ interface MatchingResponse {
 export class Matching implements OnInit {
   private http = inject(HttpClient);
   private userService = inject(UserService);
+  private websocketService = inject(WebSocketService);
 
   @ViewChild(UserDetailModal) userDetailModal?: UserDetailModal;
 
@@ -132,6 +134,9 @@ export class Matching implements OnInit {
   }
 
   ngOnInit() {
+    // ✅ Ensure WebSocket is connected when matching component initializes
+    this.websocketService.connectIfNeeded();
+
     console.log('Matching component initialized, loading first profile...');
     console.log('HTTP client available:', !!this.http);
 
