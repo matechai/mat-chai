@@ -34,7 +34,7 @@ public class ChatHistoryService {
         List<ChatPartnerDto> partners = new ArrayList<>();
 
         for (User partner : matchedUsers) {
-            // Fetch the last message (in either direction)
+            // Fetch the last message (in either direction) using raw query
             List<ChatMessage> lastMessages = chatRepository.findLastMessageBetweenUsers(
                     currentUser.getUsername(),
                     partner.getUsername()
@@ -81,15 +81,17 @@ public class ChatHistoryService {
 
     /**
      * Marks all unread messages from the partner as read
-     * when the current user opens the chat.
+     * when the current user opens the chat using raw MongoDB query.
      */
     public void markMessagesAsRead(User currentUser, String partnerUsername) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("sender").is(partnerUsername)
+        query.addCriteria(
+            Criteria.where("sender").is(partnerUsername)
                 .and("receiver").is(currentUser.getUsername())
-                .and("read").is(false));
+                .and("read").is(false)
+        );
 
         Update update = new Update().set("read", true);
-        mongoTemplate.updateMulti(query, update, ChatMessage.class);
+        mongoTemplate.updateMulti(query, update, ChatMessage.class, "messages");
     }
 }

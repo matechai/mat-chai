@@ -55,7 +55,7 @@ public class NotificationService {
         }
 
         notification.setRead(true);
-        notificationRepository.save(notification);
+        notificationRepository.updateById(notificationId, notification);
     }
 
     public void markAllAsRead(String username)
