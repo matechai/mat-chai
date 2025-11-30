@@ -5,6 +5,7 @@ import com.ft.matechai.user.dto.UserInfoDTO;
 import com.ft.matechai.user.dto.UserProfileDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.service.UserService;
+import com.ft.matechai.config.socket.PresenceService;
 
 import graphql.schema.DataFetchingEnvironment;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -27,9 +28,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final PresenceService presenceService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PresenceService presenceService) {
         this.userService = userService;
+        this.presenceService = presenceService;
     }
 
 
@@ -82,6 +85,16 @@ public class UserController {
     public String getGender(User user) {
 
         return userService.getGender(user.getUsername());
+    }
+
+    @SchemaMapping(typeName = "User", field = "online")
+    public Boolean getOnline(User targetUser) {
+        if (presenceService == null) return false;
+        try {
+            return presenceService.isOnline(targetUser.getUsername());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @SchemaMapping(typeName = "User", field = "sexualPreference")

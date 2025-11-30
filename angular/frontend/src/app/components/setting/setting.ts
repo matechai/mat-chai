@@ -166,7 +166,7 @@ export class Setting implements OnInit, OnDestroy {
         'Content-Type': 'application/json'
       }
     }).subscribe({
-      next: (updatedUser) => {
+      next: (updatedUser : any) => {
         this.userInfo.set(updatedUser);
         this.isEditing.set(false);
         this.isLoading.set(false);
@@ -177,7 +177,7 @@ export class Setting implements OnInit, OnDestroy {
           this.successMessage.set('');
         }, 3000);
       },
-      error: (error) => {
+      error: (error: any) => {
         // console.error('Error updating user info:', error);
         this.errorMessage.set('Failed to update user information. Please try again.');
         this.isLoading.set(false);
@@ -282,7 +282,7 @@ export class Setting implements OnInit, OnDestroy {
           this.locationSuccessMessage.set('');
         }, 5000);
       },
-      error: (error) => {
+      error: (error: any) => {
         // console.error('Error updating location:', error);
         this.isLocationLoading.set(false);
         this.locationErrorMessage.set('Failed to update location. Please try again.');
