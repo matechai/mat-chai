@@ -37,11 +37,15 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (cachedUsername) {
       this.currentUsername = cachedUsername;
       this.setupMessageSubscription();
+      // Send online status
+      this.websocketService.sendOnlineStatus(cachedUsername);
     } else {
       this.authService.getCurrentUser().subscribe({
         next: (user: any) => {
           this.currentUsername = user.username;
           this.setupMessageSubscription();
+          // Send online status
+          this.websocketService.sendOnlineStatus(user.username);
         },
         // error: (err: any) => console.error('Error getting current user:', err)
       });

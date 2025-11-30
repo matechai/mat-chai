@@ -1,7 +1,10 @@
-import { Component, EventEmitter, Input, Output, signal, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { WebSocketService, OnlineStatus } from '../../services/websocket.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 export interface UserDetail {
 	username: string;
@@ -27,8 +30,10 @@ export interface UserDetail {
 	templateUrl: './user-detail-modal.html',
 	styleUrl: './user-detail-modal.scss'
 })
-export class UserDetailModal {
+export class UserDetailModal implements OnInit, OnDestroy {
 	private http = inject(HttpClient);
+	private websocketService = inject(WebSocketService);
+	private destroy$ = new Subject<void>();
 
 	@Input() show = false;
 	@Input() mode: 'view' | 'matching' = 'view'; // view: 일반 보기, matching: 매칭 페이지
@@ -49,6 +54,27 @@ export class UserDetailModal {
 	isBlockProcessing = signal<boolean>(false);
 	alertMessage = signal<string>('');
 	alertType = signal<'success' | 'error' | ''>('');
+	userOnlineStatus = signal<{ isOnline: boolean; lastOnline?: string }>({ isOnline: false });
+
+	ngOnInit() {
+		// Subscribe to online status updates from WebSocket
+		this.websocketService.onlineStatus$
+			.pipe(takeUntil(this.destroy$))
+			.subscribe((status: OnlineStatus | null) => {
+				if (status && this.userDetail() && status.username === this.userDetail()?.username) {
+					console.log('🟢 Online status updated for', status.username, ':', status);
+					this.userOnlineStatus.set({
+						isOnline: status.isOnline,
+						lastOnline: status.lastOnline
+					});
+				}
+			});
+	}
+
+	ngOnDestroy() {
+		this.destroy$.next();
+		this.destroy$.complete();
+	}
 
 	// Load user detail by username
 	async loadUserDetail(username: string) {
@@ -86,8 +112,16 @@ export class UserDetailModal {
 			}).toPromise();
 
 			if (response?.data?.getUserByUsername) {
-				this.userDetail.set(response.data.getUserByUsername);
-				console.log('User detail loaded:', response.data.getUserByUsername);
+				const user = response.data.getUserByUsername;
+				this.userDetail.set(user);
+				
+				// Set initial online status based on lastOnline
+				this.userOnlineStatus.set({
+					isOnline: false,
+					lastOnline: user.lastOnline
+				});
+				
+				console.log('User detail loaded:', user);
 			}
 		} catch (error) {
 			// console.error('Failed to load user detail:', error);
@@ -156,7 +190,7 @@ export class UserDetailModal {
 		const diffInDays = Math.floor(diffInHours / 24);
 
 		if (diffInMinutes < 1) {
-			return 'Just now';
+			return 'online';
 		} else if (diffInMinutes < 60) {
 			return `${diffInMinutes} min${diffInMinutes > 1 ? 's' : ''} ago`;
 		} else if (diffInHours < 24) {
@@ -166,6 +200,37 @@ export class UserDetailModal {
 		} else {
 			return lastOnlineDate.toLocaleDateString();
 		}
+	}
+
+	// Get online status text and color
+	getOnlineStatusDisplay(): { text: string; isOnline: boolean; color: string } {
+		const status = this.userOnlineStatus();
+		
+		if (status.isOnline) {
+			return {
+				text: 'Online now',
+				isOnline: true,
+				color: '#4CAF50'
+			};
+		} else if (status.lastOnline) {
+			return {
+				text: this.formatLastOnline(status.lastOnline),
+				isOnline: false,
+				color: '#999'
+			};
+		} else if (this.userDetail()?.lastOnline) {
+			return {
+				text: this.formatLastOnline(this.userDetail()!.lastOnline),
+				isOnline: false,
+				color: '#999'
+			};
+		}
+		
+		return {
+			text: 'Unknown',
+			isOnline: false,
+			color: '#ccc'
+		};
 	}
 
 	// Get fame level description
