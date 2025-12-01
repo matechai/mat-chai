@@ -22,6 +22,13 @@ interface StompMessage {
   headers: any;
 }
 
+// Online status interface
+export interface OnlineStatus {
+  username: string;
+  isOnline: boolean;
+  lastOnline?: string;
+}
+
 // Declare external libraries as any to avoid type issues
 declare const SockJS: any;
 declare const StompJs: any;
@@ -41,8 +48,11 @@ export class WebSocketService {
   
   private messagesSubject = new ReplaySubject<ChatMessage | null>(1);
   private notificationsSubject = new ReplaySubject<Notification | null>(1);
+  private onlineStatusSubject = new ReplaySubject<OnlineStatus | null>(1);
+  
   public messages$ = this.messagesSubject.asObservable().pipe(shareReplay(1));
   public notifications$ = this.notificationsSubject.asObservable().pipe(shareReplay(1));
+  public onlineStatus$ = this.onlineStatusSubject.asObservable().pipe(shareReplay(1));
 
   public connected$: Observable<boolean> = this.connected.asObservable();
   public ready$ = this.ready.asObservable();
@@ -145,6 +155,20 @@ export class WebSocketService {
         console.error('❌ Error parsing notification:', e);
       }
     });
+
+    // Subscribe to online status updates
+    this.stompClient.subscribe('/topic/online-status', (message: any) => {
+      console.log('🟢 Online status received:', message.body);
+      try {
+        const onlineStatus: OnlineStatus = JSON.parse(message.body);
+        // ✅ Wrap in NgZone to trigger Angular change detection
+        this.ngZone.run(() => {
+          this.onlineStatusSubject.next(onlineStatus);
+        });
+      } catch (e) {
+        console.error('❌ Error parsing online status:', e);
+      }
+    });
   }
 
 
@@ -158,6 +182,19 @@ export class WebSocketService {
       console.log('✉️ Message sent to:', receiver);
     } else {
       // console.error('❌ WebSocket not connected. Cannot send message.');
+    }
+  }
+
+  // Send online status update
+  sendOnlineStatus(username: string): void {
+    if (this.stompClient?.connected) {
+      this.stompClient.publish({
+        destination: `/app/user.online/${username}`,
+        body: ''
+      });
+      console.log('🟢 Online status sent for:', username);
+    } else {
+      console.error('❌ WebSocket not connected. Cannot send online status.');
     }
   }
 

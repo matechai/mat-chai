@@ -41,18 +41,21 @@ public class UserService {
     private final SexualPreferenceRepository sexualPreferenceRepository;
     private final InterestRepository interestRepository;
     private final FameService fameService;
+    private final com.ft.matechai.notification.service.NotificationService notificationService;
 
 
-	public UserService(UserRepository userRepository,
+    public UserService(UserRepository userRepository,
                        GenderRepository genderRepository,
                        SexualPreferenceRepository sexualPreferenceRepository,
                        InterestRepository interestRepository,
-                       FameService fameService) {
-		this.userRepository = userRepository;
+                       FameService fameService,
+                       com.ft.matechai.notification.service.NotificationService notificationService) {
+        this.userRepository = userRepository;
         this.genderRepository = genderRepository;
         this.sexualPreferenceRepository = sexualPreferenceRepository;
         this.interestRepository = interestRepository;
         this.fameService = fameService;
+        this.notificationService = notificationService;
     }
 
 	// GETTERS // GETTERS // GETTERS // GETTERS //
@@ -62,8 +65,18 @@ public class UserService {
 
         User targetUser = userRepository.findByUsernameOrThrow(targetUsername);
 
-        if (env.getSelectionSet().contains("interests") && !user.getUsername().equals(targetUsername))
+        if (env.getSelectionSet().contains("interests") && !user.getUsername().equals(targetUsername)) {
             userRepository.view(user.getUsername(), targetUsername);
+            try {
+                // send notification to the target user that their profile was viewed
+                String sender = user.getUsername();
+                String receiver = targetUsername;
+                String message = String.format("@%s viewed your profile", sender);
+                notificationService.createAndSendNotification(sender, receiver, com.ft.matechai.notification.enums.NotificationType.PROFILE_VIEW, message);
+            } catch (Exception e) {
+                log.debug("Failed to send profile view notification: {}", e.getMessage());
+            }
+        }
 
         return targetUser;
     }

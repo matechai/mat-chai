@@ -27,9 +27,11 @@ export class LayoutComponent implements OnInit {
 			this.currentUser.set(authState.user);
 
 			// ✅ Connect WebSocket immediately when user becomes authenticated
-			if (authState.isAuthenticated) {
+			if (authState.isAuthenticated && authState.user) {
 				console.log('🔌 Auth state changed to authenticated, connecting WebSocket');
 				this.websocketService.connectIfNeeded();
+				// Send online status
+				this.websocketService.sendOnlineStatus(authState.user.username);
 			}
 		});
 

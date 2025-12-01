@@ -5,4 +5,5 @@ public enum NotificationType {
 	MATCH,
     LIKE,
 	UNLIKE
+	,PROFILE_VIEW
 }
