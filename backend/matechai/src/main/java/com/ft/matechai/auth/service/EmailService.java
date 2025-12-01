@@ -16,7 +16,7 @@ public class EmailService {
     @Value("${app.url}")
     private String address;
 
-    @Value("${frontend.url}")
+    @Value("${frontend.address}")
     private String frontendURL;
 
 
