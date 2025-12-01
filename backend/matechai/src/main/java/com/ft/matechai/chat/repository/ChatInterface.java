@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import java.util.List;
 
 @Repository
@@ -56,7 +57,7 @@ public class ChatInterface {
             Criteria.where("sender").is(sender)
                 .and("receiver").is(receiver)
         );
-        query.sort().on("timestamp", com.springframework.data.domain.Sort.Direction.DESC);
+         query.with(Sort.by(Sort.Direction.DESC, "timestamp"));
         query.limit(1);
         return mongoTemplate.findOne(query, ChatMessage.class, "messages");
     }
@@ -76,7 +77,7 @@ public class ChatInterface {
                 )
             )
         );
-        query.sort().on("timestamp", com.springframework.data.domain.Sort.Direction.DESC);
+         query.with(Sort.by(Sort.Direction.DESC, "timestamp"));
         query.limit(1);
         return mongoTemplate.find(query, ChatMessage.class, "messages");
     }
