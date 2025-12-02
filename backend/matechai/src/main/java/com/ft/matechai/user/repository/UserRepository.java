@@ -26,9 +26,11 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                 .orElseThrow(() -> new AuthExceptions.UnauthorizedException("Invalid username"));
     }
 
-    boolean existsByUsername(String username);
+    @Query("MATCH (u:User {username: $username}) RETURN count(u) > 0")
+    boolean existsByUsername(@Param("username") String username);
 
-    boolean existsByEmail(String email);
+    @Query("MATCH (u:User {email: $email}) RETURN count(u) > 0")
+    boolean existsByEmail(@Param("email") String email);
 
     @Query("MATCH (me:User {email: $email}) Return me")
     User findByEmail(@Param("email") String email);
