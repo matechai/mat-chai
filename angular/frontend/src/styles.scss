@@ -1,1 +1,17 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global font override: prefer common web/system sans-serif to avoid using local/installed fonts */
+html,
+body,
+input,
+button,
+textarea,
+select {
+	font-family: Arial, Helvetica, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', sans-serif !important;
+}
+
+/* Ensure default serif usages fall back to a standard serif (avoid platform-specific Nimbus mappings) */
+* {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* If you want absolutely no access to local fonts in dev, avoid calling any font-access APIs or libraries that enumerate fonts. */
