@@ -55,16 +55,9 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
             console.log('[Interceptor] ✅ Token refresh successful, reloading page...');
             isRefreshing = false;
 
-            // Reload page after successful token refresh
-            return next(req.clone({ withCredentials: true}));
-            // window.location.reload();
-
-            // Retry original request after refresh (this won't execute due to page reload)
-            const retryRequest = req.clone({
-              withCredentials: true
-            });
-            return next(retryRequest);
-            }),
+            // After successful refresh, retry original request with credentials
+            return next(req.clone({ withCredentials: true }));
+          }),
           catchError((refreshErr: any) => {
             // console.error('[Interceptor] ❌ Token refresh failed:', refreshErr);
             // if refresh expires/fails
