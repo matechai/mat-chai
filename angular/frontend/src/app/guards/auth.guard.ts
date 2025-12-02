@@ -20,6 +20,13 @@ export class AuthGuard implements CanActivate {
 			map((result : any) => {
 				console.log('🔒 AuthGuard: checkAuthState result:', result);
 
+				// Check if we should redirect to login (username exists but no tokens)
+				if (result.shouldRedirectToLogin) {
+					console.log('❌ Invalid auth state (username without tokens), redirecting to login');
+					this.router.navigate(['/login']);
+					return false;
+				}
+
 				// Check if user is authenticated
 				if (!result.isAuthenticated && state.url !== '/login') {
 					console.log('❌ Not authenticated, redirecting to login');

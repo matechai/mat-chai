@@ -228,25 +228,51 @@ export class Auth {
   }
 
   // Check authentication status and get user state
-// Modify checkAuthState to update currentUserSubject automatically
   checkAuthState(): Observable<{ isAuthenticated: boolean, user?: any }> {
     return new Observable((observer: any) => {
-      this.getUserAuthInfo().subscribe({
-        next: (response: any) => {
-          const user = response.data?.me || null;
-          if (user) this.setCurrentUser(user);
-          else this.setCurrentUser(null);
+      const cachedUsername = this.getCachedUsername();
+      const hasTokens = this.hasAuthCookies();
 
-          observer.next({ isAuthenticated: !!user, user });
-          observer.complete();
-        },
-        error: (error: any) => {
-          // console.error('Error checking auth state:', error);
-          this.setCurrentUser(null);
-          observer.next({ isAuthenticated: false });
-          observer.complete();
-        }
-      });
+      // Case 1: username 없고, accessToken/refreshToken도 없음 -> 로그인 안 된 상태
+      if (!cachedUsername && !hasTokens) {
+        this.setCurrentUser(null);
+        observer.next({ isAuthenticated: false });
+        observer.complete();
+        return;
+      }
+
+      // Case 2: username 있지만, accessToken/refreshToken 없음 -> 캐시 삭제하고 로그인 페이지로
+      if (cachedUsername && !hasTokens) {
+        this.clearUserCache();
+        observer.next({ isAuthenticated: false, shouldRedirectToLogin: true });
+        observer.complete();
+        return;
+      }
+
+      // Case 3: username 없지만, accessToken/refreshToken 있음 -> GraphQL 호출
+      if (!cachedUsername && hasTokens) {
+        this.getUserAuthInfo().subscribe({
+          next: (response: any) => {
+            const user = response.data?.me || null;
+            if (user) this.setCurrentUser(user);
+            else this.setCurrentUser(null);
+
+            observer.next({ isAuthenticated: !!user, user });
+            observer.complete();
+          },
+          error: (error: any) => {
+            this.setCurrentUser(null);
+            observer.next({ isAuthenticated: false });
+            observer.complete();
+          }
+        });
+        return;
+      }
+
+      // Case 4: username도 있고, 토큰도 있음 -> 캐시 사용 (GraphQL 호출 안 함)
+      const user = { username: cachedUsername };
+      observer.next({ isAuthenticated: true, user });
+      observer.complete();
     });
   }
 
