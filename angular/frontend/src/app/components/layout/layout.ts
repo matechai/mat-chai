@@ -21,6 +21,11 @@ export class LayoutComponent implements OnInit {
 	currentUser = signal<any>(null);
 
 	ngOnInit() {
+		// Get initial auth state
+		const currentAuthState = this.authService.getCurrentAuthState();
+		this.isAuthenticated.set(currentAuthState.isAuthenticated);
+		this.currentUser.set(currentAuthState.user);
+
 		// Subscribe to auth state changes for real-time updates
 		this.authService.authState$.subscribe(authState => {
 			this.isAuthenticated.set(authState.isAuthenticated);
