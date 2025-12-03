@@ -35,11 +35,35 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
         req.url.includes('/refresh') ||
         req.url.includes('/logout');
 
-      // Refresh only when accessToken has expired (check specific error message)
-      const isTokenExpiredError = err.status === 401 &&
-        err.error?.message === "Token expired";
+      // Check if it's a 401 error
+      const is401Error = err.status === 401;
 
-      if (isTokenExpiredError && !isAuthEndpoint && !isExternalGeoService)
+      // Token expired: try refresh
+      const isTokenExpiredError = err.error?.message === "Token expired";
+
+      // Token missing: logout immediately (cookie expired)
+      const isTokenMissingError = err.error?.message === "Unauthorized: accessToken missing";
+
+      // Handle token missing - direct logout
+      if (is401Error && isTokenMissingError && !isAuthEndpoint && !isExternalGeoService) {
+        authService.clearUserCache();
+
+        // Only redirect if not already on login page
+        if (!window.location.pathname.includes('/login')) {
+          authService.logout_request().subscribe({
+            next: () => {
+              window.location.href = '/login';
+            },
+            error: () => {
+              window.location.href = '/login';
+            }
+          });
+        }
+        return throwError(() => err);
+      }
+
+      // Handle token expired - try refresh
+      if (is401Error && isTokenExpiredError && !isAuthEndpoint && !isExternalGeoService)
       {
         // If already refreshing, prevent duplicate requests
         if (isRefreshing) {
@@ -65,18 +89,20 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
             authService.clearUserCache();
 
-            // Send logout request and redirect to login page
-            authService.logout_request().subscribe({
-              next: () => {
-                console.log('[Interceptor] Logout completed');
-                window.location.href = '/login';
-              },
-              error: (logoutErr: any) => {
-                // console.error('[Interceptor] Logout failed:', logoutErr);
-                // Even if logout fails, redirect to login page
-                window.location.href = '/login';
-              }
-            });
+            // Send logout request and redirect to login page (only if not already on login)
+            if (!window.location.pathname.includes('/login')) {
+              authService.logout_request().subscribe({
+                next: () => {
+                  console.log('[Interceptor] Logout completed');
+                  window.location.href = '/login';
+                },
+                error: (logoutErr: any) => {
+                  // console.error('[Interceptor] Logout failed:', logoutErr);
+                  // Even if logout fails, redirect to login page
+                  window.location.href = '/login';
+                }
+              });
+            }
 
             return throwError(() => refreshErr);
           })
