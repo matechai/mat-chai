@@ -241,7 +241,6 @@ export class Setting implements OnInit, OnDestroy {
             this.locationErrorMessage.set('Location request timed out.');
             break;
           default:
-            this.locationErrorMessage.set('An unknown error occurred while getting your location.');
             break;
         }
       },

@@ -121,7 +121,6 @@ export class Signup {
         .subscribe({
           next: (response: any) => {
             this.isLoading = false;
-            console.log('Signup successful:', response);
             this.showAlert('✅ Registration completed successfully! Please complete email verification and then proceed to login.', 'success');
 
             // Navigate to login after showing message
@@ -131,7 +130,7 @@ export class Signup {
           },
           error: (err: any) => {
             this.isLoading = false;
-            console.log('Signup failed:', err);
+            // console.log('Signup failed:', err);
             if (err.status === 409) {
               this.showAlert('❌ Username or email already exists.', 'error');
             } else if (err.status === 400) {
