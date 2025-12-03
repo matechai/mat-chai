@@ -8,7 +8,7 @@ let isRefreshing = false;
 
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => 
 {
-  console.log('[Interceptor] Request:', req.url);
+  // console.log('[Interceptor] Request:', req.url);
   const authService = inject(Auth);
 
   // Exclude credentials for external IP geolocation services
@@ -23,7 +23,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
   });
 
   if (isExternalGeoService) {
-    console.log('[Interceptor] External geo service detected, skipping credentials');
+    // console.log('[Interceptor] External geo service detected, skipping credentials');
   }
 
   return next(cloneReq).pipe(
@@ -43,11 +43,11 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
       {
         // If already refreshing, prevent duplicate requests
         if (isRefreshing) {
-          console.log('[Interceptor] Already refreshing, skipping...');
+          // console.log('[Interceptor] Already refreshing, skipping...');
           return throwError(() => err);
         }
 
-        console.log('[Interceptor] AccessToken expired, refreshing token...');
+        // console.log('[Interceptor] AccessToken expired, refreshing token...');
         isRefreshing = true;
 
         return authService.refresh_request().pipe(
