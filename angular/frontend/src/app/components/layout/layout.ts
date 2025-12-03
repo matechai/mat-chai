@@ -28,7 +28,7 @@ export class LayoutComponent implements OnInit {
 
 			// ✅ Connect WebSocket immediately when user becomes authenticated
 			if (authState.isAuthenticated && authState.user) {
-				console.log('🔌 Auth state changed to authenticated, connecting WebSocket');
+				// console.log('🔌 Auth state changed to authenticated, connecting WebSocket');
 				this.websocketService.connectIfNeeded();
 				// Send online status
 				this.websocketService.sendOnlineStatus(authState.user.username);
@@ -36,7 +36,7 @@ export class LayoutComponent implements OnInit {
 		});
 
 		// Layout은 auth state만 구독! AuthGuard가 인증 체크 담당
-		console.log('🎨 Layout initialized - listening to auth state only');
+		// console.log('🎨 Layout initialized - listening to auth state only');
 	}
 
 	navigateToHome() {
@@ -76,7 +76,6 @@ export class LayoutComponent implements OnInit {
 	}
 
 	logout() {
-		console.log('🚪 Logout button clicked');
 
 		// Immediately change UI state (improve user experience)
 		this.authService.clearUserCache();
@@ -84,7 +83,6 @@ export class LayoutComponent implements OnInit {
 		// Send logout request to server
 		this.authService.logout_request().subscribe({
 			next: (response: any) => {
-				console.log('✅ Logout successful:', response);
 				this.router.navigate(['/login']);
 			},
 			error: (error: any) => {

@@ -65,7 +65,6 @@ export class WebSocketService {
 
   public connect(): void {
     if (this.stompClient?.connected) {
-      console.log('🔌 WebSocket already connected');
       return;
     }
 
@@ -79,7 +78,7 @@ export class WebSocketService {
     });
 
     if (!this.stompClient) {
-      console.error('❌ Failed to create STOMP client');
+      // console.error('❌ Failed to create STOMP client');
       return;
     }
 
@@ -97,19 +96,19 @@ export class WebSocketService {
     };
 
     this.stompClient.onDisconnect = (frame: any) => {
-      console.log('🔌 WebSocket disconnected');
+      // console.log('🔌 WebSocket disconnected');
       this.isConnectedValue = false;
       this.connected.next(false);
     };
 
     this.stompClient.onWebSocketClose = () => {
-      console.log('🔌 WebSocket closed');
+      // console.log('🔌 WebSocket closed');
       this.isConnectedValue = false;
       this.connected.next(false);
     };
 
     this.stompClient.onWebSocketError = (error: any) => {
-      console.error('❌ WebSocket error:', error);
+      // console.error('❌ WebSocket error:', error);
       this.isConnectedValue = false;
       this.connected.next(false);
     };
@@ -122,16 +121,16 @@ export class WebSocketService {
     if (!this.isConnected()) {
       this.connect();
     } else {
-      console.log('🔌 WebSocket already connected (connectIfNeeded skipped)');
+      // console.log('🔌 WebSocket already connected (connectIfNeeded skipped)');
     }
   }
 
   private subscribeToChannels(): void {
     if (!this.stompClient) return;
-    console.log('🔔 Subscribing to STOMP channels');
+    // console.log('🔔 Subscribing to STOMP channels');
 
     this.stompClient.subscribe('/user/queue/messages', (message: any) => {
-      console.log('📨 Message received:', message.body);
+      // console.log('📨 Message received:', message.body);
       try {
         const chatMessage: ChatMessage = JSON.parse(message.body);
         // ✅ Wrap in NgZone to trigger Angular change detection
@@ -139,12 +138,12 @@ export class WebSocketService {
           this.messagesSubject.next(chatMessage);
         });
       } catch (e) {
-        console.error('❌ Error parsing chat message:', e);
+        // console.error('❌ Error parsing chat message:', e);
       }
     });
 
     this.stompClient.subscribe('/user/queue/notifications', (message: any) => {
-      console.log('🔔 Notification received:', message.body);
+      // console.log('🔔 Notification received:', message.body);
       try {
         const notification: Notification = JSON.parse(message.body);
         // ✅ Wrap in NgZone to trigger Angular change detection
@@ -152,13 +151,13 @@ export class WebSocketService {
           this.notificationsSubject.next(notification);
         });
       } catch (e) {
-        console.error('❌ Error parsing notification:', e);
+        // console.error('❌ Error parsing notification:', e);
       }
     });
 
     // Subscribe to online status updates
     this.stompClient.subscribe('/topic/online-status', (message: any) => {
-      console.log('🟢 Online status received:', message.body);
+      // console.log('🟢 Online status received:', message.body);
       try {
         const onlineStatus: OnlineStatus = JSON.parse(message.body);
         // ✅ Wrap in NgZone to trigger Angular change detection
@@ -166,7 +165,7 @@ export class WebSocketService {
           this.onlineStatusSubject.next(onlineStatus);
         });
       } catch (e) {
-        console.error('❌ Error parsing online status:', e);
+        // console.error('❌ Error parsing online status:', e);
       }
     });
   }
@@ -179,7 +178,7 @@ export class WebSocketService {
         destination: `/app/chat.send/${receiver}`,
         body: content
       });
-      console.log('✉️ Message sent to:', receiver);
+      // console.log('✉️ Message sent to:', receiver);
     } else {
       // console.error('❌ WebSocket not connected. Cannot send message.');
     }
@@ -192,9 +191,9 @@ export class WebSocketService {
         destination: `/app/user.online/${username}`,
         body: ''
       });
-      console.log('🟢 Online status sent for:', username);
+      // console.log('🟢 Online status sent for:', username);
     } else {
-      console.error('❌ WebSocket not connected. Cannot send online status.');
+      // console.error('❌ WebSocket not connected. Cannot send online status.');
     }
   }
 
@@ -205,7 +204,7 @@ export class WebSocketService {
       this.connected.next(false);
       this.stompClient = null;
       this.channelsSubscribed = false;
-      console.log('🔌 WebSocket disconnected');
+      // console.log('🔌 WebSocket disconnected');
     }
   }
 

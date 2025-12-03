@@ -176,11 +176,11 @@ export class Matching implements OnInit {
   // Load next profile from backend
   async loadNextProfile() {
     if (this.isLoading()) {
-      console.log('Already loading, skipping...');
+      // console.log('Already loading, skipping...');
       return;
     }
 
-    console.log('Loading profile for page:', this.currentPage());
+    // console.log('Loading profile for page:', this.currentPage());
     this.isLoading.set(true);
 
     try {
@@ -207,13 +207,13 @@ export class Matching implements OnInit {
       }
 
       const url = `/api/matching?${params.toString()}`;
-      console.log('Sending GET request to:', url);
+      // console.log('Sending GET request to:', url);
 
       const response = await this.http.get<MatchingResponse>(url, {
         withCredentials: true
       }).toPromise();
 
-      console.log('Received response:', response);
+      // console.log('Received response:', response);
 
       if (response && response.user) {
         this.currentUser.set(response.user);
@@ -245,7 +245,7 @@ export class Matching implements OnInit {
       // });
       this.noMoreProfiles.set(true);
     } finally {
-      console.log('Loading complete, setting isLoading to false');
+      // console.log('Loading complete, setting isLoading to false');
       this.isLoading.set(false);
     }
   }
@@ -275,7 +275,7 @@ export class Matching implements OnInit {
     const user = this.currentUser();
     if (!user) return;
 
-    console.log('Liked user:', user.username);
+    // console.log('Liked user:', user.username);
 
     try {
       // Send like to backend using the correct endpoint
@@ -295,7 +295,7 @@ export class Matching implements OnInit {
     const user = this.currentUser();
     if (!user) return;
 
-    console.log('Passed user:', user.username);
+    // console.log('Passed user:', user.username);
 
     try {
       // Send pass to backend using the correct endpoint
@@ -344,39 +344,39 @@ export class Matching implements OnInit {
 
   // Handle like from modal (matching mode)
   async onModalLike(username: string) {
-    console.log('Modal like:', username);
+    // console.log('Modal like:', username);
     await this.onLike(); // 기존 onLike 메서드 재사용
   }
 
   // Handle pass from modal (matching mode)
   async onModalPass(username: string) {
-    console.log('Modal pass:', username);
+    // console.log('Modal pass:', username);
     await this.onPass(); // 기존 onPass 메서드 재사용
   }
 
   // Handle user blocked from modal
   onUserBlocked(username: string) {
-    console.log('User blocked:', username);
+    // console.log('User blocked:', username);
     // Load next user as the current one has been blocked
     this.loadNextProfile();
   }
 
   // Filter functions
   toggleFilterModal() {
-    console.log('toggleFilterModal called');
-    console.log('Current showFilterModal state:', this.showFilterModal());
+    // console.log('toggleFilterModal called');
+    // console.log('Current showFilterModal state:', this.showFilterModal());
     const newState = !this.showFilterModal();
     this.showFilterModal.set(newState);
-    console.log('New showFilterModal state:', this.showFilterModal());
+    // console.log('New showFilterModal state:', this.showFilterModal());
   }
 
   closeFilterModal() {
-    console.log('Close filter modal called');
+    // console.log('Close filter modal called');
     this.showFilterModal.set(false);
   }
 
   applySortFilter(sortBy: string, order: string) {
-    console.log('Applying sort filter:', sortBy, order);
+    // console.log('Applying sort filter:', sortBy, order);
     this.sortBy.set(sortBy);
     this.order.set(order);
 
@@ -386,7 +386,7 @@ export class Matching implements OnInit {
     this.noMoreProfiles.set(false);
     this.currentUser.set(null);
 
-    console.log('Filter applied - sortBy:', this.sortBy(), 'order:', this.order());
+    // console.log('Filter applied - sortBy:', this.sortBy(), 'order:', this.order());
 
     this.closeFilterModal();
 
@@ -414,7 +414,7 @@ export class Matching implements OnInit {
 
   // Search filter functions
   toggleSearchModal() {
-    console.log('toggleSearchModal called');
+    // console.log('toggleSearchModal called');
     this.showSearchModal.set(!this.showSearchModal());
   }
 
@@ -423,14 +423,14 @@ export class Matching implements OnInit {
   }
 
   applySearchFilter() {
-    console.log('Applying search filter:', {
-      minAge: this.minAge(),
-      maxAge: this.maxAge(),
-      minFame: this.minFame(),
-      maxFame: this.maxFame(),
-      maxDistance: this.maxDistance(),
-      interests: this.selectedInterests()
-    });
+    // console.log('Applying search filter:', {
+    //   minAge: this.minAge(),
+    //   maxAge: this.maxAge(),
+    //   minFame: this.minFame(),
+    //   maxFame: this.maxFame(),
+    //   maxDistance: this.maxDistance(),
+    //   interests: this.selectedInterests()
+    // });
 
     // Reset pagination and reload
     this.currentPage.set(0);
