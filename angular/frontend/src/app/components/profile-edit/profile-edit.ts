@@ -215,21 +215,46 @@ export class ProfileEdit implements OnInit {
 
 	// Handle photo selection
 	onPhotoSelected(event: any): void {
-		const file = event.target.files[0];
-		if (file && this.selectedPhotos().length < 5) {
-			const reader = new FileReader();
-			reader.onload = (e: any) => {
-				const currentPhotos = this.selectedPhotos();
-				this.selectedPhotos.set([
-					...currentPhotos,
-					{ file: file, preview: e.target.result }
-				]);
-			};
-			reader.readAsDataURL(file);
-		}
-		// Reset file input
+	const file = event.target.files[0];
+	if (!file) return;
+
+	const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+	const maxSize = 5 * 1024 * 1024; // 5MB
+
+	// 1. Max photos
+	if (this.selectedPhotos().length >= 5) {
+		this.errorMessage.set('You can upload a maximum of 5 photos.');
 		event.target.value = '';
+		return;
 	}
+
+	// 2. Type check
+	if (!allowedTypes.includes(file.type)) {
+		this.errorMessage.set('Invalid file type. Only JPG, PNG, and WEBP are allowed.');
+		event.target.value = '';
+		return;
+	}
+
+	// 3. Size check
+	if (file.size > maxSize) {
+		this.errorMessage.set('File too large. Max size is 5MB.');
+		event.target.value = '';
+		return;
+	}
+
+	// 4. Add preview
+	const reader = new FileReader();
+	reader.onload = (e: any) => {
+		this.selectedPhotos.update(photos => [
+			...photos,
+			{ file, preview: e.target.result }
+		]);
+	};
+
+	reader.readAsDataURL(file);
+	event.target.value = '';
+	}
+
 
 	// Remove photo
 	removePhoto(index: number): void {
