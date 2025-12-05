@@ -45,7 +45,7 @@ public class UserController {
     }
 
     @PatchMapping("/{username}")
-    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
+    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateUserInformation(@PathVariable String username,
                                                    @RequestBody UserInfoDTO userInfoDTO) {
 
@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @PostMapping("/{username}/profile")
-    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
+    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateProfile(@PathVariable String username,
                                            @RequestPart("data") UserProfileDTO userProfileDTO,
                                            @RequestPart("files") List<MultipartFile> files) {

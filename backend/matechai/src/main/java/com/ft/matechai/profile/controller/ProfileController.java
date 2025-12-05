@@ -41,7 +41,7 @@ public class ProfileController {
     }
 
     @PostMapping("/users/{username}/location")
-    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
+    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateLocation(@PathVariable String username,
                                             @RequestBody LocationDTO location) {
 
