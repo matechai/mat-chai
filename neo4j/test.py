@@ -1,5 +1,5 @@
 import random
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 POKEMON_MAP = {
     1: "bulbasaur",
@@ -67,7 +67,7 @@ def random_birthday(min_age=5, max_age=40):
     end_birth = today.replace(year=today.year - min_age)
     delta = (end_birth - start_birth).days
     random_days = random.randint(0, delta)
-    return (start_birth + timedelta(days=random_days)).isoformat()  # "YYYY-MM-DD"
+    return (start_birth + timedelta(days=random_days)).isoformat()
 
 
 def random_biography():
@@ -84,6 +84,12 @@ def random_biography():
         "Curious mind, always learning."
     ]
     return random.choice(bios)
+
+
+def random_last_online():
+    days_ago = random.randint(1, 30)
+    dt = datetime.now() - timedelta(days=days_ago)
+    return dt.isoformat()
 
 
 with open("init_profiles.cypher", "w", encoding="utf-8") as f:
@@ -122,7 +128,8 @@ with open("init_profiles.cypher", "w", encoding="utf-8") as f:
         
         dob = random_birthday()
         bio = random_biography()
-        
+        last_online = random_last_online()
+
         cypher = f"""CREATE (u:User {{
 			username: '{username}',
 			email: '{email}',
@@ -138,6 +145,7 @@ with open("init_profiles.cypher", "w", encoding="utf-8") as f:
 			profileImageUrl: '{profile_img}',
 			imageUrls: [],
 			dateOfBirth: date('{dob}'),
+            lastOnline: datetime('{last_online}'),
 			biography: '{bio}'
 		}});\n"""
         f.write(cypher)
