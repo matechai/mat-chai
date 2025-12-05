@@ -49,12 +49,12 @@ export class Login {
       this.authService.signin_request({ username: this.loginForm.value.userName, password: this.loginForm.value.password })
         .subscribe({
           next: (response: any) => {
-            console.log('Login successful:', response);
+            // console.log('Login successful:', response);
             // Fetch user profile information after successful login
             this.authService.getUserInfo().subscribe({
               next: (userInfo: any) => {
                 this.isLoading = false;
-                console.log('User info:', userInfo);
+                // console.log('User info:', userInfo);
 
                 const user = userInfo.data?.me;
                 if (user) {
@@ -77,7 +77,7 @@ export class Login {
                 this.showAlert('❌ Failed to load user profile. Please try logging in again.', 'error');
                 this.authService.logout_request().subscribe({
                   next: () => {
-                    console.log('Logged out successfully');
+                    // console.log('Logged out successfully');
                     this.router.navigate(['/login']);
                   },
                   error: (logoutErr: any) => {
@@ -91,7 +91,7 @@ export class Login {
           },
           error: (err: any) => {
             this.isLoading = false;
-            console.log('Login failed:', err);
+            // console.log('Login failed:', err);
             if (err.status === 403) {
               // Check if the error message indicates the user is banned
               const errorMessage = err.error?.message || '';
