@@ -47,12 +47,12 @@ export const routes: Routes = [
   {
 	path: 'forgot-password',
 	loadComponent: () => import('./components/forgot-password/forgot-password').then(m => m.ForgotPassword),
-	canActivate: [PublicGuard]
+	// canActivate: [PublicGuard]
   },
   {
 	path: 'reset-password',
-	loadComponent: () => import('./components/reset-password/reset-password').then(m => m.ResetPassword),
-	canActivate: [PublicGuard]
+	  loadComponent: () => import('./components/reset-password/reset-password').then(m => m.ResetPassword)
+	  // No guard - allow anyone with valid token
   },
   {
 	path: 'viewers', 
