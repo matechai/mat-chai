@@ -25,14 +25,36 @@ export class Signup {
 
   constructor(private fb: FormBuilder) {
     this.signupForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      userName: ['', [Validators.required]],
+      firstName: ['', [Validators.required, Validators.maxLength(50), this.noControlCharactersValidator]],
+      lastName: ['', [Validators.required, Validators.maxLength(50), this.noControlCharactersValidator]],
+      userName: ['', [Validators.required, this.usernameValidator]],
       email: ['', [Validators.required, Validators.email]],
       dateOfBirth: ['', [Validators.required]],
       password: ['', [Validators.required]],
       confirmPassword: ['', [Validators.required]],
     });
+  }
+
+  // Username validator: only alphanumeric characters allowed
+  usernameValidator(control: any) {
+    const value = control.value || '';
+    const regex = /^[a-zA-Z0-9]+$/;
+    
+    if (!value) return null;
+    
+    return regex.test(value) ? null : { invalidUsername: true };
+  }
+
+  // Validator to prevent control characters and newlines
+  noControlCharactersValidator(control: any) {
+    const value = control.value || '';
+    
+    if (!value) return null;
+    
+    // Check for control characters (\x00-\x1F, \x7F-\x9F) and newlines
+    const hasControlChars = /[\x00-\x1F\x7F-\x9F\n\r]/.test(value);
+    
+    return hasControlChars ? { hasControlCharacters: true } : null;
   }
 
   checkPasswordStrength(password: string): string {
