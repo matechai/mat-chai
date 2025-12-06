@@ -38,8 +38,11 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     // Gender
     @Transactional
-    @Query("MATCH (u:User {username: $username}), (g:Gender {gender: $gender}) " +
-            "MERGE (u)-[:HAS_GENDER]->(g)")
+    @Query("""
+                MATCH (u:User {username: $username})
+                MATCH (g:Gender {gender: $gender})
+                MERGE (u)-[:HAS_GENDER]->(g)
+            """)
     void setGender(@Param("username") String username,
                    @Param("gender") String gender);
 
@@ -53,8 +56,11 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     // Sexual Preference
     @Transactional
-    @Query("MATCH (u:User {username: $username}), (s:SexualPreference {name: $prefName}) " +
-            "MERGE (u)-[:HAS_PREFERENCE]->(s)")
+    @Query("""
+                MATCH (u:User {username: $username})
+                MATCH (s:SexualPreference {name: $prefName})
+                MERGE (u)-[:HAS_PREFERENCE]->(s)
+            """)
     void setSexualPreference(@Param("username") String username,
                              @Param("prefName") String prefName);
 
@@ -68,8 +74,11 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     // Interest
     @Transactional
-    @Query("MATCH (u:User {username: $username}), (i:Interest {name: $interestName}) " +
-            "MERGE (u)-[:INTERESTED_IN]->(i)")
+    @Query("""
+                MATCH (u:User {username: $username})
+                MATCH (i:Interest {name: $interestName})
+                MERGE (u)-[:INTERESTED_IN]->(i)
+            """)
     void addInterest(@Param("username") String username,
                      @Param("interestName") String interestName);
 
@@ -113,6 +122,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                         MATCH (u:User)-[l:LIKED]->(me:User {username: $username})
                         RETURN u, l.createdAt AS likedAt
                         ORDER BY likedAt DESC
+                        SKIP $skip
+                        LIMIT $limit
                     """,
             countQuery = """
                             MATCH (u:User)-[l:LIKED]->(me:User {username: $username})
@@ -255,6 +266,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                         MATCH (viewer:User)-[v:VIEWED]->(me:User {username: $username})
                         RETURN viewer, v.viewedAt AS viewedAt
                         ORDER BY v.viewedAt DESC
+                        SKIP $skip
+                        LIMIT $limit
                     """,
             countQuery = """
                             MATCH (viewer:User)-[v:VIEWED]->(me:User {username: $username})
@@ -322,6 +335,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                           )
                         RETURN u
                         ORDER BY u.fame DESC
+                        SKIP $skip
+                        LIMIT $limit
                     """,
             countQuery = """
                         MATCH (me:User {username: $username})
