@@ -321,7 +321,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                             ('Heterosexual' IN myPrefs) AND (
                               (meGender.gender = 'Male' AND uGender.gender = 'Female' AND 'Heterosexual' IN uPrefs) OR
                               (meGender.gender = 'Female' AND uGender.gender = 'Male' AND 'Heterosexual' IN uPrefs) OR
-                              (meGender.gender = 'Others' AND uGender.gender = 'Others' AND 'Heterosexual' IN uPrefs)
+                              (meGender.gender = 'Other' AND uGender.gender = 'Other' AND 'Heterosexual' IN uPrefs)
                             )
                           ) OR
                           (
@@ -330,13 +330,11 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                             AND 'Homosexual' IN uPrefs
                           ) OR
                           (
-                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Others'])
-                            AND uGender.gender IN ['Male', 'Female', 'Others']
+                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Other'])
+                            AND uGender.gender IN ['Male', 'Female', 'Other']
                           )
                         RETURN u
                         ORDER BY u.fame DESC
-                        SKIP $skip
-                        LIMIT $limit
                     """,
             countQuery = """
                         MATCH (me:User {username: $username})
@@ -373,7 +371,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                             ('Heterosexual' IN myPrefs) AND (
                               (meGender.gender = 'Male' AND uGender.gender = 'Female' AND 'Heterosexual' IN uPrefs) OR
                               (meGender.gender = 'Female' AND uGender.gender = 'Male' AND 'Heterosexual' IN uPrefs) OR
-                              (meGender.gender = 'Others' AND uGender.gender = 'Others' AND 'Heterosexual' IN uPrefs)
+                              (meGender.gender = 'Other' AND uGender.gender = 'Other' AND 'Heterosexual' IN uPrefs)
                             )
                           ) OR
                           (
@@ -382,8 +380,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                             AND 'Homosexual' IN uPrefs
                           ) OR
                           (
-                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Others'])
-                            AND uGender.gender IN ['Male', 'Female', 'Others']
+                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Other'])
+                            AND uGender.gender IN ['Male', 'Female', 'Other']
                           )
                         RETURN count(u)
                     """)

@@ -51,7 +51,7 @@ POKEMON_LIST = list(POKEMON_MAP.values())
 
 PASSWORD_HASH = "$2a$12$xk3pxoVQxE2UfubCvr70a.5mj8KWEMWEEw8s3/RtQgfBfOPRKkf0q"
 
-GENDERS = ["Female", "Male", "Others"]
+GENDERS = ["Female", "Male", "Other"]
 PREFERENCES = ["Heterosexual", "Homosexual", "Bisexual", "Prefer not to say", "Other"]
 INTERESTS = [
     "Vegan","Geek","Piercing","Fitness","Gaming","Music","Travel","Books",

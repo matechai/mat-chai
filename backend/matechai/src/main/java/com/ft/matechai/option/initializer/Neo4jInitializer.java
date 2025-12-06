@@ -31,7 +31,7 @@ public class Neo4jInitializer implements CommandLineRunner {
         String[] genders = {
                 "Male",
                 "Female",
-                "Others"
+                "Other"
         };
 
         for (String gender : genders) {
