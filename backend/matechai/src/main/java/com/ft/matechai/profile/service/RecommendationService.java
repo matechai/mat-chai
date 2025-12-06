@@ -37,7 +37,7 @@ public class RecommendationService {
      */
     public PaginatedUserDTO getRecommendedUsers(User me, int page, String sortBy, String order, int minAge, int maxAge, int minFame, int maxFame, double distance, List<String> interests) {
 
-        Pageable pageable = PageRequest.of(page, 1);
+        Pageable pageable = PageRequest.of(page, 100);
         Page<User> usersPage = userRepository.getUsersForMatching(me.getUsername(), minAge, maxAge, minFame, maxFame, distance, interests, pageable);
 
         if (!usersPage.hasContent())
@@ -52,26 +52,32 @@ public class RecommendationService {
             default -> Comparator.comparing(User::getFame);
         };
 
-        if ("desc".equalsIgnoreCase(order))
-            comparator = comparator.reversed();
-        sortedList.sort(comparator);
+        if (sortBy.equals("age")) {
 
-        User targetUser = sortedList.get(page);
+            if ("asc".equalsIgnoreCase(order))
+                comparator = comparator.reversed();
+            sortedList.sort(comparator);
+        } else {
 
-        UserBasicProfileDTO userProfileDto = UserBasicProfileDTO.builder()
-                .username(targetUser.getUsername())
-                .profileImage(targetUser.getProfileImageUrl())
-                .imageUrls(targetUser.getImageUrls())
-                .dateOfBirth(targetUser.getDateOfBirth())
-                .targetLikesMe(userRepository.targetLikesMe(me.getUsername(), targetUser.getUsername()))
-                .matched(userRepository.isMatched(me.getUsername(), targetUser.getUsername()))
-                .build();
+            if ("desc".equalsIgnoreCase(order))
+                comparator = comparator.reversed();
+            sortedList.sort(comparator);
+        }
+
+        List<UserBasicProfileDTO> userProfileDtoList = sortedList.stream()
+                .map(u -> UserBasicProfileDTO.builder()
+                .username(u.getUsername())
+                .profileImage(u.getProfileImageUrl())
+                .imageUrls(u.getImageUrls())
+                .dateOfBirth(u.getDateOfBirth())
+                .targetLikesMe(userRepository.targetLikesMe(me.getUsername(), u.getUsername()))
+                .matched(userRepository.isMatched(me.getUsername(), u.getUsername()))
+                .build())
+                .toList();
 
         return PaginatedUserDTO.builder()
-                .user(userProfileDto)
-                .currentPage(page)
-                .totalPages(usersPage.getTotalPages())
-                .hasNext(usersPage.hasNext())
+                .users(userProfileDtoList)
+                .totalElements(usersPage.getTotalElements())
                 .build();
     }
 
