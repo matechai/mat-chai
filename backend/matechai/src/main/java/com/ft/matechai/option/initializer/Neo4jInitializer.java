@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +35,7 @@ public class Neo4jInitializer implements CommandLineRunner {
         };
 
         for (String gender : genders) {
-            genderRepository.saveIfNotExists(gender);
+            genderRepository.saveIfNotExists(gender, UUID.randomUUID().toString());
         }
 
         System.out.println("Initial Gender loaded into Neo4j");
@@ -51,7 +53,7 @@ public class Neo4jInitializer implements CommandLineRunner {
 
 
         for (String sexualPreference : sexualPreferences) {
-            sexualPreferenceRepository.saveIfNotExists(sexualPreference);
+            sexualPreferenceRepository.saveIfNotExists(sexualPreference, UUID.randomUUID().toString());
         }
 
         System.out.println("Initial Sexual Preference loaded into Neo4j");
@@ -84,7 +86,7 @@ public class Neo4jInitializer implements CommandLineRunner {
         };
 
         for (String interest : interests) {
-            interestRepository.saveIfNotExists(interest);
+            interestRepository.saveIfNotExists(interest, UUID.randomUUID().toString());
         }
 
         System.out.println("Initial Interests loaded into Neo4j");

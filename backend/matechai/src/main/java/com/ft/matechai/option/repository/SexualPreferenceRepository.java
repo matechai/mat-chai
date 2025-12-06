@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface SexualPreferenceRepository extends Neo4jRepository<SexualPreference, Long> {
+public interface SexualPreferenceRepository extends Neo4jRepository<SexualPreference, String> {
 
     @Query("MATCH (s:SexualPreference {name: $name}) RETURN s")
     Optional<SexualPreference> findBySexualPreference(@Param("name") String name);
@@ -20,8 +20,13 @@ public interface SexualPreferenceRepository extends Neo4jRepository<SexualPrefer
                 .orElseThrow(() -> new EntityNotFoundException("Sexual Preference", name));
     }
 
-    @Query("MERGE (s:SexualPreference {name: $name}) RETURN s")
-    void saveIfNotExists(@Param("name") String name);
+
+    @Query("""
+                MERGE (s:SexualPreference {name: $name})
+                ON CREATE SET s.id = $id
+                RETURN s
+            """)
+    SexualPreference saveIfNotExists(@Param("name") String name, @Param("id") String id);
 
 
     @Query("""
