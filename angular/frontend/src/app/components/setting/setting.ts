@@ -166,11 +166,12 @@ export class Setting implements OnInit, OnDestroy {
         'Content-Type': 'application/json'
       }
     }).subscribe({
-      next: (updatedUser : any) => {
-        this.userInfo.set(updatedUser);
+      next: () => {
         this.isEditing.set(false);
-        this.isLoading.set(false);
         this.successMessage.set('User information updated successfully!');
+
+        // Reload user info from server to ensure data consistency
+        this.fetchUserDetails();
 
         // Clear success message after 3 seconds
         setTimeout(() => {
