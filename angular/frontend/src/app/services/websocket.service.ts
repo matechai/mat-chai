@@ -1,10 +1,9 @@
 ﻿import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import { ChatMessage } from '../interfaces/chat-message.model';
-import { Notification, NotificationType } from '../interfaces/notification.model';
-import { filter, shareReplay } from 'rxjs/operators';
+import { Notification } from '../interfaces/notification.model';
 
-// Type definitions for WebSocket
 interface StompClient {
   connected: boolean;
   activate: () => void;
@@ -17,49 +16,40 @@ interface StompClient {
   onWebSocketError?: (error: any) => void;
 }
 
-interface StompMessage {
-  body: string;
-  headers: any;
-}
-
-// Online status interface
 export interface OnlineStatus {
   username: string;
   isOnline: boolean;
   lastOnline?: string;
 }
 
-// Declare external libraries as any to avoid type issues
 declare const SockJS: any;
 declare const StompJs: any;
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService {
   private stompClient: StompClient | null = null;
+  private isConnectedValue = false;
+  private channelsSubscribed = false;
+
   private connected = new BehaviorSubject<boolean>(false);
   private ready = new BehaviorSubject<boolean>(false);
-  private isConnectedValue = false;
-  private channelsSubscribed = false; 
 
-  
-  
   private messagesSubject = new ReplaySubject<ChatMessage | null>(1);
   private notificationsSubject = new ReplaySubject<Notification | null>(1);
   private onlineStatusSubject = new ReplaySubject<OnlineStatus | null>(1);
-  
+
   public messages$ = this.messagesSubject.asObservable().pipe(shareReplay(1));
   public notifications$ = this.notificationsSubject.asObservable().pipe(shareReplay(1));
   public onlineStatus$ = this.onlineStatusSubject.asObservable().pipe(shareReplay(1));
 
-  public connected$: Observable<boolean> = this.connected.asObservable();
+  public connected$ = this.connected.asObservable();
   public ready$ = this.ready.asObservable();
 
-  public onConnected$ = this.connected$.pipe(
-  filter((status: any) => status === true)
-);
+  // Queues for messages / online status triggered before connection
+  private pendingMessages: { receiver: string; content: string }[] = [];
+  private pendingOnlineStatuses: string[] = [];
 
   constructor(private ngZone: NgZone) {}
 
@@ -67,14 +57,18 @@ export class WebSocketService {
     if (this.stompClient?.connected) {
       return;
     }
+  }
+
+  /** Establish STOMP connection */
+  private connect(): void {
+    if (this.stompClient?.connected) return;
 
     this.stompClient = new StompJs.Client({
       webSocketFactory: () => new SockJS('http://localhost:8080/ws-chat'),
-      connectHeaders: {},
-      debug: (str: string) => console.log('STOMP: ' + str),
+      debug: (str: any) => console.log('STOMP: ' + str),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
+      heartbeatOutgoing: 4000
     });
 
     if (!this.stompClient) {
@@ -87,10 +81,10 @@ export class WebSocketService {
       this.isConnectedValue = true;
       this.connected.next(true);
       this.ready.next(true);
-      
-      // Subscribe to channels IMMEDIATELY after connection
+
+      // Subscribe to channels after ensuring connection is ready
       if (!this.channelsSubscribed) {
-        this.subscribeToChannels();
+        setTimeout(() => this.subscribeToChannels(), 100);
         this.channelsSubscribed = true;
       }
     };
@@ -113,7 +107,8 @@ export class WebSocketService {
       this.connected.next(false);
     };
 
-    this.stompClient.activate();
+    this.stompClient!.activate();
+    console.log('STOMP: Activating WebSocket...');
   }
 
 
@@ -125,6 +120,7 @@ export class WebSocketService {
     }
   }
 
+  /** Subscribe to message, notification, and online-status channels */
   private subscribeToChannels(): void {
     if (!this.stompClient) return;
     // console.log('🔔 Subscribing to STOMP channels');
@@ -170,9 +166,8 @@ export class WebSocketService {
     });
   }
 
-
-  
-  sendMessage(receiver: string, content: string): void {
+  /** Send chat message, queue if not connected */
+  public sendMessage(receiver: string, content: string): void {
     if (this.stompClient?.connected) {
       this.stompClient.publish({
         destination: `/app/chat.send/${receiver}`,
@@ -180,12 +175,13 @@ export class WebSocketService {
       });
       // console.log('✉️ Message sent to:', receiver);
     } else {
-      // console.error('❌ WebSocket not connected. Cannot send message.');
+      console.warn('❌ WebSocket not connected, queuing message for:', receiver);
+      this.pendingMessages.push({ receiver, content });
     }
   }
 
-  // Send online status update
-  sendOnlineStatus(username: string): void {
+  /** Send online status, queue if not connected */
+  public sendOnlineStatus(username: string): void {
     if (this.stompClient?.connected) {
       this.stompClient.publish({
         destination: `/app/user.online/${username}`,
@@ -197,19 +193,31 @@ export class WebSocketService {
     }
   }
 
-  disconnect(): void {
+  /** Flush queued messages */
+  private flushPendingMessages() {
+    this.pendingMessages.forEach(msg => this.sendMessage(msg.receiver, msg.content));
+    this.pendingMessages = [];
+  }
+
+  /** Flush queued online statuses */
+  private flushPendingOnlineStatuses() {
+    this.pendingOnlineStatuses.forEach(username => this.sendOnlineStatus(username));
+    this.pendingOnlineStatuses = [];
+  }
+
+  /** Disconnect STOMP client */
+  public disconnect(): void {
     if (this.stompClient) {
       this.stompClient.deactivate();
-      this.isConnectedValue = false;
-      this.connected.next(false);
       this.stompClient = null;
+      this.isConnectedValue = false;
       this.channelsSubscribed = false;
       // console.log('🔌 WebSocket disconnected');
     }
   }
 
-  isConnected(): boolean {
+  /** Return connection status */
+  public isConnected(): boolean {
     return this.isConnectedValue;
   }
-
 }
