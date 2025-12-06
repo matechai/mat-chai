@@ -89,7 +89,7 @@
     
     <!-- Page Info -->
     <p style="color:#666; margin:0 0 1.5rem 0; font-size:14px;">
-      Profile {{ currentPage() + 1 }} of {{ totalPages() }}
+      Profile {{ currentIndex() + 1 }} of {{ totalUsers() }}
     </p>
     
     <!-- Action Buttons -->
@@ -116,7 +116,8 @@
 <!-- User Detail Modal -->
 <app-user-detail-modal [show]="showUserDetail()" [mode]="'matching'" (close)="closeUserDetailModal()"
   (like)="onModalLike($event)" (pass)="onModalPass($event)"
-  (userBlocked)="onUserBlocked($event)">
+  (userBlocked)="onUserBlocked($event)"
+  (userReported)="onUserReported($event)">
 </app-user-detail-modal>
 <!-- Filter Modal -->
 <div *ngIf="showFilterModal()"

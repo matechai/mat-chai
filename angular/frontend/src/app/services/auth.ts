@@ -284,6 +284,9 @@ export class Auth {
   // Clear user cache
   clearUserCache(): void {
     sessionStorage.removeItem('username');
+    // Also clear matching cache
+    sessionStorage.removeItem('matching_users');
+    sessionStorage.removeItem('matching_index');
     this.setCurrentUser(null);
     // Update auth state when clearing cache
     this.updateAuthState(false, null);

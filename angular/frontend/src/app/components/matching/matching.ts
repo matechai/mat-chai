@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -15,10 +15,8 @@ interface User {
 }
 
 interface MatchingResponse {
-  user: User;
-  currentPage: number;
-  totalPages: number;
-  hasNext: boolean;
+  users: User[];
+  totalElements: number;
 }
 
 @Component({
@@ -28,7 +26,7 @@ interface MatchingResponse {
   templateUrl: './matching.html',
   styleUrl: './matching.scss'
 })
-export class Matching implements OnInit {
+export class Matching implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private userService = inject(UserService);
   private websocketService = inject(WebSocketService);
@@ -44,11 +42,14 @@ export class Matching implements OnInit {
 
   // Signals for state management
   currentUser = signal<User | null>(null);
-  currentPage = signal<number>(0);
-  totalPages = signal<number>(0);
-  hasNext = signal<boolean>(true);
+  currentIndex = signal<number>(0); // Current index in cached users array
+  totalUsers = signal<number>(0);
   isLoading = signal<boolean>(false);
   noMoreProfiles = signal<boolean>(false);
+
+  // SessionStorage keys
+  private readonly STORAGE_KEY = 'matching_users';
+  private readonly INDEX_KEY = 'matching_index';
 
   // Image carousel state
   currentImageIndex = signal<number>(0);
@@ -137,19 +138,26 @@ export class Matching implements OnInit {
     // ✅ Ensure WebSocket is connected when matching component initializes
     this.websocketService.connectIfNeeded();
 
-    console.log('Matching component initialized, loading first profile...');
-    console.log('HTTP client available:', !!this.http);
+    console.log('Matching component initialized');
 
     // Load available interests from GraphQL
     this.userService.getInterests().subscribe({
       next: (data: string[]) => this.availableInterests.set(data),
-      // error: (error: any) => console.error('Error loading interests:', error)
     });
 
-    // 약간의 지연 후 로딩 시작 (컴포넌트 완전 초기화 대기)
-    setTimeout(() => {
-      this.loadNextProfile();
-    }, 100);
+    // Always clear cache on component init (fresh start)
+    console.log('🧹 Clearing old cache on init');
+    this.clearCache();
+
+    // Fetch fresh data
+    console.log('🔄 Fetching new users');
+    this.fetchAndCacheUsers();
+  }
+
+  ngOnDestroy() {
+    // Clear cache when component is destroyed (navigation away)
+    console.log('🧹 Clearing cache on component destroy');
+    this.clearCache();
   }
 
   // Calculate age from date of birth
@@ -173,25 +181,19 @@ export class Matching implements OnInit {
     return imagePath.replace('/app/uploads/', '/uploads/');
   }
 
-  // Load next profile from backend
-  async loadNextProfile() {
-    if (this.isLoading()) {
-      // console.log('Already loading, skipping...');
-      return;
-    }
+  // Fetch users from backend and cache them
+  async fetchAndCacheUsers() {
+    if (this.isLoading()) return;
 
-    // console.log('Loading profile for page:', this.currentPage());
     this.isLoading.set(true);
+    console.log('🌐 Fetching users from backend...');
 
     try {
-      // Call actual backend API with page and filter parameters
-      const page = this.currentPage();
       const sortBy = this.sortBy();
       const order = this.order();
 
-      // Build URL with search filter parameters
+      // Build URL with filter parameters
       const params = new URLSearchParams();
-      params.set('page', page.toString());
       params.set('sortBy', sortBy);
       params.set('order', order);
       params.set('minAge', this.minAge().toString());
@@ -200,54 +202,113 @@ export class Matching implements OnInit {
       params.set('maxFame', this.maxFame().toString());
       params.set('distance', this.maxDistance().toString());
 
-      // Add interests if any are selected
       const interests = this.selectedInterests();
       if (interests.length > 0) {
         params.set('interests', interests.join(','));
       }
 
       const url = `/api/matching?${params.toString()}`;
-      // console.log('Sending GET request to:', url);
-
       const response = await this.http.get<MatchingResponse>(url, {
         withCredentials: true
       }).toPromise();
 
-      // console.log('Received response:', response);
+      if (response && response.users && response.users.length > 0) {
+        console.log(`✅ Fetched ${response.users.length} users`);
 
-      if (response && response.user) {
-        this.currentUser.set(response.user);
-        this.currentPage.set(response.currentPage);
-        this.totalPages.set(response.totalPages);
-        this.hasNext.set(response.hasNext);
+        // Cache users in sessionStorage
+        this.setCachedUsers(response.users);
+        this.setCachedIndex(0);
 
-        // Prepare images array (profile image + additional images)
-        const images: string[] = [];
-        if (response.user.profileImage) {
-          images.push(this.convertImagePath(response.user.profileImage));
-        }
-        if (response.user.imageUrls && response.user.imageUrls.length > 0) {
-          images.push(...response.user.imageUrls.map((url: string) => this.convertImagePath(url)));
-        }
-
-        this.allImages.set(images);
-        this.currentImageIndex.set(0);
+        this.totalUsers.set(response.users.length);
+        this.currentIndex.set(0);
+        this.showUserAtIndex(0);
         this.noMoreProfiles.set(false);
       } else {
+        console.log('❌ No users found');
         this.noMoreProfiles.set(true);
+        this.clearCache();
       }
     } catch (error) {
-      // console.error('Failed to load profile:', error);
-      // console.error('Error details:', {
-      //   message: (error as any)?.message,
-      //   status: (error as any)?.status,
-      //   url: (error as any)?.url
-      // });
+      console.error('❌ Failed to fetch users:', error);
       this.noMoreProfiles.set(true);
+      this.clearCache();
     } finally {
-      // console.log('Loading complete, setting isLoading to false');
       this.isLoading.set(false);
     }
+  }
+
+  // Show user at specific index
+  showUserAtIndex(index: number) {
+    const users = this.getCachedUsers();
+    if (!users || index >= users.length) {
+      this.noMoreProfiles.set(true);
+      return;
+    }
+
+    const user = users[index];
+    this.currentUser.set(user);
+    this.currentIndex.set(index);
+    this.setCachedIndex(index);
+
+    // Prepare images array
+    const images: string[] = [];
+    if (user.profileImage) {
+      images.push(this.convertImagePath(user.profileImage));
+    }
+    if (user.imageUrls && user.imageUrls.length > 0) {
+      images.push(...user.imageUrls.map((url: string) => this.convertImagePath(url)));
+    }
+
+    this.allImages.set(images);
+    this.currentImageIndex.set(0);
+
+    console.log(`👤 Showing user ${index + 1}/${users.length}: ${user.username}`);
+  }
+
+  // Move to next user
+  async moveToNextUser() {
+    const nextIndex = this.currentIndex() + 1;
+    const totalUsers = this.totalUsers();
+
+    if (nextIndex < totalUsers) {
+      this.showUserAtIndex(nextIndex);
+    } else {
+      console.log('✨ All cached users viewed, fetching more...');
+      this.clearCache();
+
+      // Try to fetch more users
+      await this.fetchAndCacheUsers();
+
+      // If still no users after refetch, show no more profiles
+      if (this.totalUsers() === 0) {
+        console.log('❌ No more profiles available');
+        this.noMoreProfiles.set(true);
+      }
+    }
+  }
+
+  // SessionStorage helper methods
+  private getCachedUsers(): User[] | null {
+    const cached = sessionStorage.getItem(this.STORAGE_KEY);
+    return cached ? JSON.parse(cached) : null;
+  }
+
+  private setCachedUsers(users: User[]) {
+    sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(users));
+  }
+
+  private getCachedIndex(): number {
+    const cached = sessionStorage.getItem(this.INDEX_KEY);
+    return cached ? parseInt(cached) : 0;
+  }
+
+  private setCachedIndex(index: number) {
+    sessionStorage.setItem(this.INDEX_KEY, index.toString());
+  }
+
+  private clearCache() {
+    sessionStorage.removeItem(this.STORAGE_KEY);
+    sessionStorage.removeItem(this.INDEX_KEY);
   }
 
 
@@ -275,18 +336,17 @@ export class Matching implements OnInit {
     const user = this.currentUser();
     if (!user) return;
 
-    // console.log('Liked user:', user.username);
+    console.log('👍 Liked user:', user.username);
 
     try {
-      // Send like to backend using the correct endpoint
       await this.http.post(`/api/users/${user.username}/like`, {}, {
         withCredentials: true
       }).toPromise();
 
-      // Move to next profile
-      await this.moveToNextProfile();
+      // Move to next user in cache
+      this.moveToNextUser();
     } catch (error) {
-      // console.error('Failed to send like:', error);
+      console.error('❌ Failed to send like:', error);
     }
   }
 
@@ -295,34 +355,17 @@ export class Matching implements OnInit {
     const user = this.currentUser();
     if (!user) return;
 
-    // console.log('Passed user:', user.username);
+    console.log('👎 Passed user:', user.username);
 
     try {
-      // Send pass to backend using the correct endpoint
       await this.http.post(`/api/users/${user.username}/pass`, {}, {
         withCredentials: true
       }).toPromise();
 
-      // Move to next profile
-      await this.moveToNextProfile();
+      // Move to next user in cache
+      this.moveToNextUser();
     } catch (error) {
-      // console.error('Failed to send pass:', error);
-    }
-  }
-
-  // Move to next profile (shared logic for like and pass)
-  private async moveToNextProfile() {
-    // Check if there are more profiles available
-    if (this.hasNext()) {
-      // Increment page number for next API call
-      const nextPage = this.currentPage() + 1;
-      this.currentPage.set(nextPage);
-
-      // Load next profile with incremented page
-      await this.loadNextProfile();
-    } else {
-      // No more profiles available
-      this.noMoreProfiles.set(true);
+      console.error('❌ Failed to send pass:', error);
     }
   }
 
@@ -355,10 +398,18 @@ export class Matching implements OnInit {
   }
 
   // Handle user blocked from modal
-  onUserBlocked(username: string) {
-    // console.log('User blocked:', username);
-    // Load next user as the current one has been blocked
-    this.loadNextProfile();
+  async onUserBlocked(username: string) {
+    console.log('🚫 User blocked:', username);
+    // Move to next user
+    await this.moveToNextUser();
+  }
+
+  // Handle user reported from modal
+  async onUserReported(event: any) {
+    const username = typeof event === 'string' ? event : event.username || event;
+    console.log('⚠️ User reported:', username);
+    // Move to next user
+    await this.moveToNextUser();
   }
 
   // Filter functions
@@ -376,24 +427,15 @@ export class Matching implements OnInit {
   }
 
   applySortFilter(sortBy: string, order: string) {
-    // console.log('Applying sort filter:', sortBy, order);
+    console.log('🔄 Applying sort filter:', sortBy, order);
     this.sortBy.set(sortBy);
     this.order.set(order);
 
-    // Reset pagination and reload
-    this.currentPage.set(0);
-    this.hasNext.set(true);
-    this.noMoreProfiles.set(false);
-    this.currentUser.set(null);
-
-    // console.log('Filter applied - sortBy:', this.sortBy(), 'order:', this.order());
-
     this.closeFilterModal();
 
-    // Force reload with new filter
-    setTimeout(() => {
-      this.loadNextProfile();
-    }, 100);
+    // Clear cache and fetch new data
+    this.clearCache();
+    this.fetchAndCacheUsers();
   }
 
   getSortLabel(): string {
@@ -423,27 +465,20 @@ export class Matching implements OnInit {
   }
 
   applySearchFilter() {
-    // console.log('Applying search filter:', {
-    //   minAge: this.minAge(),
-    //   maxAge: this.maxAge(),
-    //   minFame: this.minFame(),
-    //   maxFame: this.maxFame(),
-    //   maxDistance: this.maxDistance(),
-    //   interests: this.selectedInterests()
-    // });
-
-    // Reset pagination and reload
-    this.currentPage.set(0);
-    this.hasNext.set(true);
-    this.noMoreProfiles.set(false);
-    this.currentUser.set(null);
+    console.log('🔍 Applying search filter:', {
+      minAge: this.minAge(),
+      maxAge: this.maxAge(),
+      minFame: this.minFame(),
+      maxFame: this.maxFame(),
+      maxDistance: this.maxDistance(),
+      interests: this.selectedInterests()
+    });
 
     this.closeSearchModal();
 
-    // Force reload with new filter
-    setTimeout(() => {
-      this.loadNextProfile();
-    }, 100);
+    // Clear cache and fetch new data with filters
+    this.clearCache();
+    this.fetchAndCacheUsers();
   }
 
   resetSearchFilter() {
