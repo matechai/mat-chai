@@ -5,13 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 public class PaginatedUserDTO {
 
-    private UserBasicProfileDTO user;
-    private int currentPage;
-    private int totalPages;
-    private boolean hasNext;
+    private List<UserBasicProfileDTO> users;
+    private Long totalElements;
 }

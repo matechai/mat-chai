@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import zxcvbn from 'zxcvbn';
 
 interface ResetPasswordRequest {
 	token: string;
@@ -32,6 +33,8 @@ export class ResetPassword implements OnInit {
 	successMessage = signal<string>('');
 	errorMessage = signal<string>('');
 	step = signal<'validating' | 'reset' | 'success' | 'invalid'>('validating');
+	passwordStrength = signal<string>('');
+	passwordFeedback = signal<string>('');
 
 	ngOnInit() {
 		// Get token from query parameters
@@ -74,6 +77,49 @@ export class ResetPassword implements OnInit {
 		});
 	}
 
+	checkPasswordStrength(password: string): string {
+		if (!password) return 'Weak';
+
+		// Use zxcvbn to analyze password (no user inputs for reset password)
+		const result = zxcvbn(password);
+
+		// Store feedback for display
+		this.passwordFeedback.set(
+			result.feedback.warning ||
+			result.feedback.suggestions.join(' ') || ''
+		);
+
+		// Map zxcvbn score (0-4) to strength labels
+		switch (result.score) {
+			case 0:
+			case 1:
+				return 'Weak';
+			case 2:
+			case 3:
+				return 'Medium';
+			case 4:
+				return 'Strong';
+			default:
+				return 'Weak';
+		}
+	}
+
+	onPasswordInput() {
+		const password = this.password();
+		this.passwordStrength.set(this.checkPasswordStrength(password));
+	}
+
+	isPasswordValid(): boolean {
+		const passwordValue = this.password();
+		const confirmPasswordValue = this.confirmPassword();
+
+		if (!passwordValue) return false;
+		if (passwordValue !== confirmPasswordValue) return false;
+
+		// Password must not be weak
+		return this.passwordStrength() !== 'Weak';
+	}
+
 	onSubmit() {
 		const passwordValue = this.password().trim();
 		const confirmPasswordValue = this.confirmPassword().trim();
@@ -84,13 +130,14 @@ export class ResetPassword implements OnInit {
 			return;
 		}
 
-		// if (passwordValue.length < 8) {
-		// 	this.errorMessage.set('Password must be at least 8 characters long');
-		// 	return;
-		// }
-
 		if (passwordValue !== confirmPasswordValue) {
 			this.errorMessage.set('Passwords do not match');
+			return;
+		}
+
+		// Check password strength
+		if (!this.isPasswordValid()) {
+			this.errorMessage.set('Password is too weak. ' + this.passwordFeedback());
 			return;
 		}
 
@@ -130,6 +177,7 @@ export class ResetPassword implements OnInit {
 
 	updatePassword(value: string) {
 		this.password.set(value);
+		this.onPasswordInput();
 		this.clearMessages();
 	}
 

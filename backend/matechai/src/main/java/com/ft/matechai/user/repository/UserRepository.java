@@ -38,8 +38,11 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     // Gender
     @Transactional
-    @Query("MATCH (u:User {username: $username}), (g:Gender {gender: $gender}) " +
-            "MERGE (u)-[:HAS_GENDER]->(g)")
+    @Query("""
+                MATCH (u:User {username: $username})
+                MATCH (g:Gender {gender: $gender})
+                MERGE (u)-[:HAS_GENDER]->(g)
+            """)
     void setGender(@Param("username") String username,
                    @Param("gender") String gender);
 
@@ -53,8 +56,11 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     // Sexual Preference
     @Transactional
-    @Query("MATCH (u:User {username: $username}), (s:SexualPreference {name: $prefName}) " +
-            "MERGE (u)-[:HAS_PREFERENCE]->(s)")
+    @Query("""
+                MATCH (u:User {username: $username})
+                MATCH (s:SexualPreference {name: $prefName})
+                MERGE (u)-[:HAS_PREFERENCE]->(s)
+            """)
     void setSexualPreference(@Param("username") String username,
                              @Param("prefName") String prefName);
 
@@ -68,8 +74,11 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     // Interest
     @Transactional
-    @Query("MATCH (u:User {username: $username}), (i:Interest {name: $interestName}) " +
-            "MERGE (u)-[:INTERESTED_IN]->(i)")
+    @Query("""
+                MATCH (u:User {username: $username})
+                MATCH (i:Interest {name: $interestName})
+                MERGE (u)-[:INTERESTED_IN]->(i)
+            """)
     void addInterest(@Param("username") String username,
                      @Param("interestName") String interestName);
 
@@ -113,6 +122,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                         MATCH (u:User)-[l:LIKED]->(me:User {username: $username})
                         RETURN u, l.createdAt AS likedAt
                         ORDER BY likedAt DESC
+                        SKIP $skip
+                        LIMIT $limit
                     """,
             countQuery = """
                             MATCH (u:User)-[l:LIKED]->(me:User {username: $username})
@@ -255,6 +266,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                         MATCH (viewer:User)-[v:VIEWED]->(me:User {username: $username})
                         RETURN viewer, v.viewedAt AS viewedAt
                         ORDER BY v.viewedAt DESC
+                        SKIP $skip
+                        LIMIT $limit
                     """,
             countQuery = """
                             MATCH (viewer:User)-[v:VIEWED]->(me:User {username: $username})
@@ -308,7 +321,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                             ('Heterosexual' IN myPrefs) AND (
                               (meGender.gender = 'Male' AND uGender.gender = 'Female' AND 'Heterosexual' IN uPrefs) OR
                               (meGender.gender = 'Female' AND uGender.gender = 'Male' AND 'Heterosexual' IN uPrefs) OR
-                              (meGender.gender = 'Others' AND uGender.gender = 'Others' AND 'Heterosexual' IN uPrefs)
+                              (meGender.gender = 'Other' AND uGender.gender = 'Other' AND 'Heterosexual' IN uPrefs)
                             )
                           ) OR
                           (
@@ -317,8 +330,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                             AND 'Homosexual' IN uPrefs
                           ) OR
                           (
-                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Others'])
-                            AND uGender.gender IN ['Male', 'Female', 'Others']
+                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Other'])
+                            AND uGender.gender IN ['Male', 'Female', 'Other']
                           )
                         RETURN u
                         ORDER BY u.fame DESC
@@ -358,7 +371,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                             ('Heterosexual' IN myPrefs) AND (
                               (meGender.gender = 'Male' AND uGender.gender = 'Female' AND 'Heterosexual' IN uPrefs) OR
                               (meGender.gender = 'Female' AND uGender.gender = 'Male' AND 'Heterosexual' IN uPrefs) OR
-                              (meGender.gender = 'Others' AND uGender.gender = 'Others' AND 'Heterosexual' IN uPrefs)
+                              (meGender.gender = 'Other' AND uGender.gender = 'Other' AND 'Heterosexual' IN uPrefs)
                             )
                           ) OR
                           (
@@ -367,8 +380,8 @@ public interface UserRepository extends Neo4jRepository<User, String> {
                             AND 'Homosexual' IN uPrefs
                           ) OR
                           (
-                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Others'])
-                            AND uGender.gender IN ['Male', 'Female', 'Others']
+                            ANY(pref IN myPrefs WHERE pref IN ['Bisexual', 'Prefer not to say', 'Other'])
+                            AND uGender.gender IN ['Male', 'Female', 'Other']
                           )
                         RETURN count(u)
                     """)

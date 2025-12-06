@@ -12,18 +12,15 @@ export class PublicGuard implements CanActivate {
   private router = inject(Router);
 
   canActivate(): Observable<boolean> {
-    return this.authService.checkAuthState().pipe(
-      map((result: any) => {
-        if (result.isAuthenticated) {
-          // Redirect logged-in users to dashboard/matching
-          this.router.navigate(['/matching']);
-          return false;
-        }
-        return true; // allow unauthenticated users
-      }),
-      catchError(() => {
-        return of(true); // allow unauthenticated users even on error
-      })
-    );
+    // Use synchronous getCurrentAuthState() to avoid unnecessary GraphQL calls
+    const authState = this.authService.getCurrentAuthState();
+
+    if (authState.isAuthenticated) {
+      // Redirect logged-in users to dashboard/matching
+      this.router.navigate(['/matching']);
+      return of(false);
+    }
+
+    return of(true); // allow unauthenticated users
   }
 }

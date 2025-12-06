@@ -9,6 +9,8 @@ import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
+import java.util.UUID;
+
 
 @Node("Gender")
 @Data
@@ -17,7 +19,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 @AllArgsConstructor
 public class Gender {
 
-    @Id @GeneratedValue
-    private Long id;
+    @Id
+    private String id = UUID.randomUUID().toString();
     private String gender;
 }

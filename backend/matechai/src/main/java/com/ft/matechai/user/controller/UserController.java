@@ -2,6 +2,7 @@ package com.ft.matechai.user.controller;
 
 import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.user.dto.UserInfoDTO;
+import com.ft.matechai.user.dto.UserInfoResponseDTO;
 import com.ft.matechai.user.dto.UserProfileDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.service.UserService;
@@ -45,16 +46,16 @@ public class UserController {
     }
 
     @PatchMapping("/{username}")
-    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
+    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateUserInformation(@PathVariable String username,
                                                    @RequestBody UserInfoDTO userInfoDTO) {
 
-        userService.updateUserInfo(username, userInfoDTO);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        UserInfoResponseDTO response = userService.updateUserInfo(username, userInfoDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{username}/profile")
-    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
+    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateProfile(@PathVariable String username,
                                            @RequestPart("data") UserProfileDTO userProfileDTO,
                                            @RequestPart("files") List<MultipartFile> files) {

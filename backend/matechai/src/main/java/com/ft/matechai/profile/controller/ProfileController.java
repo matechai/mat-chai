@@ -5,6 +5,7 @@ import com.ft.matechai.profile.dto.LocationDTO;
 import com.ft.matechai.profile.dto.ReportRequestDTO;
 import com.ft.matechai.profile.dto.UserBasicProfileDTO;
 import com.ft.matechai.profile.service.ProfileService;
+import com.ft.matechai.user.dto.PaginatedResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,25 +24,25 @@ public class ProfileController {
     }
 
     @GetMapping("/users/me/viewers")
-    public ResponseEntity<Page<UserBasicProfileDTO>> getViewers(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<PaginatedResponseDTO<UserBasicProfileDTO>> getViewers(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                 @RequestParam(defaultValue = "0") int page,
                                                                 @RequestParam(defaultValue = "20") int size) {
 
-        Page<UserBasicProfileDTO> viewers = profileService.getViewers(principalDetails.getUser(), page, size);
+        PaginatedResponseDTO<UserBasicProfileDTO> viewers = profileService.getViewers(principalDetails.getUser(), page, size);
         return ResponseEntity.ok(viewers);
     }
 
     @GetMapping("/users/me/liked-by")
-    public ResponseEntity<Page<UserBasicProfileDTO>> getUsersWhoLikedMe(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<PaginatedResponseDTO<UserBasicProfileDTO>> getUsersWhoLikedMe(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                         @RequestParam(defaultValue = "0") int page,
                                                                         @RequestParam(defaultValue = "20") int size) {
 
-        Page<UserBasicProfileDTO> response = profileService.getUsersWhoLikedMe(principalDetails.getUser(), page, size);
+        PaginatedResponseDTO<UserBasicProfileDTO> response = profileService.getUsersWhoLikedMe(principalDetails.getUser(), page, size);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/users/{username}/location")
-    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN', 'ROLE_GOD')")
+    @PreAuthorize("#username == authentication.principal.username or hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateLocation(@PathVariable String username,
                                             @RequestBody LocationDTO location) {
 

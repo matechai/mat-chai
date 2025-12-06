@@ -15,10 +15,10 @@ export class AuthGuard implements CanActivate {
 	private router = inject(Router);
 
 	canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-		console.log('🔒 AuthGuard: canActivate() called for route:', state.url);
+		// console.log('🔒 AuthGuard: canActivate() called for route:', state.url);
 		return this.authService.checkAuthState().pipe(
 			map((result : any) => {
-				console.log('🔒 AuthGuard: checkAuthState result:', result);
+				// console.log('🔒 AuthGuard: checkAuthState result:', result);
 
 				// Check if user is authenticated
 				if (!result.isAuthenticated && state.url !== '/login') {
@@ -33,8 +33,7 @@ export class AuthGuard implements CanActivate {
 
 				// Check email verification
 				if (!user.enabled) {
-					console.log('⚠️ Email not verified');
-					alert('Please verify your email address to continue.');
+					// console.log('⚠️ Email not verified');
 					// Block access but don't redirect
 					return false;
 				}
@@ -42,13 +41,13 @@ export class AuthGuard implements CanActivate {
 				// Check if profile is complete (gender is required)
 				// But allow access to profile/edit route to complete it
 				if (!user.gender && state.url !== '/profile/edit') {
-					console.log('⚠️ Profile incomplete, redirecting to profile edit');
+					// console.log('⚠️ Profile incomplete, redirecting to profile edit');
 					this.router.navigate(['/profile/edit']);
 					return false;
 				}
 
 				// All checks passed - allow access to requested route
-				console.log('✅ All checks passed, allowing access to:', state.url);
+				// console.log('✅ All checks passed, allowing access to:', state.url);
 				return true;
 			}),
 			catchError((error : any) => {
