@@ -30,6 +30,4 @@ type Query {
     genders: [String]
     sexualPreferences: [String]
     interests: [String]
-    liked: Boolean
-    matched: Boolean
 }

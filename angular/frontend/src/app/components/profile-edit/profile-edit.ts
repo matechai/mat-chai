@@ -280,11 +280,10 @@ export class ProfileEdit implements OnInit {
 
 		this.userService.updateProfile(this.currentUsername(), profileData, files).subscribe({
 			next: (response: any) => {
-				console.log('Profile update successful:', response);
 				this.isLoading.set(false);
 
-				// Navigate to matching page immediately after successful profile update
-				this.router.navigate(['/matching']);
+				// Force reload to clear all caches and guards
+				window.location.href = '/matching';
 			},
 			error: (error: any) => {
 				// console.error('Profile update error:', error);

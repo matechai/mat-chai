@@ -5,12 +5,13 @@ import com.ft.matechai.option.node.Gender;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Optional;
 
 
-public interface GenderRepository extends Neo4jRepository<Gender, Long> {
+public interface GenderRepository extends Neo4jRepository<Gender, String> {
 
     @Query("MATCH (g:Gender {gender: $gender}) RETURN g")
     Optional<Gender> findByGender(@Param("gender") String gender);
@@ -20,8 +21,12 @@ public interface GenderRepository extends Neo4jRepository<Gender, Long> {
                 .orElseThrow(() -> new EntityNotFoundException("Gender", gender));
     }
 
-    @Query("MERGE (g:Gender {gender: $gender}) RETURN g")
-    void saveIfNotExists(@Param("gender") String gender);
+    @Query("""
+                MERGE (g:Gender {gender: $gender})
+                ON CREATE SET g.id = $id
+                RETURN g
+            """)
+    Gender saveIfNotExists(@Param("gender") String gender, @Param("id") String id);
 
 
     @Query("""

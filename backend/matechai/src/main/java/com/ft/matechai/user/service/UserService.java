@@ -3,6 +3,7 @@ package com.ft.matechai.user.service;
 import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.profile.service.FameService;
 import com.ft.matechai.user.dto.UserInfoDTO;
+import com.ft.matechai.user.dto.UserInfoResponseDTO;
 import com.ft.matechai.user.dto.UserProfileDTO;
 import com.ft.matechai.option.node.Gender;
 import com.ft.matechai.option.node.SexualPreference;
@@ -137,7 +138,7 @@ public class UserService {
 	// SETTERS // SETTERS // SETTERS // SETTERS //
 
     @Transactional
-    public void updateUserInfo(String username, UserInfoDTO dto) {
+    public UserInfoResponseDTO updateUserInfo(String username, UserInfoDTO dto) {
 
         User user = userRepository.findByUsernameOrThrow(username);
 
@@ -146,6 +147,13 @@ public class UserService {
         if (dto.getLastName()   != null) user.setLastName(dto.getLastName());
 
         userRepository.save(user);
+
+        return UserInfoResponseDTO.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
     }
 
 

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface InterestRepository extends Neo4jRepository<Interest, Long> {
+public interface InterestRepository extends Neo4jRepository<Interest, String> {
 
     @Query("MATCH (i:Interest {name: $name}) RETURN i")
     Optional<Interest> findByName(@Param("name") String name);
@@ -20,8 +20,13 @@ public interface InterestRepository extends Neo4jRepository<Interest, Long> {
                 .orElseThrow(() -> new EntityNotFoundException("Interest", interest));
     }
 
-    @Query("MERGE (i:Interest {name: $name}) RETURN i")
-    void saveIfNotExists(@Param("name") String name);
+
+    @Query("""
+                MERGE (i:Interest {name: $name})
+                ON CREATE SET i.id = $id
+                RETURN i
+            """)
+    Interest saveIfNotExists(@Param("name") String name, @Param("id") String id);
 
 
     @Query("""

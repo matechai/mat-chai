@@ -3,6 +3,7 @@ package com.ft.matechai.profile.service;
 import com.ft.matechai.profile.dto.LocationDTO;
 import com.ft.matechai.profile.dto.ReportRequestDTO;
 import com.ft.matechai.profile.dto.UserBasicProfileDTO;
+import com.ft.matechai.user.dto.PaginatedResponseDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -25,11 +26,11 @@ public class ProfileService {
     }
 
 
-    public Page<UserBasicProfileDTO> getViewers(User me, int page, int size) {
+    public PaginatedResponseDTO<UserBasicProfileDTO> getViewers(User me, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return userRepository.findViewersByUserId(me.getUsername(), pageable)
+        Page<UserBasicProfileDTO> dtoPage = userRepository.findViewersByUserId(me.getUsername(), pageable)
                 .map(viewed -> new UserBasicProfileDTO(
                         viewed.getUsername(),
                         viewed.getDateOfBirth(),
@@ -38,13 +39,21 @@ public class ProfileService {
                         userRepository.targetLikesMe(me.getUsername(), viewed.getUsername()),
                         userRepository.isMatched(me.getUsername(), viewed.getUsername())
                 ));
+
+        return PaginatedResponseDTO.<UserBasicProfileDTO>builder()
+                .content(dtoPage.getContent())
+                .number(dtoPage.getNumber())
+                .totalPages(dtoPage.getTotalPages())
+                .totalElements(dtoPage.getTotalElements())
+                .last(dtoPage.isLast())
+                .build();
     }
 
-    public Page<UserBasicProfileDTO> getUsersWhoLikedMe(User me, int page, int size) {
+    public PaginatedResponseDTO<UserBasicProfileDTO> getUsersWhoLikedMe(User me, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return userRepository.findUsersWhoLikedMe(me.getUsername(), pageable)
+        Page<UserBasicProfileDTO> dtoPage = userRepository.findUsersWhoLikedMe(me.getUsername(), pageable)
                 .map(viewed -> new UserBasicProfileDTO(
                         viewed.getUsername(),
                         viewed.getDateOfBirth(),
@@ -53,6 +62,14 @@ public class ProfileService {
                         userRepository.targetLikesMe(me.getUsername(), viewed.getUsername()),
                         userRepository.isMatched(me.getUsername(), viewed.getUsername())
                 ));
+
+        return PaginatedResponseDTO.<UserBasicProfileDTO>builder()
+                .content(dtoPage.getContent())
+                .number(dtoPage.getNumber())
+                .totalPages(dtoPage.getTotalPages())
+                .totalElements(dtoPage.getTotalElements())
+                .last(dtoPage.isLast())
+                .build();
     }
 
     @Transactional

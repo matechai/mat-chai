@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -60,7 +61,7 @@ class InterestRepositoryTest {
 
     @Test
     void saveIfNotExists_shouldCreateInterestIfMissing() {
-        interestRepository.saveIfNotExists("Reading");
+        interestRepository.saveIfNotExists("Reading", UUID.randomUUID().toString());
         var names = interestRepository.findAllNames();
         assertTrue(names.contains("Reading"));
     }

@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,15 +47,13 @@ public class SecurityConfig {
         http.addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
 
         http
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .formLogin().disable()
-                .httpBasic().disable()
-                .authorizeRequests()
-                    .requestMatchers("/api/graphql").hasAnyRole("USER", "ADMIN", "GOD")
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/api/graphql").hasAnyRole("USER", "ADMIN")
                     .requestMatchers("/api/auth/signup",
                                             "/api/auth/login",
                                             "/api/auth/verify",
@@ -62,11 +61,12 @@ public class SecurityConfig {
                                             "/api/auth/forgot-password",
                                             "/api/auth/reset-password").permitAll()
                     .requestMatchers("/api/auth/logout").authenticated()
-                    .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN", "GOD")
-                    .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "GOD")
+                    .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
                     .requestMatchers("/ws-chat/**").authenticated()
                     .requestMatchers("/api/reports").authenticated()
-                    .anyRequest().authenticated();
+                    .anyRequest().authenticated()
+                );
 
         return http.build();
     }
