@@ -53,12 +53,6 @@ export class WebSocketService {
 
   constructor(private ngZone: NgZone) {}
 
-  public connect(): void {
-    if (this.stompClient?.connected) {
-      return;
-    }
-  }
-
   /** Establish STOMP connection */
   private connect(): void {
     if (this.stompClient?.connected) return;
