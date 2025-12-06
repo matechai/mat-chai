@@ -125,7 +125,7 @@ export class Signup {
 
             // Navigate to login after showing message
             setTimeout(() => {
-              this.router.navigate(['/login']);
+              window.location.href = '/login';
             }, 2000);
           },
           error: (err: any) => {
