@@ -1,5 +1,5 @@
 import random
-from datetime import date, timedelta, datetime
+from datetime import date, datetime, timedelta
 
 POKEMON_MAP = {
     1: "bulbasaur",
@@ -93,7 +93,6 @@ def random_last_online():
 
 
 with open("init_profiles.cypher", "w", encoding="utf-8") as f:
-    f.write("MATCH (n) DETACH DELETE n;\n\n")
 
     # Gender nodes
     for g in GENDERS:
