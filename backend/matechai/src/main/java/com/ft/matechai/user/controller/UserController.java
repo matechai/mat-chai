@@ -2,6 +2,7 @@ package com.ft.matechai.user.controller;
 
 import com.ft.matechai.config.auth.PrincipalDetails;
 import com.ft.matechai.user.dto.UserInfoDTO;
+import com.ft.matechai.user.dto.UserInfoResponseDTO;
 import com.ft.matechai.user.dto.UserProfileDTO;
 import com.ft.matechai.user.node.User;
 import com.ft.matechai.user.service.UserService;
@@ -49,8 +50,8 @@ public class UserController {
     public ResponseEntity<?> updateUserInformation(@PathVariable String username,
                                                    @RequestBody UserInfoDTO userInfoDTO) {
 
-        userService.updateUserInfo(username, userInfoDTO);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        UserInfoResponseDTO response = userService.updateUserInfo(username, userInfoDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{username}/profile")
