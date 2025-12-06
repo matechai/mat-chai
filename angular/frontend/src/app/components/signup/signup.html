@@ -34,12 +34,24 @@
         <input id="firstName" formControlName="firstName" type="text" placeholder="Enter your first name" required
                style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
                onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
+        @if (signupForm.get('firstName')?.touched && signupForm.get('firstName')?.errors?.['hasControlCharacters']) {
+          <div style="color:#dc3545; font-size:12px; margin-top:0.25rem;">❌ Control characters and newlines are not allowed</div>
+        }
+        @if (signupForm.get('firstName')?.touched && signupForm.get('firstName')?.errors?.['maxlength']) {
+          <div style="color:#dc3545; font-size:12px; margin-top:0.25rem;">❌ Maximum 50 characters allowed</div>
+        }
       </div>
       <div>
         <label for="lastName" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#333; font-size:14px;">Last Name</label>
         <input id="lastName" formControlName="lastName" type="text" placeholder="Enter your last name" required
                style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
                onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
+        @if (signupForm.get('lastName')?.touched && signupForm.get('lastName')?.errors?.['hasControlCharacters']) {
+          <div style="color:#dc3545; font-size:12px; margin-top:0.25rem;">❌ Control characters and newlines are not allowed</div>
+        }
+        @if (signupForm.get('lastName')?.touched && signupForm.get('lastName')?.errors?.['maxlength']) {
+          <div style="color:#dc3545; font-size:12px; margin-top:0.25rem;">❌ Maximum 50 characters allowed</div>
+        }
       </div>
     </div>
 
@@ -49,6 +61,9 @@
       <input id="userName" formControlName="userName" type="text" placeholder="Choose a unique username" required
              style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; font-size:16px; box-sizing:border-box; transition:border-color 0.2s;"
              onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ddd'">
+      @if (signupForm.get('userName')?.touched && signupForm.get('userName')?.errors?.['invalidUsername']) {
+        <div style="color:#dc3545; font-size:12px; margin-top:0.25rem;">❌ Only alphanumeric characters (a-z, A-Z, 0-9) are allowed</div>
+      }
     </div>
     <!-- Email -->
     <div>
