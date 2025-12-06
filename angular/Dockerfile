@@ -4,7 +4,7 @@ WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
 
-RUN npm install -g @angular/cli \
+RUN npm install -g @angular/cli@latest \
 	&& npm install
 
 # ---- DEV Mode (hot reload) ----
