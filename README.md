@@ -176,4 +176,7 @@ This project is licensed under the MIT License.
 
 ## Architecture Diagram
 
+<img width="1920" height="1080" alt="Spring Boot(1)" src="https://github.com/user-attachments/assets/26486c08-816b-4516-b009-cbab9b30c57a" />
+
+
 This diagram shows how the frontend communicates with the backend via GraphQL, which interacts with Neo4j and MongoDB.
