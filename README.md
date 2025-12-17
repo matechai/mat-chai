@@ -20,8 +20,7 @@
 - [Testing with Dummy Data](#-testing-with-dummy-data)
 
 
-<br>
-
+<br><br>
 
 
 ## ✨ Features
@@ -244,7 +243,7 @@ cd neo4j
 python test.py
 
 docker exec -it matcha-neo4j bash
-cypher-shell -u {neo4j_username}] -p {neo4j_password} -f /docker-entrypoint-initdb.d/init_profiles.cypher
+cypher-shell -u {neo4j_username} -p {neo4j_password} -f /docker-entrypoint-initdb.d/init_profiles.cypher
 ```
 
 <br>
@@ -335,6 +334,6 @@ python test.py
 
 # Access Neo4j container
 docker exec -it matcha-neo4j bash
-cypher-shell -u {neo4j_username}] -p {neo4j_password} -f /docker-entrypoint-initdb.d/init_profiles.cypher
+cypher-shell -u {neo4j_username} -p {neo4j_password} -f /docker-entrypoint-initdb.d/init_profiles.cypher
 ```
 
