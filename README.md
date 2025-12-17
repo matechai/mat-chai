@@ -1,166 +1,139 @@
-# 42 Project Matcha
+# 42 Project Matcha 
 
-[![Spring Boot](https://img.shields.io/badge/SpringBoot-2.7.0-brightgreen)](https://spring.io/projects/spring-boot)
-[![Angular](https://img.shields.io/badge/Angular-16-red)](https://angular.io/)
-[![Neo4j](https://img.shields.io/badge/Neo4j-5.0-blue)](https://neo4j.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-latest-green)](https://www.mongodb.com/)
-[![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.4-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot) [![Angular](https://img.shields.io/badge/Angular-20.2-DD0031?logo=angular&logoColor=white)](https://angular.io/) [![Java](https://img.shields.io/badge/Java-17-007396?logoColor=white)](https://www.oracle.com/java/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
+[![Neo4j](https://img.shields.io/badge/Neo4j-5.0-008CC1?logo=neo4j&logoColor=white)](https://neo4j.com/) [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/) [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/) [![Nginx](https://img.shields.io/badge/Nginx-Latest-009639?logo=nginx&logoColor=white)](https://nginx.org/) [![hits](https://myhits.vercel.app/api/hit/https%3A%2F%2Fgithub.com%2Fmatechai%2Fmat-chai?color=blue&label=hits&size=small&base_count=1)](https://myhits.vercel.app)
+
+<br>
 
 **Matcha** is a social matchmaking application developed as part of the 42 curriculum. The platform provides advanced user interactions, real-time chat, notifications, and matchmaking features using a modern tech stack.
 
----
+<br>
 
-## Table of Contents
-- [Features](#features)  
-- [Tech Stack](#tech-stack)  
-- [Architecture](#architecture)  
-- [Setup](#setup)  
-- [Docker Compose](#docker-compose)  
-- [.env Template](#env-template)  
-- [Neo4j Dummy Users Script](#neo4j-dummy-users-script)  
-- [Project Structure](#project-structure)  
-- [License](#license)  
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Quick Start](#-quick-start)
+- [Setup](#-setup)
+- [Services & Endpoints](#-services--endpoints)
+- [.env Template](#-env-template)
+- [Testing with Dummy Data](#-testing-with-dummy-data)
 
----
 
-## Features
-- **Authentication & Security:** JWT-based login and session management  
-- **User Profiles:** Upload 1–5 pictures with location data  
-- **Interactions:** Like, dislike, matchmaking  
-- **Search & Filters:** Advanced filtering for finding users  
-- **Notifications:** Receive notifications for likes, dislikes, matches, profile views, and chat availability  
-- **Chat:** Real-time messaging allowed only between matched users  
-- **Data Generation:** Python script to generate 500 dummy users in Neo4j for testing  
+<br><br>
 
----
 
-## Tech Stack
-- **Backend:** Spring Boot with **GraphQL API**  
-- **Frontend:** Angular  
-- **Databases:**  
-  - Neo4j (user storage and relationships)  
-  - MongoDB (chat and notifications)  
-- **Reverse Proxy:** Nginx  
-- **Containerization:** Docker & Docker Compose  
+## ✨ Features
 
----
+### 🔐 Authentication & Security
+- JWT-based authentication
+- Secure session management
+- Email verification system
+- Password strength validation
 
-## Architecture
-The system is modular with clear responsibilities:  
+### 👤 User Profiles
+- Upload 1–5 profile pictures
+- Interactive location picker with map
+- Real-time age calculation
+- Bio and interests management
 
-- **Spring Boot backend:** Handles authentication, GraphQL API, business logic, and notifications  
-- **Neo4j:** Stores users, relationships, and graph-based recommendations  
-- **MongoDB:** Stores chat messages and notifications  
-- **Angular frontend:** Consumes GraphQL API for dynamic UI  
-- **Nginx:** Serves frontend and acts as reverse proxy  
-- **Docker Compose:** Orchestrates all services  
+### 💫 Smart Interactions
+- Like/Pass system with instant feedback
+- Intelligent matchmaking algorithm
+- Browse history tracking
+- Block & report functionality
 
-### User Flow
-1. Users register and upload 1–5 pictures with location data.  
-2. Users can like, dislike, view profiles, and apply filters.  
-3. Notifications are sent for likes, dislikes, matches, profile views, and chat availability.  
-4. Only matched users can chat.  
+### 🔍 Advanced Search
+- Filter by age, location, interests
+- Sort by distance or compatibility
+- Real-time search results
+- Pagination support
 
----
+### 🔔 Real-time Notifications
+- Match notifications
+- Profile view alerts
+- Like/Unlike updates
+- Message notifications
+- WebSocket-based instant delivery
 
-## Setup
+### 💬 Live Chat
+- Real-time messaging
+- Chat only with matched users
+- Message history
+- Online/Offline status
+- Typing indicators
 
-### Prerequisites
-- Docker  
-- Docker Compose  
+### 👮 Admin Panel
+- User report management
+- Ban/Unban functionality
+- View reported users with reasons
 
-### `.env` File
-The project requires a `.env` file at the root containing environment variables for:  
-- JWT configuration  
-- Spring Boot configuration  
-- MongoDB credentials  
-- Neo4j credentials  
-- Mail settings  
-- File upload paths  
-- GraphQL endpoint  
+<br>
 
-> **Note:** `.env` is **not included** in the repository for security reasons.
 
----
 
-## Docker Compose
+## 🛠 Tech Stack
 
-Build and run all services using Docker Compose:
-
-```bash
-git clone <your-repo-url>
-cd matcha
-docker-compose up --build
+### Backend
 ```
-## Services & Ports
-
-- Backend (Spring Boot GraphQL API): http://localhost:8080/graphql
-
-- Frontend (Angular via Nginx): http://localhost
-
-- Neo4j Browser: http://localhost:7474
-
-- MongoDB: Accessible with credentials in .env
-
-- Mongo Express: http://localhost:8081
-
-## .env Template
-
-Create a .env file in the root directory with the following placeholder values:
-```bash
-# Server
-SERVER_PORT=8080
-APP_URL=http://localhost
-
-# JWT
-JWT_TYPE=Bearer
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRATIONMS_ACCESSTOKEN=3600000
-JWT_EXPIRATIONMS_REFRESHTOKEN=86400000
-
-# MongoDB
-SPRING_DATA_MONGODB_URI=mongodb://username:password@mongodb:27017/matcha
-SPRING_DATA_MONGODB_USERNAME=admin
-SPRING_DATA_MONGODB_PASSWORD=admin
-ME_CONFIG_MONGODB_SERVER=mongodb
-
-# Neo4j
-SPRING_NEO4J_URI=bolt://neo4j:7687
-SPRING_NEO4J_AUTHENTICATION_USERNAME=neo4j
-SPRING_NEO4J_AUTHENTICATION_PASSWORD=password
-
-# Mail
-SMTP_MAIL_HOST=smtp.example.com
-SPRING_MAIL_PORT=587
-SPRING_MAIL_USERNAME=your_email@example.com
-SPRING_MAIL_PASSWORD=your_password
-SPRING_MAIL_PROTOCOL=smtp
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED=true
-FRONTEND_URL=http://localhost
-
-# File Upload
-FILE_UPLOAD_PATH=/uploads
-
-# GraphQL
-GRAPHQL_PATH=/graphql
-```
-> **Note:** Please change it according to your credentials.
-
-# Neo4j Dummy Users Script
-
-Populate Neo4j with 500 dummy users for testing:
-```python
-# Inside the neo4j directory or container
-python3 generate_users.py
+Framework    : Spring Boot 3.5.4
+Language     : Java 17
+Security     : Spring Security + JWT
+Real-time    : WebSocket (STOMP)
+API          : GraphQL + REST
+Build        : Gradle
 ```
 
-The generated data will also be stored inside the neo4j directory.
+**Key Dependencies:**
+- `spring-boot-starter-graphql` - GraphQL API
+- `spring-boot-starter-websocket` - Real-time communication
+- `spring-boot-starter-security` - Authentication & Authorization
+- `jjwt` - JWT token management
+- `spring-boot-starter-mail` - Email notifications
 
-## Project Structure
-```bash
+### Frontend
+```
+Framework    : Angular 20.2
+Language     : TypeScript 5.0
+UI Library   : Standalone Components
+State        : Signals API
+Routing      : Angular Router
+Forms        : Reactive Forms
+```
+
+**Key Features:**
+- `zxcvbn` - Password strength validation
+- `leaflet` - Interactive maps
+- WebSocket client for real-time updates
+- GraphQL client integration
+
+### Databases
+```
+Graph DB     : Neo4j 5.0
+  ├─ User profiles & relationships
+  ├─ Matchmaking graph algorithms
+  └─ Like/Block/Match connections
+
+Document DB  : MongoDB
+  ├─ Chat messages
+  ├─ Notifications
+  └─ User activity logs
+```
+
+### Infrastructure
+```
+Reverse Proxy : Nginx
+Containerization : Docker & Docker Compose
+Orchestration : Docker Compose with health checks
+```
+
+<br>
+
+
+
+## 📁 Project Structure
+
+```
 matcha/
 ├── backend/        # Spring Boot backend with GraphQL API
 ├── angular/        # Angular frontend
@@ -170,13 +143,197 @@ matcha/
 ├── .env            # Local environment variables (not in repo)
 └── README.md
 ```
-## License
 
-This project is licensed under the MIT License.
-
-## Architecture Diagram
-
-<img width="1920" height="1080" alt="Spring Boot(1)" src="https://github.com/user-attachments/assets/26486c08-816b-4516-b009-cbab9b30c57a" />
+<br>
 
 
-This diagram shows how the frontend communicates with the backend via GraphQL, which interacts with Neo4j and MongoDB.
+
+## 🏗 Architecture  
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        A[Angular Frontend<br/>Port 4200]
+    end
+    
+    subgraph "Gateway Layer"
+        B[Nginx<br/>Port 80]
+    end
+    
+    subgraph "Application Layer"
+        C[Spring Boot API<br/>Port 8080]
+        D[GraphQL Endpoint]
+        E[REST API]
+        F[WebSocket Server]
+    end
+    
+    subgraph "Data Layer"
+        G[(Neo4j<br/>Port 7687)]
+        H[(MongoDB<br/>Port 27017)]
+    end
+    
+    A -->|HTTP/WS| B
+    B -->|Proxy| C
+    C --> D
+    C --> E
+    C --> F
+    D -->|Users & Relationships| G
+    E -->|Users & Relationships| G
+    F -->|Chat & Notifications| H
+    
+    style A fill:#DD0031,color:#fff
+    style B fill:#009639,color:#fff
+    style C fill:#6DB33F,color:#fff
+    style G fill:#008CC1,color:#fff
+    style H fill:#47A248,color:#fff
+```
+
+
+
+<br>
+
+
+## 🚀 Quick Start
+
+### Prerequisites
+- [Docker](https://www.docker.com/get-started) & Docker Compose
+- Git
+
+### One-Command Setup
+```bash
+git clone <repository-url>
+cd matcha
+cp .env.example .env  # Edit with your credentials
+docker-compose up --build
+```
+
+🎉 **That's it!** Access the app at `http://localhost`
+
+
+<br>
+
+
+## 📋 Setup
+
+### Step 1: Clone Repository
+```bash
+git clone <repository-url>
+cd matcha
+```
+
+### Step 2: Environment Configuration
+
+Create `.env` file in the root directory:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your credentials (see [.env Template](#-env-template) below)
+
+### Step 3: Start Services
+```bash
+docker-compose up --build
+```
+
+### Step 4: Initialize Test Data (Optional)
+```bash
+# Generate 500 dummy users for testing
+cd neo4j
+python test.py
+
+docker exec -it matcha-neo4j bash
+cypher-shell -u {neo4j_username} -p {neo4j_password} -f /docker-entrypoint-initdb.d/init_profiles.cypher
+```
+
+<br>
+
+
+
+## 🌐 Services & Endpoints
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| 🎨 **Frontend** | `http://localhost` | Angular application |
+| 🔌 **Backend API** | `http://localhost:8080/api` | Spring Boot REST API |
+| 📊 **GraphQL** | `http://localhost:8080/api/graphql` | GraphQL playground |
+| 🔵 **Neo4j Browser** | `http://localhost:7474` | Graph database UI |
+| 🟢 **MongoDB** | `mongodb://localhost:27017` | Document database |
+| 🗂️ **Mongo Express** | `http://localhost:8081` | MongoDB admin UI |
+
+<br>
+
+
+<br>
+
+## 🔐 .env Template
+
+Create a `.env` file with the following configuration:
+
+```env
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🖥️  Server Configuration
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SERVER_PORT=8080
+APP_URL=http://localhost
+FRONTEND_URL=http://localhost
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🔑 JWT Configuration
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+JWT_TYPE=Bearer
+JWT_SECRET=your_super_secret_jwt_key_min_256_bits_recommended
+JWT_EXPIRATIONMS_ACCESSTOKEN=3600000      # 1 hour
+JWT_EXPIRATIONMS_REFRESHTOKEN=86400000    # 24 hours
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🍃 MongoDB Configuration
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SPRING_DATA_MONGODB_URI=mongodb://admin:password@mongodb:27017/matcha
+SPRING_DATA_MONGODB_USERNAME=admin
+SPRING_DATA_MONGODB_PASSWORD=password
+ME_CONFIG_MONGODB_SERVER=mongodb
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🔵 Neo4j Configuration
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SPRING_NEO4J_URI=bolt://neo4j:7687
+SPRING_NEO4J_AUTHENTICATION_USERNAME=neo4j
+SPRING_NEO4J_AUTHENTICATION_PASSWORD=your_neo4j_password
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 📧 Mail Server Configuration (Gmail Example)
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SMTP_MAIL_HOST=smtp.gmail.com
+SPRING_MAIL_PORT=587
+SPRING_MAIL_USERNAME=your_email@gmail.com
+SPRING_MAIL_PASSWORD=your_app_password
+SPRING_MAIL_PROTOCOL=smtp
+SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
+SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED=true
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 📁 File Upload & GraphQL
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE_UPLOAD_PATH=/uploads
+GRAPHQL_PATH=/graphql
+```
+
+> ⚠️ **Security Note:** Never commit `.env` to version control. Keep your credentials safe!
+
+<br><br>
+
+## 🧪 Testing with Dummy Data
+
+Generate 500 realistic test users with the included Python script:
+
+```bash
+cd neo4j
+python test.py
+
+# Access Neo4j container
+docker exec -it matcha-neo4j bash
+cypher-shell -u {neo4j_username} -p {neo4j_password} -f /docker-entrypoint-initdb.d/init_profiles.cypher
+```
+
