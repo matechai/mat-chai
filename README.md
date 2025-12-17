@@ -22,7 +22,7 @@
 
 <br>
 
----
+
 
 ## ✨ Features
 
@@ -71,7 +71,7 @@
 
 <br>
 
----
+
 
 ## 🛠 Tech Stack
 
@@ -130,7 +130,7 @@ Orchestration : Docker Compose with health checks
 
 <br>
 
----
+
 
 ## 📁 Project Structure
 
@@ -145,8 +145,9 @@ matcha/
 └── README.md
 ```
 
+<br>
 
----
+
 
 ## 🏗 Architecture  
 
@@ -189,7 +190,9 @@ graph TB
 ```
 
 
----
+
+<br>
+
 
 ## 🚀 Quick Start
 
@@ -207,7 +210,9 @@ docker-compose up --build
 
 🎉 **That's it!** Access the app at `http://localhost`
 
----
+
+<br>
+
 
 ## 📋 Setup
 
@@ -244,7 +249,7 @@ cypher-shell -u {neo4j_username}] -p {neo4j_password} -f /docker-entrypoint-init
 
 <br>
 
----
+
 
 ## 🌐 Services & Endpoints
 
@@ -259,7 +264,9 @@ cypher-shell -u {neo4j_username}] -p {neo4j_password} -f /docker-entrypoint-init
 
 <br>
 
----
+
+<br>
+
 ## 🔐 .env Template
 
 Create a `.env` file with the following configuration:
@@ -316,9 +323,8 @@ GRAPHQL_PATH=/graphql
 
 > ⚠️ **Security Note:** Never commit `.env` to version control. Keep your credentials safe!
 
-<br>
+<br><br>
 
----
 ## 🧪 Testing with Dummy Data
 
 Generate 500 realistic test users with the included Python script:
